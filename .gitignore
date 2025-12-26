@@ -1,0 +1,312 @@
+# =============================================================================
+# Mobile Anyons Project .gitignore
+# =============================================================================
+
+# =============================================================================
+# OS Generated Files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# =============================================================================
+# Emacs
+# =============================================================================
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+*.org~
+.dir-locals.el
+flycheck_*.el
+.projectile
+.cask/
+dist/
+TAGS
+GTAGS
+GRTAGS
+GPATH
+.tern-port
+
+# =============================================================================
+# Vim (just in case)
+# =============================================================================
+*.swp
+*.swo
+*.swn
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+tags
+
+# =============================================================================
+# LaTeX
+# =============================================================================
+## Core latex/pdflatex auxiliary files
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+## Intermediate documents
+*.dvi
+*.xdv
+*-converted-to.*
+
+## Bibliography auxiliary files
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+## Build tool auxiliary files
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+
+## Package-specific auxiliary files
+*.alg
+*.loa
+*.thm
+*.nav
+*.pre
+*.snm
+*.vrb
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+*.fls
+*.idx
+*.ilg
+*.ind
+*.brf
+*.nlo
+*.nls
+*.nlg
+
+## Latexmk
+*.latexmain
+
+## Knitr
+*-concordance.tex
+*.tikz
+*-tikzDictionary
+
+## xypic precompiled matrices
+*.xyc
+
+## beamer
+*.nav
+*.snm
+*.vrb
+
+## pdfcomment
+*.upa
+*.upb
+
+## xindy
+*.xdy
+
+## standalone packages
+*.sta
+
+## gnuplot
+*.gnuplot
+
+## tikz externalization
+*.dpth
+*.md5
+*.auxlock
+
+# =============================================================================
+# Julia
+# =============================================================================
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+deps/deps.jl
+deps/build.log
+deps/downloads/
+deps/usr/
+deps/src/
+docs/build/
+docs/site/
+Manifest.toml
+*.ji
+.julia/
+
+LocalPreferences.toml
+
+# =============================================================================
+# Clojure
+# =============================================================================
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/lib/
+/classes/
+/target/
+/checkouts/
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.lein-failures
+.nrepl-port
+.cpcache/
+*.hprof
+
+profiles.clj
+
+.boot/
+
+.cpcache/
+
+.calva/
+
+.cider-repl-history
+
+# =============================================================================
+# Lean 4 (optional/future)
+# =============================================================================
+/build/
+/lake-packages/
+/.lake/
+*.olean
+*.ilean
+*.trace
+
+# =============================================================================
+# Python (for any helper scripts)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.ipynb_checkpoints
+*.pyc
+.venv/
+venv/
+ENV/
+
+# =============================================================================
+# Beads (bd)
+# =============================================================================
+# Local-only: DO NOT COMMIT
+.beads/beads.db
+.beads/beads.db-*
+.beads/bd.sock
+.beads/bd.pipe
+.beads/.exclusive-lock
+
+# bd protected-branch workflows
+.git/beads-worktrees/
+
+# (Tracked Beads files like .beads/beads.jsonl, deletions.jsonl, config.yaml,
+#  metadata.json, README.md are intentionally NOT ignored.)
+
+# =============================================================================
+# IDEs and Editors
+# =============================================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+.vscode/
+*.code-workspace
+
+*.sublime-workspace
+*.sublime-project
+
+# =============================================================================
+# Build and Output Directories
+# =============================================================================
+/out/
+/output/
+/dist/
+/_build/
+
+# =============================================================================
+# Project-Specific
+# =============================================================================
+# Generated PDFs (optional)
+# tex/*.pdf
+# tex/sections/*.pdf
+
+*.hdf5
+*.h5
+*.mat
+*.npy
+*.npz
+
+*.tmp
+*.temp
+*.bak
+*.backup
+
+*.log
+logs/
+
+# =============================================================================
+# Secrets and Local Config (if any)
+# =============================================================================
+.env
+.env.local
+*.secret
+secrets/
+credentials/
+
+# Untrack PDFs in literature/
+literature/pdfs/
+
+# Literature TeX source files (reference material, not project code)
+literature/tex/

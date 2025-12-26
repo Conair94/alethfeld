@@ -1,0 +1,137 @@
+{:meta
+ {:theorem-name "Dobinski's Formula"
+  :generated-at "2025-12-26"
+  :orchestrator-version "2.0"
+  :iterations {:total 1 :by-step {:all-steps 1}}
+  :escalated-steps []
+  :obligations []
+  :status :proven}
+
+ :theorem "B_n = \\frac{1}{e} \\sum_{k=0}^{\\infty} \\frac{k^n}{k!}"
+
+ :proof-mode :strict-mathematics
+
+ :symbols
+ [{:symbol "B_n"
+   :type "integer"
+   :tex "B_n"
+   :description "The n-th Bell number, counting partitions of an n-element set"}
+  {:symbol "n"
+   :type "non-negative integer"
+   :tex "n"
+   :description "Index parameter, n >= 0"}
+  {:symbol "S(n,j)"
+   :type "non-negative integer"
+   :tex "S(n,j)"
+   :description "Stirling number of the second kind"}
+  {:symbol "k^{(j)}"
+   :type "integer"
+   :tex "k^{(j)}"
+   :description "Falling factorial: k(k-1)...(k-j+1)"}
+  {:symbol "e"
+   :type "real"
+   :tex "e"
+   :description "Euler's number"}]
+
+ :assumptions
+ [{:id :A1 :statement "n >= 0 is a non-negative integer"}
+  {:id :A2 :statement "All series converge absolutely"}]
+
+ :definitions
+ [{:id :D1 :name "Bell number" :statement "B_n = sum_{j=0}^n S(n,j)"}
+  {:id :D2 :name "Stirling number" :statement "S(n,j) = (1/j!) sum_{i=0}^j (-1)^{j-i} C(j,i) i^n"}
+  {:id :D3 :name "Falling factorial" :statement "k^{(j)} = k!/(k-j)! for k>=j, 0 for k<j"}
+  {:id :D4 :name "Euler's number" :statement "e = sum_{k=0}^inf 1/k!"}
+  {:id :D5 :name "Power expansion" :statement "k^n = sum_{j=0}^n S(n,j) k^{(j)}"}]
+
+ :steps
+ [{:id :<1>1
+   :claim "k^n = sum_{j=0}^n S(n,j) k^{(j)}"
+   :using [:D3 :D5]
+   :justification :definition-expansion
+   :status :verified
+   :substeps
+   [{:id :<2>1 :claim "k^{(j)} = k(k-1)...(k-j+1)" :using [:D3] :justification :definition-expansion :status :verified}
+    {:id :<2>2 :claim "k^{(0)} = 1" :using [:D3] :justification :definition-expansion :status :verified}
+    {:id :<2>3 :claim "k^{(j)} = 0 when k < j" :using [:D3] :justification :definition-expansion :status :verified}
+    {:id :<2>4 :claim "k^{(j)} = k!/(k-j)! when k >= j" :using [:<2>1] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>5 :claim "Identity expresses powers in falling factorial basis" :using [:D5 :<2>1] :justification :definition-expansion :status :verified}]}
+
+  {:id :<1>2
+   :claim "sum k^n/k! = sum (1/k!) sum S(n,j) k^{(j)}"
+   :using [:<1>1]
+   :justification :substitution
+   :status :verified
+   :substeps
+   [{:id :<2>6 :claim "Substitute k^n expansion" :using [:<1>1] :justification :substitution :status :verified}
+    {:id :<2>7 :claim "Result of substitution" :using [:<2>6] :justification :algebraic-rewrite :status :verified}]}
+
+  {:id :<1>3
+   :claim "= sum_{j=0}^n S(n,j) sum_{k=0}^inf k^{(j)}/k!"
+   :using [:<1>2 :A2]
+   :justification :equivalence-elim
+   :status :verified
+   :substeps
+   [{:id :<2>8 :claim "Inner sum is finite (n+1 terms)" :using [:A1] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>9 :claim "|S(n,j) k^{(j)}/k!| <= S(n,j) k^j/k!" :using [:<2>1] :justification :monotonicity :status :verified}
+    {:id :<2>10 :claim "sum k^j/k! converges by ratio test" :using [] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>11 :claim "Double sum converges absolutely" :using [:<2>9 :<2>10 :<2>8] :justification :conjunction-intro :status :verified}
+    {:id :<2>12 :claim "Fubini-Tonelli allows exchange" :using [:<2>11 :A2] :justification :equivalence-elim :status :verified}
+    {:id :<2>13 :claim "Exchange summation" :using [:<2>12] :justification :equivalence-elim :status :verified}
+    {:id :<2>14 :claim "Factor out S(n,j)" :using [:<2>13] :justification :algebraic-rewrite :status :verified}]}
+
+  {:id :<1>4
+   :claim "sum_{k=0}^inf k^{(j)}/k! = e for all j >= 0"
+   :using [:<2>3 :<2>4]
+   :justification :algebraic-rewrite
+   :status :verified
+   :substeps
+   [{:id :<2>15 :claim "k^{(j)}=0 for k<j contributes 0" :using [:<2>3] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>16 :claim "Sum starts at k=j" :using [:<2>15] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>17 :claim "k^{(j)}/k! = 1/(k-j)! for k>=j" :using [:<2>4] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>18 :claim "sum_{k=j}^inf k^{(j)}/k! = sum_{k=j}^inf 1/(k-j)!" :using [:<2>16 :<2>17] :justification :substitution :status :verified}
+    {:id :<2>19 :claim "Reindex: m = k-j" :using [] :justification :substitution :status :verified}
+    {:id :<2>20 :claim "sum_{k=j}^inf 1/(k-j)! = sum_{m=0}^inf 1/m!" :using [:<2>19] :justification :substitution :status :verified}
+    {:id :<2>21 :claim "sum_{m=0}^inf 1/m! = e" :using [:D4] :justification :definition-expansion :status :verified}
+    {:id :<2>22 :claim "sum_{k=0}^inf k^{(j)}/k! = e" :using [:<2>18 :<2>20 :<2>21] :justification :equality-rewrite :status :verified}]}
+
+  {:id :<1>5
+   :claim "sum S(n,j) sum k^{(j)}/k! = e sum S(n,j)"
+   :using [:<1>3 :<1>4]
+   :justification :substitution
+   :status :verified
+   :substeps
+   [{:id :<2>23 :claim "Substitute inner sum = e" :using [:<1>4] :justification :substitution :status :verified}
+    {:id :<2>24 :claim "Factor out e" :using [:<2>23] :justification :algebraic-rewrite :status :verified}]}
+
+  {:id :<1>6
+   :claim "sum_{j=0}^n S(n,j) = B_n"
+   :using [:D1]
+   :justification :definition-expansion
+   :status :verified}
+
+  {:id :<1>7
+   :claim "sum k^n/k! = e * B_n"
+   :using [:<1>2 :<1>3 :<1>5 :<1>6]
+   :justification :equality-rewrite
+   :status :verified
+   :substeps
+   [{:id :<2>25 :claim "Chain equalities from :<1>2, :<1>3" :using [:<1>2 :<1>3] :justification :equality-rewrite :status :verified}
+    {:id :<2>26 :claim "Apply :<1>5, :<1>6" :using [:<1>5 :<1>6] :justification :substitution :status :verified}
+    {:id :<2>27 :claim "Conclude sum k^n/k! = e * B_n" :using [:<2>25 :<2>26] :justification :equality-rewrite :status :verified}]}
+
+  {:id :<1>8
+   :claim "B_n = (1/e) sum k^n/k!"
+   :using [:<1>7]
+   :justification :algebraic-rewrite
+   :status :verified
+   :substeps
+   [{:id :<2>28 :claim "e != 0" :using [:D4] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>29 :claim "Divide both sides by e" :using [:<1>7 :<2>28] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>30 :claim "(1/e) sum k^n/k! = B_n" :using [:<2>29] :justification :algebraic-rewrite :status :verified}
+    {:id :<2>31 :claim "B_n = (1/e) sum k^n/k!" :using [:<2>30] :justification :equivalence-elim :status :verified}]}]
+
+ :qed
+ {:claim "B_n = (1/e) sum_{k=0}^inf k^n/k!"
+  :final-step :<1>8
+  :status :proven}}

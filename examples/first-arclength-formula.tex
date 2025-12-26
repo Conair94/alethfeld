@@ -1,0 +1,156 @@
+\documentclass[11pt]{article}
+
+% === Packages ===
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+% === Theorem Environments ===
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% === Lamport-style Step Numbering ===
+\newlist{proofsteps}{enumerate}{2}
+\setlist[proofsteps,1]{label=$\langle 1 \rangle$\arabic*., ref=$\langle 1 \rangle$\arabic*, leftmargin=2em}
+\setlist[proofsteps,2]{label=$\langle 2 \rangle$\arabic*., ref=$\langle 2 \rangle$\arabic*, leftmargin=2.5em}
+
+% === Custom Commands ===
+\newcommand{\justify}[1]{\hfill\textit{(#1)}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\closure}[1]{\overline{#1}}
+
+\begin{document}
+
+\title{The First Arclength Formula: A Structured Proof}
+\author{}
+\date{}
+\maketitle
+
+\begin{theorem}[First Arclength Formula]\label{thm:arclength}
+Let $p : \CC \to \CC$ be a non-zero polynomial, and let $\Omega \subseteq \CC$ be a semialgebraic open set that does not contain any critical points of $p$ in its closure. Define the lemniscate
+\[
+E_1(p) = \{z \in \CC : |p(z)| \leq 1\}.
+\]
+Then
+\[
+\ell(\partial E_1(p) \cap \Omega) = \int_{-\pi}^{\pi} \sum_{z \in \Omega : p(z) = e^{i\alpha}} \frac{1}{|p'(z)|}\, d\alpha.
+\]
+\end{theorem}
+
+\noindent\textbf{Hypotheses.}
+\begin{itemize}[leftmargin=2em]
+    \item[\textbf{H1}:] $p : \CC \to \CC$ is a non-zero polynomial.
+    \item[\textbf{H2}:] $\Omega \subseteq \CC$ is a semialgebraic open set.
+    \item[\textbf{H3}:] $p'(z) \neq 0$ for all $z \in \closure{\Omega}$.
+\end{itemize}
+
+\medskip
+\noindent\textbf{External Results.}
+\begin{enumerate}[label=\textbf{E\arabic*}., leftmargin=2.5em]
+    \item \textit{Whitney Stratification} \cite{BCR98}: One-dimensional semialgebraic sets are rectifiable with finite arclength.
+    \item \textit{Area Formula} \cite{EG92}: For a local diffeomorphism $f : M \to N$ between equidimensional Riemannian manifolds,
+    \[
+    \int_M g\, dV_M = \int_N \sum_{x \in f^{-1}(y)} \frac{g(x)}{|Jf(x)|}\, dV_N.
+    \]
+\end{enumerate}
+
+\begin{proof}
+\begin{proofsteps}
+    \item $p|_\Omega$ is a local diffeomorphism. \justify{Inverse Function Theorem; H1, H3}
+    \begin{proofsteps}
+        \item By \textbf{H3}, $p'(z) \neq 0$ on $\closure{\Omega}$.
+        \item The inverse function theorem implies $p$ is a local diffeomorphism at each point of $\Omega$.
+    \end{proofsteps}
+
+    \item $\partial E_1(p) \cap \Omega$ is a smooth 1-dimensional submanifold. \justify{Implicit Function Theorem; H1, H3}
+    \begin{proofsteps}
+        \item Define $f(z) = |p(z)|^2 - 1$. Then $\partial E_1(p) \cap \Omega = f^{-1}(0) \cap \Omega$.
+        \item Compute $|\nabla f|^2 = 4|p(z)|^2|p'(z)|^2$.
+        \item On $\partial E_1(p)$, we have $|p(z)| = 1$, so $|\nabla f|^2 = 4|p'(z)|^2$.
+        \item By \textbf{H3}, $|p'(z)|^2 \neq 0$ on $\closure{\Omega}$, hence $|\nabla f| \neq 0$ on $\partial E_1(p) \cap \closure{\Omega}$.
+        \item By the implicit function theorem, $f^{-1}(0) \cap \Omega$ is a smooth 1-submanifold.
+    \end{proofsteps}
+
+    \item $\partial E_1(p) \cap \Omega$ is rectifiable with finite arclength. \justify{Whitney Stratification; H1, H2, $\langle 1 \rangle$2}
+    \begin{proofsteps}
+        \item The set $\partial E_1(p) = \{z : |p(z)|^2 = 1\}$ is semialgebraic (polynomial condition).
+        \item By \textbf{H2}, $\Omega$ is semialgebraic.
+        \item Therefore $\partial E_1(p) \cap \Omega$ is semialgebraic (intersection of semialgebraic sets).
+        \item By \textbf{E1}, one-dimensional semialgebraic sets are rectifiable with finite arclength.
+    \end{proofsteps}
+
+    \item For each $w \in S^1$, the fiber $p^{-1}(\{w\}) \cap \Omega$ is finite. \justify{Fundamental Theorem of Algebra; H1}
+    \begin{proofsteps}
+        \item By the Fundamental Theorem of Algebra, $p(z) = w$ has at most $\deg(p)$ solutions.
+        \item Hence $p^{-1}(\{w\}) \cap \Omega \subseteq p^{-1}(\{w\})$ has at most $\deg(p)$ elements.
+    \end{proofsteps}
+
+    \item $p : (\partial E_1(p) \cap \Omega) \to S^1$ is a local diffeomorphism. \justify{tangent space analysis; $\langle 1 \rangle$2, H3}
+    \begin{proofsteps}
+        \item At $z \in \partial E_1(p) \cap \Omega$, the tangent space $T_z(\partial E_1(p))$ consists of vectors $v$ with
+        \[
+        \mathrm{Re}(\overline{p(z)}p'(z)v) = 0.
+        \]
+        \item The differential $dp_z(v) = p'(z)v$ maps this isomorphically onto $T_{p(z)}S^1 = i \cdot p(z) \cdot \RR$.
+        \item This holds because $|p(z)| = 1$ implies $\overline{p(z)} = 1/p(z)$.
+    \end{proofsteps}
+
+    \item For arclength-parametrized $\gamma$, $|(p \circ \gamma)'(t)| = |p'(\gamma(t))|$. \justify{Chain Rule; $\langle 1 \rangle$2, $\langle 1 \rangle$5}
+    \begin{proofsteps}
+        \item By the chain rule, $(p \circ \gamma)'(t) = p'(\gamma(t)) \cdot \gamma'(t)$.
+        \item Since $\gamma$ is arclength-parametrized, $|\gamma'(t)| = 1$.
+        \item Therefore $|(p \circ \gamma)'(t)| = |p'(\gamma(t))| \cdot |\gamma'(t)| = |p'(\gamma(t))|$.
+    \end{proofsteps}
+
+    \item \textbf{Area Formula:}
+    \[
+    \ell(\partial E_1(p) \cap \Omega) = \int_{S^1} \sum_{z \in p^{-1}(w) \cap \Omega} \frac{1}{|p'(z)|}\, d\ell(w).
+    \] \justify{E2; $\langle 1 \rangle$3, $\langle 1 \rangle$4, $\langle 1 \rangle$5, $\langle 1 \rangle$6}
+    \begin{proofsteps}
+        \item Apply \textbf{E2} with $M = \partial E_1(p) \cap \Omega$, $N = S^1$, $f = p$, and $g \equiv 1$.
+        \item The Jacobian is $|Jf| = |p'|$ by step $\langle 1 \rangle$6.
+        \item The fibers are finite by step $\langle 1 \rangle$4.
+        \item The domain is rectifiable by step $\langle 1 \rangle$3.
+        \item The map is a local diffeomorphism by step $\langle 1 \rangle$5.
+    \end{proofsteps}
+
+    \item Parametrizing $S^1$ by $\alpha \mapsto e^{i\alpha}$, $\alpha \in [-\pi, \pi]$, we have $d\ell = d\alpha$. \justify{arclength computation}
+    \begin{proofsteps}
+        \item Let $\phi(\alpha) = e^{i\alpha}$ for $\alpha \in [-\pi, \pi]$.
+        \item Then $\phi'(\alpha) = ie^{i\alpha}$, so $|\phi'(\alpha)| = |ie^{i\alpha}| = 1$.
+        \item Hence $\phi$ is arclength-parametrized.
+        \item The pullback satisfies $\phi^*(d\ell) = d\alpha$.
+    \end{proofsteps}
+
+    \item \textbf{Conclusion:}
+    \[
+    \ell(\partial E_1(p) \cap \Omega) = \int_{-\pi}^{\pi} \sum_{z \in \Omega : p(z) = e^{i\alpha}} \frac{1}{|p'(z)|}\, d\alpha.
+    \] \justify{substitution; $\langle 1 \rangle$7, $\langle 1 \rangle$8}
+    \begin{proofsteps}
+        \item Substitute the parametrization from step $\langle 1 \rangle$8 into step $\langle 1 \rangle$7.
+        \item Under $w = e^{i\alpha}$, we have $p^{-1}(\{w\}) \cap \Omega = \{z \in \Omega : p(z) = e^{i\alpha}\}$.
+        \item Direct substitution yields the claimed formula. \qedhere
+    \end{proofsteps}
+\end{proofsteps}
+\end{proof}
+
+\begin{thebibliography}{99}
+\bibitem{BCR98}
+J.~Bochnak, M.~Coste, and M.-F.~Roy,
+\textit{Real Algebraic Geometry},
+Ergebnisse der Mathematik, vol.~36,
+Springer-Verlag, 1998.
+
+\bibitem{EG92}
+L.~C.~Evans and R.~F.~Gariepy,
+\textit{Measure Theory and Fine Properties of Functions},
+CRC Press, 1992.
+\end{thebibliography}
+
+\end{document}

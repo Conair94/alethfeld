@@ -1,0 +1,103 @@
+\documentclass[11pt]{article}
+
+% === Packages ===
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+% === Theorem Environments ===
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% === Lamport-style Step Numbering ===
+\newlist{proofsteps}{enumerate}{2}
+\setlist[proofsteps,1]{label=$\langle 1 \rangle$\arabic*., ref=$\langle 1 \rangle$\arabic*, leftmargin=2em}
+\setlist[proofsteps,2]{label=$\langle 2 \rangle$\arabic*., ref=$\langle 2 \rangle$\arabic*, leftmargin=2.5em}
+
+% === Custom Commands ===
+\newcommand{\fall}[2]{#1^{(#2)}}       % falling factorial
+\newcommand{\Stir}[2]{S(#1,#2)}        % Stirling number
+\newcommand{\Bell}[1]{B_{#1}}          % Bell number
+\newcommand{\justify}[1]{\hfill\textit{(#1)}}
+
+\begin{document}
+
+\title{Dobi\'{n}ski's Formula: A Structured Proof}
+\author{}
+\date{}
+\maketitle
+
+\begin{theorem}[Dobi\'{n}ski's Formula]
+For all $n \geq 0$,
+\[
+\Bell{n} = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}
+\]
+\end{theorem}
+
+\noindent\textbf{Notation and Definitions.}
+\begin{itemize}[leftmargin=2em]
+    \item[$\Bell{n}$:] The $n$-th Bell number.
+    \item[$\Stir{n}{j}$:] The Stirling number of the second kind.
+    \item[$\fall{k}{j}$:] The falling factorial $k(k-1)\cdots(k-j+1)$.
+    \item[$e$:] Euler's number.
+\end{itemize}
+
+\medskip
+\noindent\textbf{Definitions Used.}
+\begin{enumerate}[label=\textbf{D\arabic*}., leftmargin=2.5em]
+    \item $\Bell{n} = \sum_{j=0}^{n} \Stir{n}{j}$
+    \setcounter{enumi}{2}
+    \item $\fall{k}{j} = \dfrac{k!}{(k-j)!}$ for $k \geq j$, and $\fall{k}{j} = 0$ for $k < j$
+    \item $e = \sum_{k=0}^{\infty} \dfrac{1}{k!}$
+    \item $k^n = \sum_{j=0}^{n} \Stir{n}{j} \, \fall{k}{j}$
+\end{enumerate}
+
+\begin{proof}
+\begin{proofsteps}
+    \item $k^n = \sum_{j=0}^{n} \Stir{n}{j} \, \fall{k}{j}$ \justify{by D5, D3}
+    \begin{proofsteps}
+        \item $\fall{k}{j} = k(k-1)\cdots(k-j+1)$ \justify{by D3}
+        \item $\fall{k}{0} = 1$ \justify{by D3}
+        \item $\fall{k}{j} = 0$ when $k < j$ \justify{by D3}
+        \item $\fall{k}{j} = \dfrac{k!}{(k-j)!}$ when $k \geq j$ \justify{by algebra}
+    \end{proofsteps}
+
+    \item $\sum_{k=0}^{\infty} \dfrac{k^n}{k!} = \sum_{k=0}^{\infty} \dfrac{1}{k!} \sum_{j=0}^{n} \Stir{n}{j} \, \fall{k}{j}$ \justify{by substitution from $\langle 1 \rangle$1}
+
+    \item $= \sum_{j=0}^{n} \Stir{n}{j} \sum_{k=0}^{\infty} \dfrac{\fall{k}{j}}{k!}$ \justify{by Fubini--Tonelli, absolute convergence}
+    \begin{proofsteps}
+        \setcounter{proofstepsii}{7}
+        \item The inner sum has finitely many nonzero terms ($n+1$ terms). \justify{finite sum}
+        \setcounter{proofstepsii}{8}
+        \item Absolute convergence holds via the bound $\fall{k}{j} \leq k^j$. \justify{comparison test}
+        \setcounter{proofstepsii}{11}
+        \item Exchange of summation order is justified. \justify{Fubini--Tonelli}
+    \end{proofsteps}
+
+    \item \textbf{Key Lemma:} $\sum_{k=0}^{\infty} \dfrac{\fall{k}{j}}{k!} = e$ for all $j \geq 0$. \justify{Key Lemma}
+    \begin{proofsteps}
+        \setcounter{proofstepsii}{14}
+        \item Terms with $k < j$ vanish since $\fall{k}{j} = 0$. \justify{by D3}
+        \item For $k \geq j$: $\dfrac{\fall{k}{j}}{k!} = \dfrac{1}{(k-j)!}$. \justify{by algebra}
+        \setcounter{proofstepsii}{17}
+        \item Reindex with $m = k - j$: $\sum_{k=j}^{\infty} \dfrac{1}{(k-j)!} = \sum_{m=0}^{\infty} \dfrac{1}{m!}$. \justify{substitution}
+        \setcounter{proofstepsii}{20}
+        \item $\sum_{m=0}^{\infty} \dfrac{1}{m!} = e$. \justify{by D4}
+    \end{proofsteps}
+
+    \item $\sum_{j=0}^{n} \Stir{n}{j} \sum_{k=0}^{\infty} \dfrac{\fall{k}{j}}{k!} = e \sum_{j=0}^{n} \Stir{n}{j}$ \justify{substitute $\langle 1 \rangle$4, factor out $e$}
+
+    \item $\sum_{j=0}^{n} \Stir{n}{j} = \Bell{n}$ \justify{by D1}
+
+    \item $\sum_{k=0}^{\infty} \dfrac{k^n}{k!} = e \cdot \Bell{n}$ \justify{chain $\langle 1 \rangle$2 $\to$ $\langle 1 \rangle$3 $\to$ $\langle 1 \rangle$5 $\to$ $\langle 1 \rangle$6}
+
+    \item $\Bell{n} = \dfrac{1}{e} \sum_{k=0}^{\infty} \dfrac{k^n}{k!}$ \justify{divide by $e \neq 0$} \qedhere
+\end{proofsteps}
+\end{proof}
+
+\end{document}

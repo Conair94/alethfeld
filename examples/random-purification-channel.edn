@@ -1,0 +1,193 @@
+{:meta
+ {:name "Random Purification Channel"
+  :generated-at "2025-12-26"
+  :orchestrator-version "2.0"
+  :proof-mode :strict-mathematics
+  :iterations {:total 4 :by-step {:T1 1 :T2 2 :T3 2 :T4 2 :T5 1 :T6 1 :T7 1 :T8 1 :T9 1 :T10 1 :T11 1 :T12 1 :T13 1 :T14 1 :T15 1}}
+  :escalated-steps []
+  :obligations []}
+
+ :theorem
+ "For finite-dimensional $\\mathcal{H}_A$ with $\\dim(\\mathcal{H}_A) = d$, there exists a quantum channel $\\Lambda^{(n)}_{\\mathrm{purify}}: \\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\to \\mathcal{L}((\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n})$, where $\\mathcal{H}_B \\cong \\mathcal{H}_A$, such that for any $\\rho_A \\in \\mathcal{D}(\\mathcal{H}_A)$:
+$\\Lambda^{(n)}_{\\mathrm{purify}}(\\rho_A^{\\otimes n}) = \\mathbb{E}_{U_B}\\left[(\\mathrm{id}_A \\otimes U_B)(\\psi_\\rho)_{AB}(\\mathrm{id}_A \\otimes U_B^\\dagger)\\right]^{\\otimes n}$"
+
+ :symbols
+ {:H_A {:type "Hilbert space" :tex "\\mathcal{H}_A" :constraints "dim = d < ∞"}
+  :H_B {:type "Hilbert space" :tex "\\mathcal{H}_B" :constraints "≅ H_A"}
+  :d {:type "ℕ" :tex "d" :constraints "d ≥ 1"}
+  :n {:type "ℕ" :tex "n" :constraints "n ≥ 1"}
+  :rho {:type "D(H_A)" :tex "\\rho_A" :constraints "density operator"}
+  :Omega {:type "H_A ⊗ H_B" :tex "|\\Omega\\rangle" :constraints "= Σ_i |i⟩⊗|i⟩"}
+  :psi_rho {:type "H_A ⊗ H_B" :tex "|\\psi_\\rho\\rangle" :constraints "= (√ρ ⊗ I)|Ω⟩"}
+  :U {:type "U(d)" :tex "U" :constraints "Haar-random unitary"}
+  :Lambda {:type "L(H_A) → L(H_A ⊗ H_B)" :tex "\\Lambda" :constraints "CPTP channel"}}
+
+ :assumptions
+ {:A1 {:statement "$\\dim(\\mathcal{H}_A) = d < \\infty$" :type :finite-dimensionality}
+  :A2 {:statement "$\\mathcal{H}_B \\cong \\mathcal{H}_A$" :type :isomorphism}
+  :A3 {:statement "$n \\geq 1$" :type :parameter-constraint}}
+
+ :definitions
+ {:D1 {:name "Maximally entangled state"
+       :statement "$|\\Omega\\rangle = \\sum_{i=1}^d |i\\rangle_A \\otimes |i\\rangle_B$"}
+  :D2 {:name "Canonical purification"
+       :statement "$|\\psi_\\rho\\rangle = (\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle$"}
+  :D3 {:name "Haar twirl"
+       :statement "$\\mathcal{T}(X) = \\mathbb{E}_U[(I \\otimes U)X(I \\otimes U^\\dagger)]$"}
+  :D4 {:name "Single-copy channel"
+       :statement "$\\Lambda(\\rho) = \\rho \\otimes I_B/d$"}
+  :D5 {:name "n-copy channel"
+       :statement "$\\Lambda^{(n)} = \\Lambda^{\\otimes n}$"}}
+
+ :external-references
+ [{:doi "10.1007/978-1-4612-0979-9"
+   :authors ["William Fulton" "Joe Harris"]
+   :title "Representation Theory: A First Course"
+   :publisher "Springer"
+   :year 1991
+   :statement "Schur's lemma: the commutant of U(d) in the defining representation is C·I"
+   :status :verified
+   :used-in [:T4]}]
+
+ :steps
+ [{:id :T1
+   :claim "Purification existence: For any $\\rho \\in \\mathcal{D}(\\mathcal{H}_A)$, there exists pure $|\\psi\\rangle \\in \\mathcal{H}_A \\otimes \\mathcal{H}_B$ with $\\mathrm{Tr}_B(|\\psi\\rangle\\langle\\psi|) = \\rho$"
+   :using [:A1 :A2]
+   :justification :standard-result
+   :status :verified
+   :substeps
+   [{:id :T1.1 :claim "Spectral decomposition: $\\rho = \\sum_i \\lambda_i |e_i\\rangle\\langle e_i|$" :justification :spectral-theorem}
+    {:id :T1.2 :claim "Define $|\\psi\\rangle = \\sum_i \\sqrt{\\lambda_i} |e_i\\rangle \\otimes |f_i\\rangle$" :justification :construction}
+    {:id :T1.3 :claim "$\\langle\\psi|\\psi\\rangle = \\sum_i \\lambda_i = 1$" :justification :normalization}
+    {:id :T1.4 :claim "$\\mathrm{Tr}_B(|\\psi\\rangle\\langle\\psi|) = \\rho$" :justification :direct-computation}]}
+
+  {:id :T2
+   :claim "Canonical purification: $|\\psi_\\rho\\rangle = (\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle$ satisfies $\\mathrm{Tr}_B(|\\psi_\\rho\\rangle\\langle\\psi_\\rho|) = \\rho$"
+   :using [:A1 :A2 :D1 :D2]
+   :justification :construction
+   :status :verified
+   :substeps
+   [{:id :T2.1 :claim "Dimensional assumption: $\\dim(\\mathcal{H}_A) = \\dim(\\mathcal{H}_B) = d$" :justification :explicit-hypothesis}
+    {:id :T2.2 :claim "$|\\psi_\\rho\\rangle = (\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle = \\sum_i (\\sqrt{\\rho}|i\\rangle) \\otimes |i\\rangle$" :justification :definition-expansion}
+    {:id :T2.3 :claim "$\\langle\\psi_\\rho|\\psi_\\rho\\rangle = \\mathrm{Tr}(\\rho) = 1$" :justification :direct-computation}
+    {:id :T2.4 :claim "$\\mathrm{Tr}_B(|\\psi_\\rho\\rangle\\langle\\psi_\\rho|) = \\sqrt{\\rho}(\\sum_i|i\\rangle\\langle i|)\\sqrt{\\rho} = \\rho$" :justification :partial-trace}]}
+
+  {:id :T3
+   :claim "Purification uniqueness: Any two purifications $|\\psi\\rangle, |\\psi'\\rangle$ of $\\rho$ satisfy $|\\psi'\\rangle = (I_A \\otimes W)|\\psi\\rangle$ for some unitary $W$"
+   :using [:T1]
+   :justification :uhlmann-theorem
+   :status :verified
+   :substeps
+   [{:id :T3.1 :claim "Write Schmidt decompositions with same coefficients" :justification :schmidt-decomposition}
+    {:id :T3.2 :claim "Define isometry $W_0$ on support of $\\rho_B$" :justification :construction}
+    {:id :T3.3 :claim "Extend $W_0$ to unitary $W$ on all of $\\mathcal{H}_B$" :justification :isometry-extension}
+    {:id :T3.4 :claim "$(I_A \\otimes W)|\\psi\\rangle = |\\psi'\\rangle$" :justification :direct-computation}]}
+
+  {:id :T4
+   :claim "Haar twirl identity: $\\mathbb{E}_U[(I \\otimes U)|\\psi\\rangle\\langle\\psi|(I \\otimes U^\\dagger)] = \\rho_A \\otimes I_B/d$"
+   :using [{:external {:doi "10.1007/978-1-4612-0979-9"} :statement "Schur's lemma"}]
+   :justification :schur-weyl-duality
+   :status :verified
+   :substeps
+   [{:id :T4.1 :claim "Twirl map $\\mathcal{T}$ projects onto commutant of $\\{I \\otimes U\\}$" :justification :haar-averaging}
+    {:id :T4.2 :claim "Commutant is $\\mathcal{L}(\\mathcal{H}_A) \\otimes \\mathbb{C} \\cdot I_B$ by Schur's lemma" :justification :schur-lemma}
+    {:id :T4.3 :claim "$\\mathcal{T}(|\\psi\\rangle\\langle\\psi|) = X_A \\otimes I_B$ for some $X_A$" :justification :projection}
+    {:id :T4.4 :claim "$\\mathrm{Tr}_B(X_A \\otimes I_B) = d \\cdot X_A$" :justification :partial-trace}
+    {:id :T4.5 :claim "Twirl commutes with $\\mathrm{Tr}_B$: $\\mathrm{Tr}_B(\\mathcal{T}(Y)) = \\mathrm{Tr}_B(Y)$" :justification :cyclicity-of-trace}
+    {:id :T4.6 :claim "$d \\cdot X_A = \\rho_A$, hence $X_A = \\rho_A/d$" :justification :algebraic-rewrite}
+    {:id :T4.7 :claim "$\\mathcal{T}(|\\psi\\rangle\\langle\\psi|) = \\rho_A \\otimes I_B/d$" :justification :substitution}]}
+
+  {:id :T5
+   :claim "Define purification map $P: \\mathcal{D}(\\mathcal{H}_A) \\to \\{\\text{pure states}\\}$ by $P(\\rho) = |\\psi_\\rho\\rangle\\langle\\psi_\\rho|$"
+   :using [:T2]
+   :justification :definition
+   :status :verified}
+
+  {:id :T6
+   :claim "Define single-copy channel: $\\Lambda(\\rho) = \\mathbb{E}_U[(I \\otimes U)P(\\rho)(I \\otimes U^\\dagger)] = \\rho \\otimes I_B/d$"
+   :using [:T4 :T5]
+   :justification :definition
+   :status :verified}
+
+  {:id :T7
+   :claim "Extend $\\Lambda$ to all of $\\mathcal{L}(\\mathcal{H}_A)$ by linearity: $\\Lambda(X) = X \\otimes I_B/d$"
+   :using [:T6]
+   :justification :linear-extension
+   :status :verified}
+
+  {:id :T8
+   :claim "$\\Lambda$ is completely positive (CP)"
+   :using [:T6 :T7]
+   :justification :kraus-representation
+   :status :verified
+   :substeps
+   [{:id :T8.1 :claim "$\\Lambda(X) = X \\otimes I_B/d$ is tensor with positive operator" :justification :definition}
+    {:id :T8.2 :claim "Kraus operators: $K_i = |i\\rangle_B/\\sqrt{d}$" :justification :construction}
+    {:id :T8.3 :claim "$\\Lambda(X) = \\sum_i (I \\otimes K_i) X (I \\otimes K_i^\\dagger)$" :justification :kraus-form}]}
+
+  {:id :T9
+   :claim "$\\Lambda$ is trace-preserving (TP)"
+   :using [:T6 :T7]
+   :justification :direct-computation
+   :status :verified
+   :substeps
+   [{:id :T9.1 :claim "$\\mathrm{Tr}(\\Lambda(\\rho)) = \\mathrm{Tr}(\\rho) \\cdot \\mathrm{Tr}(I_B/d) = \\mathrm{Tr}(\\rho)$" :justification :trace-factorization}
+    {:id :T9.2 :claim "$\\mathrm{Tr}(I_B/d) = d/d = 1$" :justification :computation}]}
+
+  {:id :T10
+   :claim "$\\Lambda: \\mathcal{L}(\\mathcal{H}_A) \\to \\mathcal{L}(\\mathcal{H}_A \\otimes \\mathcal{H}_B)$ is CPTP"
+   :using [:T8 :T9]
+   :justification :conjunction-intro
+   :status :verified}
+
+  {:id :T11
+   :claim "$\\Lambda(\\rho) = \\mathbb{E}_U[(I \\otimes U)|\\psi\\rangle\\langle\\psi|(I \\otimes U^\\dagger)]$ for ANY purification $|\\psi\\rangle$ of $\\rho$"
+   :using [:T3 :T4]
+   :justification :haar-invariance
+   :status :verified
+   :substeps
+   [{:id :T11.1 :claim "Let $|\\psi\\rangle = (I \\otimes W)|\\psi_\\rho\\rangle$ by T3" :justification :purification-uniqueness}
+    {:id :T11.2 :claim "$\\mathbb{E}_U[(I \\otimes U)|\\psi\\rangle\\langle\\psi|(I \\otimes U^\\dagger)] = \\mathbb{E}_U[(I \\otimes UW)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I \\otimes (UW)^\\dagger)]$" :justification :substitution}
+    {:id :T11.3 :claim "Haar right-invariance: $\\mathbb{E}_U[f(UW)] = \\mathbb{E}_U[f(U)]$" :justification :haar-measure-property}
+    {:id :T11.4 :claim "Result equals $\\Lambda(\\rho)$" :justification :definition}]}
+
+  {:id :T12
+   :claim "Output $\\Lambda(\\rho)$ is independent of purification choice"
+   :using [:T11]
+   :justification :modus-ponens
+   :status :verified}
+
+  {:id :T13
+   :claim "Define n-copy channel $\\Lambda^{(n)} = \\Lambda^{\\otimes n}$ with independent Haar averages"
+   :using [:T10 :A3]
+   :justification :definition
+   :status :verified
+   :substeps
+   [{:id :T13.1 :claim "$\\Lambda^{(n)}: \\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\to \\mathcal{L}((\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n})$" :justification :type-annotation}
+    {:id :T13.2 :claim "$\\Lambda^{(n)}(\\rho_1 \\otimes \\cdots \\otimes \\rho_n) = \\Lambda(\\rho_1) \\otimes \\cdots \\otimes \\Lambda(\\rho_n)$" :justification :tensor-product-definition}
+    {:id :T13.3 :claim "Each factor uses independent Haar unitary $U_k$" :justification :independence}]}
+
+  {:id :T14
+   :claim "$\\Lambda^{(n)}$ is CPTP"
+   :using [:T10 :T13]
+   :justification :tensor-product-cptp
+   :status :verified
+   :substeps
+   [{:id :T14.1 :claim "Tensor product of CPTP maps is CPTP" :justification :standard-result}
+    {:id :T14.2 :claim "$\\Lambda$ is CPTP by T10" :justification :prior-step}
+    {:id :T14.3 :claim "$\\Lambda^{\\otimes n}$ is CPTP" :justification :modus-ponens}]}
+
+  {:id :T15
+   :claim "$\\Lambda^{(n)}(\\rho^{\\otimes n}) = \\left[\\mathbb{E}_U[(I \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I \\otimes U^\\dagger)]\\right]^{\\otimes n}$"
+   :using [:T6 :T11 :T13]
+   :justification :tensor-product-computation
+   :status :verified
+   :substeps
+   [{:id :T15.1 :claim "$\\Lambda^{(n)}(\\rho^{\\otimes n}) = \\Lambda(\\rho)^{\\otimes n}$" :justification :tensor-product-on-products}
+    {:id :T15.2 :claim "$= (\\rho \\otimes I_B/d)^{\\otimes n}$" :justification :T6}
+    {:id :T15.3 :claim "$= \\left[\\mathbb{E}_U[(I \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I \\otimes U^\\dagger)]\\right]^{\\otimes n}$" :justification :T11}]}]
+
+ :qed
+ {:by [:T14 :T15]
+  :via "T14 establishes $\\Lambda^{(n)}$ is CPTP. T15 establishes the required action on product states, matching the theorem statement."
+  :status :verified}}

@@ -1,0 +1,153 @@
+{:meta
+ {:generated-at "2025-12-26"
+  :orchestrator-version "2.0"
+  :iterations {:total 2 :by-step {:s1 1 :s2 2 :s2a 1 :s3 1 :s4 2 :s5 1 :s6 1 :s7 1 :s8 1}}
+  :escalated-steps []
+  :obligations []}
+
+ :theorem
+ {:id :first-arclength-formula
+  :statement "Let p be a non-zero polynomial, and let Omega be a semialgebraic open set that does not contain any critical points of p in its closure. Then ell(partial E_1(p) cap Omega) = integral_{-pi}^{pi} sum_{z in Omega: p(z) = e^{i alpha}} 1/|p'(z)| d alpha, where E_1(p) = {z : |p(z)| <= 1}."
+  :latex-statement "\\ell(\\partial E_1(p) \\cap \\Omega) = \\int_{-\\pi}^{\\pi} \\sum_{z \\in \\Omega: p(z) = e^{i\\alpha}} \\frac{1}{|p'(z)|}\\, d\\alpha"}
+
+ :proof-mode :strict-mathematics
+
+ :symbols
+ {:p {:type "polynomial" :tex "p" :description "non-zero polynomial p: C -> C"}
+  :Omega {:type "set" :tex "\\Omega" :description "semialgebraic open subset of C"}
+  :E_1 {:type "set" :tex "E_1(p)" :description "sublevel set {z : |p(z)| <= 1}"}
+  :partial-E_1 {:type "set" :tex "\\partial E_1(p)" :description "boundary, equal to {z : |p(z)| = 1}"}
+  :alpha {:type "real" :tex "\\alpha" :constraints "alpha in [-pi, pi]"}
+  :ell {:type "measure" :tex "\\ell" :description "arclength measure"}}
+
+ :assumptions
+ {:h1 {:id :h1 :statement "p : C -> C is a non-zero polynomial"}
+  :h2 {:id :h2 :statement "Omega is a semialgebraic open set in C"}
+  :h3 {:id :h3 :statement "p'(z) != 0 for all z in cl(Omega)"}}
+
+ :external-references
+ [{:id :whitney-stratification
+   :result "Whitney stratification for semialgebraic sets"
+   :statement "One-dimensional semialgebraic sets are rectifiable with finite arclength"
+   :source {:authors ["Bochnak, J." "Coste, M." "Roy, M.-F."]
+            :title "Real Algebraic Geometry"
+            :publisher "Springer-Verlag"
+            :year 1998
+            :series "Ergebnisse der Mathematik"
+            :volume 36
+            :chapter 9}}
+  {:id :area-formula
+   :result "Area formula for local diffeomorphisms"
+   :statement "For a local diffeomorphism f: M -> N between equidimensional Riemannian manifolds: integral_M g dV_M = integral_N sum_{x in f^{-1}(y)} g(x)/|Jf(x)| dV_N"
+   :source {:authors ["Evans, L.C." "Gariepy, R.F."]
+            :title "Measure Theory and Fine Properties of Functions"
+            :publisher "CRC Press"
+            :year 1992
+            :chapter 3}}]
+
+ :steps
+ [{:id :s1
+   :claim "The restriction p|_Omega is a local diffeomorphism"
+   :using [:h1 :h3]
+   :justification :modus-ponens
+   :via "inverse function theorem"
+   :status :verified
+   :substeps
+   [{:id :s1-1 :claim "By h3, p'(z) != 0 on cl(Omega)" :status :verified}
+    {:id :s1-2 :claim "The inverse function theorem implies p is a local diffeomorphism at each point of Omega" :status :verified}]}
+
+  {:id :s2
+   :claim "partial E_1(p) cap Omega is a smooth 1-dimensional submanifold"
+   :using [:h1 :h3]
+   :justification :modus-ponens
+   :via "implicit function theorem"
+   :status :verified
+   :substeps
+   [{:id :s2-1 :claim "Define f(z) = |p(z)|^2 - 1; then partial E_1(p) cap Omega = f^{-1}(0) cap Omega" :status :verified}
+    {:id :s2-2 :claim "|nabla f|^2 = 4|p(z)|^2|p'(z)|^2" :status :verified}
+    {:id :s2-3 :claim "On partial E_1(p), |p(z)| = 1, so |nabla f|^2 = 4|p'(z)|^2" :status :verified}
+    {:id :s2-4 :claim "By h3, p'(z) != 0, so nabla f != 0 on partial E_1(p) cap cl(Omega)" :status :verified}
+    {:id :s2-5 :claim "By implicit function theorem, f^{-1}(0) cap Omega is a smooth 1-submanifold" :status :verified}]}
+
+  {:id :s2a
+   :claim "partial E_1(p) cap Omega is rectifiable with finite arclength"
+   :using [:h1 :h2 :s2]
+   :justification :modus-ponens
+   :via "Whitney stratification"
+   :external [:whitney-stratification]
+   :status :verified
+   :substeps
+   [{:id :s2a-1 :claim "partial E_1(p) = {z : |p(z)|^2 = 1} is semialgebraic (polynomial condition)" :status :verified}
+    {:id :s2a-2 :claim "By h2, Omega is semialgebraic" :status :verified}
+    {:id :s2a-3 :claim "partial E_1(p) cap Omega is semialgebraic (intersection of semialgebraic sets)" :status :verified}
+    {:id :s2a-4 :claim "By Whitney stratification, 1-dimensional semialgebraic sets are rectifiable with finite arclength" :status :verified}]}
+
+  {:id :s3
+   :claim "For each w in S^1, the fiber p^{-1}({w}) cap Omega is finite"
+   :using [:h1]
+   :justification :modus-ponens
+   :via "Fundamental Theorem of Algebra"
+   :status :verified
+   :substeps
+   [{:id :s3-1 :claim "By FTA, p(z) = w has at most deg(p) solutions in C" :status :verified}
+    {:id :s3-2 :claim "Hence p^{-1}({w}) cap Omega has at most deg(p) elements" :status :verified}]}
+
+  {:id :s4
+   :claim "p : (partial E_1(p) cap Omega) -> S^1 is a local diffeomorphism of 1-manifolds"
+   :using [:s2 :h3]
+   :justification :modus-ponens
+   :via "inverse function theorem for manifolds"
+   :status :verified
+   :substeps
+   [{:id :s4-1 :claim "T_z(partial E_1(p)) = {v : Re(conj(p(z)) p'(z) v) = 0}" :status :verified}
+    {:id :s4-2 :claim "dp_z(v) = p'(z) v maps T_z(partial E_1(p)) isomorphically to T_{p(z)}S^1 = i p(z) R" :status :verified}
+    {:id :s4-3 :claim "This uses |p(z)| = 1 implies conj(p(z)) = 1/p(z)" :status :verified}]}
+
+  {:id :s5
+   :claim "For arclength-parametrized gamma, |(p circ gamma)'(t)| = |p'(gamma(t))|"
+   :using [:s2 :s4]
+   :justification :algebraic-rewrite
+   :via "chain rule"
+   :status :verified
+   :substeps
+   [{:id :s5-1 :claim "By chain rule: (p circ gamma)'(t) = p'(gamma(t)) gamma'(t)" :status :verified}
+    {:id :s5-2 :claim "gamma arclength-parametrized implies |gamma'(t)| = 1" :status :verified}
+    {:id :s5-3 :claim "Therefore |(p circ gamma)'(t)| = |p'(gamma(t))| |gamma'(t)| = |p'(gamma(t))|" :status :verified}]}
+
+  {:id :s6
+   :claim "Area formula: ell(partial E_1(p) cap Omega) = integral_{S^1} sum_{z in p^{-1}(w) cap Omega} 1/|p'(z)| d ell(w)"
+   :using [:s2a :s3 :s4 :s5]
+   :justification :modus-ponens
+   :via "area formula for local diffeomorphisms"
+   :external [:area-formula]
+   :status :verified
+   :substeps
+   [{:id :s6-1 :claim "Apply area formula with M = partial E_1(p) cap Omega, N = S^1, f = p, g = 1" :status :verified}
+    {:id :s6-2 :claim "Jacobian |Jf| = |p'| by s5" :status :verified}
+    {:id :s6-3 :claim "Fibers finite by s3; domain rectifiable by s2a; f local diffeo by s4" :status :verified}]}
+
+  {:id :s7
+   :claim "Parametrizing S^1 by alpha -> e^{i alpha}, alpha in [-pi, pi], we have d ell = d alpha"
+   :using []
+   :justification :algebraic-rewrite
+   :via "arclength computation"
+   :status :verified
+   :substeps
+   [{:id :s7-1 :claim "Let phi(alpha) = e^{i alpha}" :status :verified}
+    {:id :s7-2 :claim "|phi'(alpha)| = |i e^{i alpha}| = 1, so phi is arclength-parametrized" :status :verified}
+    {:id :s7-3 :claim "Pullback: phi^*(d ell) = |phi'| d alpha = d alpha" :status :verified}]}
+
+  {:id :s8
+   :claim "ell(partial E_1(p) cap Omega) = integral_{-pi}^{pi} sum_{z in Omega: p(z) = e^{i alpha}} 1/|p'(z)| d alpha"
+   :using [:s6 :s7]
+   :justification :substitution
+   :via "direct substitution"
+   :status :verified
+   :substeps
+   [{:id :s8-1 :claim "Under w = e^{i alpha}: p^{-1}({w}) cap Omega = {z in Omega : p(z) = e^{i alpha}}" :status :verified}
+    {:id :s8-2 :claim "Substitute s7 into s6" :status :verified}
+    {:id :s8-3 :claim "QED" :status :verified}]}]
+
+ :qed
+ {:by [:s8]
+  :via "The area formula for local diffeomorphisms, combined with parametrization of S^1, yields the claimed arclength integral formula."}}

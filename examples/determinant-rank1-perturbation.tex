@@ -1,0 +1,132 @@
+\documentclass[11pt]{article}
+
+% === Packages ===
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+% === Theorem Environments ===
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% === Lamport-style Step Numbering ===
+\newlist{proofsteps}{enumerate}{3}
+\setlist[proofsteps,1]{label=$\langle 1 \rangle$\arabic*., ref=$\langle 1 \rangle$\arabic*, leftmargin=2em}
+\setlist[proofsteps,2]{label=$\langle 2 \rangle$\arabic*., ref=$\langle 2 \rangle$\arabic*, leftmargin=2.5em}
+\setlist[proofsteps,3]{label=$\langle 3 \rangle$\arabic*., ref=$\langle 3 \rangle$\arabic*, leftmargin=3em}
+
+% === Custom Commands ===
+\newcommand{\onevec}{\mathbf{1}}
+\newcommand{\justify}[1]{\hfill\textit{(#1)}}
+
+\begin{document}
+
+\title{Determinant of a Rank-One Perturbation of a Diagonal Matrix}
+\author{}
+\date{}
+\maketitle
+
+\section*{Preliminaries}
+
+\begin{theorem}[Matrix Determinant Lemma]\label{thm:mdl}
+Let $M$ be an invertible $n \times n$ matrix and let $u, v \in \mathbb{R}^n$ be column vectors. Then
+\[
+\det(M + uv^T) = (1 + v^T M^{-1} u) \det(M).
+\]
+\end{theorem}
+
+\noindent This is a special case of the Sylvester determinant identity; see Horn \& Johnson, \textit{Matrix Analysis}, 2nd ed., Theorem 1.3.22.
+
+\section*{Main Result}
+
+\begin{proposition}\label{prop:main}
+Let $a_1, a_2, \ldots, a_n \neq 0$. Then
+\[
+d_n = \begin{vmatrix}
+1+a_1 & 1 & \cdots & 1 \\
+1 & 1+a_2 & \cdots & 1 \\
+\vdots & \vdots & \ddots & \vdots \\
+1 & 1 & \cdots & 1+a_n
+\end{vmatrix}
+= \left(1 + \sum_{k=1}^{n} \frac{1}{a_k}\right) a_1 a_2 \cdots a_n.
+\]
+\end{proposition}
+
+\noindent\textbf{Notation.}
+\begin{itemize}[leftmargin=2em]
+    \item $D = \text{diag}(a_1, a_2, \ldots, a_n)$: the $n \times n$ diagonal matrix with entries $a_1, \ldots, a_n$.
+    \item $\onevec = (1, 1, \ldots, 1)^T$: the column vector of all ones.
+    \item $\delta_{ij}$: Kronecker delta ($\delta_{ij} = 1$ if $i = j$, else $0$).
+\end{itemize}
+
+\begin{proof}
+Let $A$ denote the matrix whose determinant is $d_n$, so $A_{ij} = 1 + a_i \delta_{ij}$.
+
+\begin{proofsteps}
+    \item \textbf{Matrix decomposition:} $A = D + \onevec\onevec^T$ \justify{algebraic verification}
+    \begin{proofsteps}
+        \item The $(i,j)$-entry of $A$ is $A_{ij} = 1 + a_i \delta_{ij}$. \justify{by definition}
+        \item The $(i,j)$-entry of $D$ is $D_{ij} = a_i \delta_{ij}$. \justify{diagonal matrix}
+        \item The $(i,j)$-entry of $\onevec\onevec^T$ is $(\onevec\onevec^T)_{ij} = 1 \cdot 1 = 1$. \justify{outer product}
+        \item Therefore $(D + \onevec\onevec^T)_{ij} = a_i\delta_{ij} + 1 = A_{ij}$. \justify{entry-wise equality}
+    \end{proofsteps}
+
+    \item \textbf{Invertibility:} $D$ is invertible with $D^{-1} = \text{diag}(1/a_1, \ldots, 1/a_n)$. \justify{since all $a_k \neq 0$}
+    \begin{proofsteps}
+        \item Since $a_k \neq 0$ for all $k$, every diagonal entry of $D$ is nonzero. \justify{hypothesis}
+        \item A diagonal matrix is invertible iff all diagonal entries are nonzero. \justify{standard theorem}
+        \item Therefore $D$ is invertible. \justify{modus ponens}
+        \item The inverse of $\text{diag}(a_1, \ldots, a_n)$ is $\text{diag}(1/a_1, \ldots, 1/a_n)$. \justify{diagonal inverse}
+    \end{proofsteps}
+
+    \item \textbf{Determinant of $D$:} $\det(D) = a_1 a_2 \cdots a_n$. \justify{diagonal matrix property}
+    \begin{proofsteps}
+        \item For any diagonal matrix, $\det = $ product of diagonal entries. \justify{standard theorem}
+        \item The diagonal entries of $D$ are $a_1, a_2, \ldots, a_n$. \justify{by construction}
+        \item Therefore $\det(D) = \prod_{k=1}^{n} a_k = a_1 a_2 \cdots a_n$. \justify{substitution}
+    \end{proofsteps}
+
+    \item \textbf{Apply Matrix Determinant Lemma:}
+    \[
+    \det(D + \onevec\onevec^T) = (1 + \onevec^T D^{-1} \onevec) \det(D).
+    \] \justify{Theorem~\ref{thm:mdl} with $M=D$, $u=v=\onevec$}
+    \begin{proofsteps}
+        \item By Theorem~\ref{thm:mdl}: $\det(M + uv^T) = (1 + v^T M^{-1} u)\det(M)$. \justify{cited}
+        \item Set $M = D$ and $u = v = \onevec$, so $uv^T = \onevec\onevec^T$. \justify{substitution}
+        \item The matrix $D$ is invertible by step $\langle 1 \rangle$2. \justify{verified hypothesis}
+        \item Therefore $\det(D + \onevec\onevec^T) = (1 + \onevec^T D^{-1} \onevec)\det(D)$. \justify{lemma application}
+    \end{proofsteps}
+
+    \item \textbf{Compute the quadratic form:} $\onevec^T D^{-1} \onevec = \displaystyle\sum_{k=1}^{n} \frac{1}{a_k}$. \justify{matrix computation}
+    \begin{proofsteps}
+        \item $D^{-1} = \text{diag}(1/a_1, 1/a_2, \ldots, 1/a_n)$. \justify{from $\langle 1 \rangle$2}
+        \item $D^{-1} \onevec = (1/a_1, 1/a_2, \ldots, 1/a_n)^T$. \justify{diagonal times vector}
+        \begin{proofsteps}
+            \item The $k$-th component is $(D^{-1}\onevec)_k = (D^{-1})_{kk} \cdot 1 = \dfrac{1}{a_k}$. \justify{definition}
+        \end{proofsteps}
+        \item $\onevec^T D^{-1} \onevec = \onevec^T \cdot (1/a_1, \ldots, 1/a_n)^T$. \justify{substitution}
+        \item $= \dfrac{1}{a_1} + \dfrac{1}{a_2} + \cdots + \dfrac{1}{a_n} = \displaystyle\sum_{k=1}^{n} \frac{1}{a_k}$. \justify{dot product}
+    \end{proofsteps}
+
+    \item \textbf{Combine results:}
+    \[
+    d_n = \det(A) = \left(1 + \sum_{k=1}^{n} \frac{1}{a_k}\right) a_1 a_2 \cdots a_n.
+    \] \justify{substitution into $\langle 1 \rangle$4}
+    \begin{proofsteps}
+        \item $d_n = \det(A)$ by definition.
+        \item $\det(A) = \det(D + \onevec\onevec^T)$ by step $\langle 1 \rangle$1.
+        \item $= (1 + \onevec^T D^{-1} \onevec) \det(D)$ by step $\langle 1 \rangle$4.
+        \item Substitute $\onevec^T D^{-1} \onevec = \sum_{k=1}^{n} \frac{1}{a_k}$ from step $\langle 1 \rangle$5.
+        \item Substitute $\det(D) = a_1 a_2 \cdots a_n$ from step $\langle 1 \rangle$3.
+        \item Therefore $d_n = \left(1 + \sum_{k=1}^{n} \frac{1}{a_k}\right) a_1 a_2 \cdots a_n$. \qedhere
+    \end{proofsteps}
+\end{proofsteps}
+\end{proof}
+
+\end{document}
