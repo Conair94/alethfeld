@@ -75,6 +75,7 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 - `random-purification/proof.tex` — LaTeX output
 - `random-purification/proof.lean` — Lean 4 (unverified)
 
+***Warning!*** I discovered a small error in ⟨1⟩2. Canonical Purification: factor of d was lost. This required a correction round.
 ---
 
 ## How to Read These Examples
