@@ -70,12 +70,21 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
 **Why this example:** A result from quantum information theory—a domain requiring careful handling of operator algebras, tensor products, and probabilistic constructions. Tests whether the system can navigate the formalism of quantum mechanics without introducing the subtle errors common in this area.
 
+### ⚠️ Known Error
+
+**The theorem statement was incorrectly transcribed.** The brackets indicating operator ordering were wrong in the input—the expectation was placed before the tensor product when it should be after. The system then proved the (incorrect) theorem it was given.
+
+The proof itself appears to be correct *for the statement as provided*. The error was in the problem specification, not the reasoning.
+
+This illustrates a different failure mode: **garbage in, garbage out**. The system will faithfully prove incorrect theorems if given incorrect statements. It does not (and cannot) verify that the theorem you asked it to prove is the theorem you meant to prove.
+
+We include this example as a reminder: always check the theorem statement carefully before evaluating the proof.
+
 **Files:**
-- `random-purification/proof.edn` — Structured proof
+- `random-purification/proof.edn` — Structured proof (correct for the stated theorem)
 - `random-purification/proof.tex` — LaTeX output
 - `random-purification/proof.lean` — Lean 4 (unverified)
 
-***Warning!*** I discovered a small error in ⟨1⟩2. Canonical Purification: factor of d was lost. This required a correction round.
 ---
 
 ## How to Read These Examples
@@ -100,14 +109,14 @@ Publication-ready output. Compile with `pdflatex`. Uses Lamport-style step numbe
 
 ## Verification Status
 
-| Example | Prover-Verifier Rounds | Admitted Steps | Human Verified |
-|---------|------------------------|----------------|----------------|
-| Dobinski | 23 | 0 | ❌ |
-| Prime Determinant | 31 | 1 | ❌ |
-| Lemniscate | 28 | 2 | ❌ |
-| Random Purification | 34 | 1 | ❌ |
+| Example | Prover-Verifier Rounds | Admitted Steps | Human Verified | Notes |
+|---------|------------------------|----------------|----------------|-------|
+| Dobinski | 23 | 0 | ❌ | — |
+| Prime Determinant | 31 | 1 | ❌ | — |
+| Lemniscate | 28 | 2 | ❌ | — |
+| Random Purification | 34 | 1 | ❌ | Theorem statement error (see above) |
 
-"Admitted steps" are gaps explicitly acknowledged by the system. "Human Verified" would indicate a mathematician has checked the proof—none of these have been verified.
+"Admitted steps" are gaps explicitly acknowledged by the system. "Human Verified" would indicate a mathematician has checked the proof—none of these have been fully verified.
 
 ---
 

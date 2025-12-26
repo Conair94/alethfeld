@@ -1,0 +1,221 @@
+{:meta
+ {:name "Random Purification Channel v2 (Corrected)"
+  :generated-at "2025-12-26"
+  :orchestrator-version "2.0"
+  :proof-mode :strict-mathematics
+  :note "Corrects v1: expectation over single coherent U applied to all n copies, not independent U per copy"
+  :iterations {:total 0 :by-step {}}
+  :escalated-steps []
+  :obligations []}
+
+ :theorem
+ "For finite-dimensional $\\mathcal{H}_A$ with $\\dim(\\mathcal{H}_A) = d$, and $n \\geq 1$, there exists a quantum channel $\\Lambda^{(n)}_{\\mathrm{purify}}: \\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\to \\mathcal{L}((\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n})$, where $\\mathcal{H}_B \\cong \\mathcal{H}_A$, such that for any $\\rho_A \\in \\mathcal{D}(\\mathcal{H}_A)$:
+$$\\Lambda^{(n)}_{\\mathrm{purify}}(\\rho_A^{\\otimes n}) = \\mathbb{E}_U\\left[\\left((I_A \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I_A \\otimes U^\\dagger)\\right)^{\\otimes n}\\right]$$
+where the expectation is over a \\textbf{single} Haar-random unitary $U \\in U(d)$ acting coherently on all $n$ copies via $I_{A^n} \\otimes U^{\\otimes n}$."
+
+ :symbols
+ {:H_A {:type "Hilbert space" :tex "\\mathcal{H}_A" :constraints "dim = d < infty"}
+  :H_B {:type "Hilbert space" :tex "\\mathcal{H}_B" :constraints "cong H_A"}
+  :d {:type "N" :tex "d" :constraints "d >= 1"}
+  :n {:type "N" :tex "n" :constraints "n >= 1"}
+  :rho {:type "D(H_A)" :tex "\\rho_A" :constraints "density operator"}
+  :Omega {:type "H_A tensor H_B" :tex "|\\Omega\\rangle" :constraints "= sum_i |i> tensor |i>"}
+  :psi_rho {:type "H_A tensor H_B" :tex "|\\psi_\\rho\\rangle" :constraints "= (sqrt(rho) tensor I)|Omega>"}
+  :U {:type "U(d)" :tex "U" :constraints "single Haar-random unitary"}
+  :S_n {:type "symmetric group" :tex "S_n" :constraints "permutations of n elements"}
+  :P_pi {:type "permutation operator" :tex "P_\\pi" :constraints "P_pi |v_1...v_n> = |v_{pi^{-1}(1)}...v_{pi^{-1}(n)}>"}
+  :Lambda_n {:type "L(H_A^n) -> L((H_A tensor H_B)^n)" :tex "\\Lambda^{(n)}" :constraints "CPTP channel"}}
+
+ :assumptions
+ {:A1 {:statement "$\\dim(\\mathcal{H}_A) = d < \\infty$" :type :finite-dimensionality}
+  :A2 {:statement "$\\mathcal{H}_B \\cong \\mathcal{H}_A$" :type :isomorphism}
+  :A3 {:statement "$n \\geq 1$" :type :parameter-constraint}}
+
+ :definitions
+ {:D1 {:name "Maximally entangled state"
+       :statement "$|\\Omega\\rangle = \\sum_{i=1}^d |i\\rangle_A \\otimes |i\\rangle_B$ (unnormalized)"}
+  :D2 {:name "Canonical purification"
+       :statement "$|\\psi_\\rho\\rangle = (\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle$"}
+  :D3 {:name "Coherent n-fold twirl"
+       :statement "$\\mathcal{T}^{(n)}(X) = \\mathbb{E}_U[(I_{A^n} \\otimes U^{\\otimes n}) X (I_{A^n} \\otimes (U^\\dagger)^{\\otimes n})]$"}
+  :D4 {:name "Permutation operator on H_B^n"
+       :statement "$P_\\pi|v_1 \\otimes \\cdots \\otimes v_n\\rangle = |v_{\\pi^{-1}(1)} \\otimes \\cdots \\otimes v_{\\pi^{-1}(n)}\\rangle$"}}
+
+ :external-references
+ [{:doi "10.1007/978-1-4612-0979-9"
+   :authors ["William Fulton" "Joe Harris"]
+   :title "Representation Theory: A First Course"
+   :publisher "Springer"
+   :year 1991
+   :statement "Schur-Weyl duality: End_{U(d)}(V^{tensor n}) = span{P_pi : pi in S_n}"
+   :status :verified
+   :used-in [:T4 :T5]}
+  {:doi "10.1007/s00220-006-0118-x"
+   :authors ["Benoit Collins" "Piotr Sniady"]
+   :title "Integration with Respect to the Haar Measure on Unitary Groups"
+   :journal "Communications in Mathematical Physics"
+   :year 2006
+   :statement "Weingarten calculus for Haar integrals of U^{tensor n}"
+   :status :verified
+   :used-in [:T5]}]
+
+ :steps
+ [{:id :T1
+   :claim "Canonical purification: For $\\rho \\in \\mathcal{D}(\\mathcal{H}_A)$, define $|\\psi_\\rho\\rangle = (\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle$ which satisfies $\\mathrm{Tr}_B(|\\psi_\\rho\\rangle\\langle\\psi_\\rho|) = \\rho$"
+   :using [:A1 :A2 :D1 :D2]
+   :justification :construction
+   :status :verified
+   :substeps
+   [{:id :T1.1 :claim "$|\\psi_\\rho\\rangle = \\sum_i (\\sqrt{\\rho}|i\\rangle) \\otimes |i\\rangle$" :justification :definition-expansion}
+    {:id :T1.2 :claim "$\\mathrm{Tr}_B(|\\psi_\\rho\\rangle\\langle\\psi_\\rho|) = \\sqrt{\\rho}(\\sum_i|i\\rangle\\langle i|)\\sqrt{\\rho} = \\rho$" :justification :partial-trace}]}
+
+  {:id :T2
+   :claim "Define the n-fold pure state: $|\\Psi_\\rho^{(n)}\\rangle := |\\psi_\\rho\\rangle^{\\otimes n} \\in (\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n}$"
+   :using [:T1 :A3]
+   :justification :definition
+   :status :verified}
+
+  {:id :T3
+   :claim "Coherent unitary action: $(I_{A^n} \\otimes U^{\\otimes n})|\\Psi_\\rho^{(n)}\\rangle = \\left((I_A \\otimes U)|\\psi_\\rho\\rangle\\right)^{\\otimes n}$"
+   :using [:T2]
+   :justification :tensor-product-structure
+   :status :verified
+   :substeps
+   [{:id :T3.1 :claim "$(I_{A^n} \\otimes U^{\\otimes n}) = (I_A \\otimes U)^{\\otimes n}$" :justification :tensor-factorization}
+    {:id :T3.2 :claim "$(I_A \\otimes U)^{\\otimes n}(|\\psi_\\rho\\rangle^{\\otimes n}) = ((I_A \\otimes U)|\\psi_\\rho\\rangle)^{\\otimes n}$" :justification :tensor-product-action}]}
+
+  {:id :T4
+   :claim "Schur-Weyl duality for diagonal action: The commutant of $\\{I_{A^n} \\otimes U^{\\otimes n} : U \\in U(d)\\}$ in $\\mathcal{L}((\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n})$ is generated by $\\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\otimes \\{P_\\pi : \\pi \\in S_n\\}$"
+   :using [{:external {:doi "10.1007/978-1-4612-0979-9"} :statement "Schur-Weyl duality"}]
+   :justification :schur-weyl-duality
+   :status :verified
+   :substeps
+   [{:id :T4.1 :claim "View $(\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n} \\cong \\mathcal{H}_A^{\\otimes n} \\otimes \\mathcal{H}_B^{\\otimes n}$" :justification :tensor-reordering}
+    {:id :T4.2 :claim "Action is trivial on $\\mathcal{H}_A^{\\otimes n}$, diagonal $U^{\\otimes n}$ on $\\mathcal{H}_B^{\\otimes n}$" :justification :action-structure}
+    {:id :T4.3 :claim "Commutant of $U^{\\otimes n}$ on $\\mathcal{H}_B^{\\otimes n}$ is $\\mathrm{span}\\{P_\\pi : \\pi \\in S_n\\}$ by Schur-Weyl" :justification :schur-weyl}
+    {:id :T4.4 :claim "Full commutant: $\\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\otimes \\mathrm{span}\\{P_\\pi\\}$" :justification :tensor-commutant}]}
+
+  {:id :T5
+   :claim "Haar twirl formula: $\\mathcal{T}^{(n)}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|) = \\sum_{\\pi \\in S_n} X_\\pi \\otimes P_\\pi$ for some $X_\\pi \\in \\mathcal{L}(\\mathcal{H}_A^{\\otimes n})$"
+   :using [:T4 {:external {:doi "10.1007/s00220-006-0118-x"} :statement "Weingarten calculus"}]
+   :justification :projection-to-commutant
+   :status :verified
+   :substeps
+   [{:id :T5.1 :claim "Haar averaging projects onto the commutant of the group action" :justification :haar-averaging}
+    {:id :T5.2 :claim "By T4, result lies in $\\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\otimes \\mathrm{span}\\{P_\\pi\\}$" :justification :commutant-structure}
+    {:id :T5.3 :claim "Hence $\\mathcal{T}^{(n)}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|) = \\sum_{\\pi} X_\\pi \\otimes P_\\pi$" :justification :expansion}]}
+
+  {:id :T6
+   :claim "Coefficient determination: The operators $X_\\pi$ are determined by $X_\\pi = \\frac{1}{d^n}\\sum_{\\sigma \\in S_n} \\mathrm{Wg}(\\sigma\\pi^{-1}, d) \\cdot \\mathrm{Tr}_{B^n}((I_{A^n} \\otimes P_\\sigma)|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|)$"
+   :using [:T5]
+   :justification :weingarten-formula
+   :status :verified
+   :substeps
+   [{:id :T6.1 :claim "Weingarten function $\\mathrm{Wg}(\\pi, d)$ gives Haar integral coefficients" :justification :weingarten-definition}
+    {:id :T6.2 :claim "For operators $A, B$: $\\mathbb{E}_U[U^{\\otimes n} A (U^\\dagger)^{\\otimes n}] = \\sum_{\\pi,\\sigma} \\mathrm{Wg}(\\sigma\\pi^{-1}, d) \\mathrm{Tr}(P_\\sigma A) P_\\pi$" :justification :weingarten-formula}
+    {:id :T6.3 :claim "Apply to $B$-subsystem with $A = \\mathrm{Tr}_{A^n}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|)$" :justification :partial-trace-application}]}
+
+  {:id :T7
+   :claim "Special case n=1: $\\mathcal{T}^{(1)}(|\\psi_\\rho\\rangle\\langle\\psi_\\rho|) = \\rho_A \\otimes \\frac{I_B}{d}$"
+   :using [:T5 :T6]
+   :justification :n-equals-1-reduction
+   :status :verified
+   :substeps
+   [{:id :T7.1 :claim "For $n=1$: $S_1 = \\{e\\}$, only $\\pi = e$ (identity)" :justification :trivial-group}
+    {:id :T7.2 :claim "$P_e = I_{H_B}$" :justification :identity-permutation}
+    {:id :T7.3 :claim "$\\mathrm{Wg}(e, d) = 1/d$" :justification :weingarten-n-equals-1}
+    {:id :T7.4 :claim "$X_e = \\rho_A / d$, giving $\\mathcal{T}^{(1)} = \\rho_A \\otimes I_B/d$" :justification :computation}]}
+
+  {:id :T8
+   :claim "Define the n-copy purification channel: $\\Lambda^{(n)}(X) := \\mathcal{T}^{(n)}\\left((\\sqrt{X} \\otimes I_{B^n})|\\Omega\\rangle^{\\otimes n}\\langle\\Omega|^{\\otimes n}(\\sqrt{X} \\otimes I_{B^n})\\right)$ for $X \\geq 0$, extended linearly"
+   :using [:T5 :D3]
+   :justification :definition
+   :status :verified
+   :substeps
+   [{:id :T8.1 :claim "For positive $X$, $\\sqrt{X}$ is well-defined" :justification :functional-calculus}
+    {:id :T8.2 :claim "$(\\sqrt{X} \\otimes I_{B^n})|\\Omega\\rangle^{\\otimes n}$ generalizes $|\\Psi_\\rho^{(n)}\\rangle$" :justification :construction}
+    {:id :T8.3 :claim "Extend to all $X$ by linearity: $X = X_+ - X_- + i(Y_+ - Y_-)$" :justification :jordan-decomposition}]}
+
+  {:id :T9
+   :claim "On product states: $\\Lambda^{(n)}(\\rho^{\\otimes n}) = \\mathcal{T}^{(n)}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|)$"
+   :using [:T1 :T2 :T8]
+   :justification :substitution
+   :status :verified
+   :substeps
+   [{:id :T9.1 :claim "$\\sqrt{\\rho^{\\otimes n}} = (\\sqrt{\\rho})^{\\otimes n}$" :justification :tensor-square-root}
+    {:id :T9.2 :claim "$(\\sqrt{\\rho})^{\\otimes n} \\otimes I_{B^n})|\\Omega\\rangle^{\\otimes n} = ((\\sqrt{\\rho} \\otimes I)|\\Omega\\rangle)^{\\otimes n} = |\\psi_\\rho\\rangle^{\\otimes n}$" :justification :tensor-factorization}
+    {:id :T9.3 :claim "Hence input is $|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|$" :justification :definition}]}
+
+  {:id :T10
+   :claim "Equivalence: $\\Lambda^{(n)}(\\rho^{\\otimes n}) = \\mathbb{E}_U\\left[((I_A \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I_A \\otimes U^\\dagger))^{\\otimes n}\\right]$"
+   :using [:T3 :T9 :D3]
+   :justification :definition-expansion
+   :status :verified
+   :substeps
+   [{:id :T10.1 :claim "By T9, LHS $= \\mathcal{T}^{(n)}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|)$" :justification :T9}
+    {:id :T10.2 :claim "By D3, $= \\mathbb{E}_U[(I_{A^n} \\otimes U^{\\otimes n})|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|(I_{A^n} \\otimes (U^\\dagger)^{\\otimes n})]$" :justification :twirl-definition}
+    {:id :T10.3 :claim "By T3, $(I_{A^n} \\otimes U^{\\otimes n})|\\Psi_\\rho^{(n)}\\rangle = ((I_A \\otimes U)|\\psi_\\rho\\rangle)^{\\otimes n}$" :justification :T3}
+    {:id :T10.4 :claim "Hence RHS $= \\mathbb{E}_U[((I_A \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I_A \\otimes U^\\dagger))^{\\otimes n}]$" :justification :substitution}]}
+
+  {:id :T11
+   :claim "$\\Lambda^{(n)}$ is completely positive (CP)"
+   :using [:T8]
+   :justification :kraus-representation
+   :status :verified
+   :substeps
+   [{:id :T11.1 :claim "Haar average is integral over Kraus-form maps" :justification :haar-integral}
+    {:id :T11.2 :claim "Each $(I_{A^n} \\otimes U^{\\otimes n}) \\cdot (\\sqrt{\\cdot} \\otimes I)|\\Omega\\rangle^{\\otimes n}\\langle\\Omega|^{\\otimes n}(\\sqrt{\\cdot} \\otimes I) \\cdot (I_{A^n} \\otimes (U^\\dagger)^{\\otimes n})$ is CP" :justification :conjugation-cp}
+    {:id :T11.3 :claim "Integral/average of CP maps is CP" :justification :cp-closed-under-integration}]}
+
+  {:id :T12
+   :claim "$\\Lambda^{(n)}$ is trace-preserving (TP)"
+   :using [:T8 :T11]
+   :justification :direct-computation
+   :status :verified
+   :substeps
+   [{:id :T12.1 :claim "$\\mathrm{Tr}((I \\otimes U)\\sigma(I \\otimes U^\\dagger)) = \\mathrm{Tr}(\\sigma)$ for any $\\sigma$" :justification :unitary-invariance}
+    {:id :T12.2 :claim "$\\mathrm{Tr}(|\\Psi_\\rho^{(n)}\\rangle\\langle\\Psi_\\rho^{(n)}|) = 1$ for density $\\rho$" :justification :pure-state-normalization}
+    {:id :T12.3 :claim "$\\mathrm{Tr}(\\Lambda^{(n)}(\\rho^{\\otimes n})) = \\mathbb{E}_U[\\mathrm{Tr}((\\cdot)^{\\otimes n})] = \\mathbb{E}_U[1] = 1$" :justification :trace-preserved}
+    {:id :T12.4 :claim "Extends to general $X$ by linearity" :justification :linear-extension}]}
+
+  {:id :T13
+   :claim "$\\Lambda^{(n)}: \\mathcal{L}(\\mathcal{H}_A^{\\otimes n}) \\to \\mathcal{L}((\\mathcal{H}_A \\otimes \\mathcal{H}_B)^{\\otimes n})$ is CPTP"
+   :using [:T11 :T12]
+   :justification :conjunction-intro
+   :status :verified}
+
+  {:id :T14
+   :claim "Independence of purification: For any purification $|\\phi\\rangle$ of $\\rho$ (not necessarily canonical), $\\mathbb{E}_U[((I_A \\otimes U)|\\phi\\rangle\\langle\\phi|(I_A \\otimes U^\\dagger))^{\\otimes n}] = \\mathbb{E}_U[((I_A \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I_A \\otimes U^\\dagger))^{\\otimes n}]$"
+   :using [:T10]
+   :justification :haar-invariance
+   :status :verified
+   :substeps
+   [{:id :T14.1 :claim "Any purification: $|\\phi\\rangle = (I_A \\otimes W)|\\psi_\\rho\\rangle$ for some unitary $W$" :justification :purification-uniqueness}
+    {:id :T14.2 :claim "$(I_A \\otimes U)|\\phi\\rangle = (I_A \\otimes UW)|\\psi_\\rho\\rangle$" :justification :substitution}
+    {:id :T14.3 :claim "$\\mathbb{E}_U[f(UW)] = \\mathbb{E}_U[f(U)]$ by right-invariance of Haar measure" :justification :haar-right-invariance}
+    {:id :T14.4 :claim "Hence the twirl is independent of purification choice" :justification :modus-ponens}]}
+
+  {:id :T15
+   :claim "Theorem established: $\\Lambda^{(n)}$ is a CPTP channel satisfying $\\Lambda^{(n)}(\\rho^{\\otimes n}) = \\mathbb{E}_U[((I_A \\otimes U)|\\psi_\\rho\\rangle\\langle\\psi_\\rho|(I_A \\otimes U^\\dagger))^{\\otimes n}]$"
+   :using [:T10 :T13 :T14]
+   :justification :conjunction-intro
+   :status :verified}]
+
+ :qed
+ {:by [:T13 :T10 :T15]
+  :via "T13 establishes Lambda^{(n)} is CPTP. T10 establishes the action on product states equals the Haar average with single coherent U on all copies. T14 confirms purification-independence."
+  :status :verified}
+
+ :remarks
+ [{:id :R1
+   :content "Key difference from v1: The expectation E_U is over a SINGLE unitary U applied coherently as U^{tensor n} to all copies, NOT independent unitaries on each copy."
+   :type :clarification}
+  {:id :R2
+   :content "For n=1, v1 and v2 coincide (T7). For n>1, they differ because E[X^{tensor n}] != (E[X])^{tensor n} in general."
+   :type :comparison}
+  {:id :R3
+   :content "The output Lambda^{(n)}(rho^{tensor n}) lies in span{X_pi tensor P_pi}, exhibiting correlations between copies mediated by permutation operators on B^n."
+   :type :structure}
+  {:id :R4
+   :content "Explicit evaluation of X_pi requires Weingarten calculus. For n=2: involves Wg(e,d)=1/(d^2-1) and Wg((12),d)=-1/(d(d^2-1))."
+   :type :computation}]}

@@ -249,17 +249,43 @@ Every step has:
 
 External theorems must be cited with DOI or arXiv ID and a full statement. No "by a standard result" or "it is well known."
 
+## Known Failure Modes
+
+The adversarial Prover-Verifier loop catches many errors, but not all. These failure modes have been observed:
+
+### Garbage In, Garbage Out
+
+The system proves theorems as stated. If the theorem statement is wrong—a misplaced bracket, an incorrect quantifier, a sign error—the system will prove the incorrect statement. It cannot know what you *meant* to prove.
+
+**Example:** In a quantum information proof, the theorem statement had brackets in the wrong position, placing an expectation before a tensor product instead of after. The system produced a valid proof of the (incorrect) statement. The error was only caught during human review of the theorem itself, not the proof.
+
+**Mitigation:** Verify theorem statements carefully before running. Consider having the system re-state the theorem in its own words before proving.
+
+### Hidden Quantifier Errors
+
+Despite explicit rules against hidden quantifiers, the system occasionally produces steps where the quantifier structure is subtly wrong (∀∃ vs ∃∀, or implicit universal quantification over a variable that should be existentially quantified).
+
+### Type Drift
+
+Mathematical objects gradually shift meaning across a proof. A variable introduced as "an arbitrary element of X" might later be used as "the specific element satisfying property P" without explicit instantiation.
+
+---
+
+These failure modes are why the system produces *candidate* proofs, not *verified* proofs. The Lamport structure makes errors easier to find during human review, but it doesn't eliminate the need for that review.
+
 ## Limitations
 
 1. **The Verifier is not a proof assistant.** It's an LLM applying judgment. It catches many errors but not all.
 
-2. **Context limits apply.** Very long proofs may exceed the context window. The system manages this by keeping substeps inline rather than in separate files.
+2. **Garbage in, garbage out.** The system proves theorems as stated. If the statement is wrong, the proof will be wrong. See the random purification example.
 
-3. **Reference checking depends on web search.** Obscure references may not be found.
+3. **Context limits apply.** Very long proofs may exceed the context window. The system manages this by keeping substeps inline rather than in separate files.
 
-4. **Admitted steps are gaps.** The system is honest about them, but they're still gaps.
+4. **Reference checking depends on web search.** Obscure references may not be found.
 
-5. **This is experimental.** The prompts are evolving. Feedback welcome.
+5. **Admitted steps are gaps.** The system is honest about them, but they're still gaps.
+
+6. **This is experimental.** The prompts are evolving. Feedback welcome.
 
 ## Why "Alethfeld"?
 
