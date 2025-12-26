@@ -44,7 +44,7 @@ Let $\HA$ be a finite-dimensional Hilbert space with $\dim(\HA) = d < \infty$, a
 \[
 \Lambda^{(n)}_{\mathrm{purify}}(\rho_A^{\otimes n}) = \left[\EU\left[(\id_A \otimes U_B)\ket{\psi_\rho}\bra{\psi_\rho}_{AB}(\id_A \otimes U_B^\dagger)\right]\right]^{\otimes n}
 \]
-where $\ket{\psi_\rho}_{AB}$ is the canonical purification $\ket{\psi_\rho} = (\sqrt{\rho} \otimes I)\ket{\Omega}$ with maximally entangled state $\ket{\Omega} = \frac{1}{\sqrt{d}}\sum_{i=1}^d \ket{i}_A\ket{i}_B$, and $\EU$ denotes the expectation over the Haar measure on the unitary group $U(d)$.
+where $\ket{\psi_\rho}_{AB}$ is the canonical purification $\ket{\psi_\rho} = (\sqrt{\rho} \otimes I)\ket{\Omega}$ with (unnormalized) maximally entangled state $\ket{\Omega} = \sum_{i=1}^d \ket{i}_A\ket{i}_B$, and $\EU$ denotes the expectation over the Haar measure on the unitary group $U(d)$.
 \end{theorem}
 
 \noindent\textbf{Assumptions.}
@@ -64,10 +64,10 @@ where $\ket{\psi_\rho}_{AB}$ is the canonical purification $\ket{\psi_\rho} = (\
 \begin{proofsteps}
     \item \textbf{Purification Existence.} Every density operator $\rho_A \in \DA$ admits a purification $\ket{\psi}_{AB} \in \HA \otimes \HB$. \justify{Standard result; A1, A2}
 
-    \item \textbf{Canonical Purification.} Define $\ket{\psi_\rho} = (\sqrt{\rho} \otimes I)\ket{\Omega}$ where $\ket{\Omega} = \frac{1}{\sqrt{d}}\sum_{i=1}^d \ket{i}_A\ket{i}_B$. \justify{Construction; A1, A2}
+    \item \textbf{Canonical Purification.} Define $\ket{\psi_\rho} = (\sqrt{\rho} \otimes I)\ket{\Omega}$ where $\ket{\Omega} = \sum_{i=1}^d \ket{i}_A\ket{i}_B$ (unnormalized). \justify{Construction; A1, A2}
     \begin{proofsteps}
         \item Let $\{\ket{i}\}_{i=1}^d$ be an orthonormal basis for $\HA \cong \HB$.
-        \item Define the maximally entangled state $\ket{\Omega} = \frac{1}{\sqrt{d}}\sum_{i=1}^d \ket{i}_A\ket{i}_B$.
+        \item Define the (unnormalized) maximally entangled state $\ket{\Omega} = \sum_{i=1}^d \ket{i}_A\ket{i}_B$.
         \item Set $\ket{\psi_\rho} = (\sqrt{\rho} \otimes I)\ket{\Omega}$.
         \item Verify $\Tr_B(\ket{\psi_\rho}\bra{\psi_\rho}) = \rho_A$:
         \begin{proofsteps}
