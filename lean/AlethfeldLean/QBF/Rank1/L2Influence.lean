@@ -83,6 +83,90 @@ theorem exponent_simplify {n : ℕ} :
   congr 1
   omega
 
+/-! ## Track 1 Helper Lemmas (L2-S1a, S1b, S1c) -/
+
+/-- Extension function: extend β with value ℓ at position j -/
+def extendAt (j : Fin n) (ℓ : Fin 4) (β : {k : Fin n // k ≠ j} → Fin 4) : MultiIndex n :=
+  fun k => if h : k = j then ℓ else β ⟨k, h⟩
+
+/-- Restriction function: restrict α to indices ≠ j -/
+def restrictAt (j : Fin n) (α : MultiIndex n) : {k : Fin n // k ≠ j} → Fin 4 :=
+  fun ⟨k, _⟩ => α k
+
+/-- extendAt and restrictAt are inverse when α j = ℓ -/
+theorem extendAt_restrictAt (j : Fin n) (ℓ : Fin 4) (α : MultiIndex n) (hα : α j = ℓ) :
+    extendAt j ℓ (restrictAt j α) = α := by
+  ext k
+  simp only [extendAt, restrictAt]
+  split_ifs with h
+  · rw [h, hα]
+  · rfl
+
+/-- restrictAt extendAt is identity -/
+theorem restrictAt_extendAt (j : Fin n) (ℓ : Fin 4) (β : {k : Fin n // k ≠ j} → Fin 4) :
+    restrictAt j (extendAt j ℓ β) = β := by
+  ext ⟨k, hk⟩
+  simp only [restrictAt, extendAt, dif_neg hk]
+
+/-- S1a: MultiIndex decomposition - reindex sum by fixing α_j = ℓ -/
+theorem multiIndex_decompose (j : Fin n) (ℓ : Fin 4) (f : MultiIndex n → ℝ) :
+    ∑ α : MultiIndex n, (if α j = ℓ then f α else 0) =
+    ∑ β : ({k : Fin n // k ≠ j} → Fin 4), f (extendAt j ℓ β) := by
+  -- The equivalence between {α | α j = ℓ} and ({k // k ≠ j} → Fin 4)
+  let equiv : {α : MultiIndex n // α j = ℓ} ≃ ({k : Fin n // k ≠ j} → Fin 4) := {
+    toFun := fun ⟨α, _⟩ => restrictAt j α
+    invFun := fun β => ⟨extendAt j ℓ β, by simp [extendAt]⟩
+    left_inv := fun ⟨α, hα⟩ => by
+      simp only [Subtype.mk.injEq]
+      exact extendAt_restrictAt j ℓ α hα
+    right_inv := fun β => restrictAt_extendAt j ℓ β
+  }
+  -- Split sum by condition: ∑ (if cond then f else 0) = ∑_{cond} f
+  have step1 : ∑ α : MultiIndex n, (if α j = ℓ then f α else 0) =
+               ∑ α ∈ Finset.filter (fun α => α j = ℓ) Finset.univ, f α := by
+    rw [Finset.sum_filter]
+  -- Convert filtered sum to subtype sum
+  have step2 : ∑ α ∈ Finset.filter (fun α => α j = ℓ) Finset.univ, f α =
+               ∑ α : {α : MultiIndex n // α j = ℓ}, f α.val := by
+    rw [← Finset.sum_subtype]
+    intro x
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  -- Use equivalence to reindex to β
+  have step3 : ∑ α : {α : MultiIndex n // α j = ℓ}, f α.val =
+               ∑ β : ({k : Fin n // k ≠ j} → Fin 4), f (extendAt j ℓ β) := by
+    rw [Fintype.sum_equiv equiv
+      (f := fun (a : {α : MultiIndex n // α j = ℓ}) => f a.val)
+      (g := fun β => f (extendAt j ℓ β))]
+    intro ⟨α, hα⟩
+    simp only [equiv, Equiv.coe_fn_mk, restrictAt, extendAt_restrictAt j ℓ α hα]
+  rw [step1, step2, step3]
+
+/-- S1b: Product factorization when α_j is fixed -/
+theorem qProduct_factor_fixed_j (bloch : Fin n → BlochVector) (j : Fin n) (ℓ : Fin 4)
+    (β : {k : Fin n // k ≠ j} → Fin 4) :
+    qProduct bloch (extendAt j ℓ β) =
+    (bloch j).q ℓ * ∏ k : {k : Fin n // k ≠ j}, (bloch k.val).q (β k) := by
+  unfold qProduct extendAt
+  rw [← Finset.prod_erase_mul Finset.univ _ (Finset.mem_univ j)]
+  rw [mul_comm]
+  congr 1
+  · -- Show the j-th factor is (bloch j).q ℓ
+    simp only [↓reduceDIte]
+  · -- Show remaining factors match β
+    rw [Finset.prod_subtype (Finset.univ.erase j) (p := fun k => k ≠ j)]
+    · apply Finset.prod_congr rfl
+      intro ⟨k, hk⟩ _
+      simp only [dif_neg hk]
+    · intro k
+      simp only [Finset.mem_erase, Finset.mem_univ, and_true, ne_eq]
+
+/-- S1c: Sum-product interchange (Fubini for finite sums) -/
+theorem sum_prod_factor (bloch : Fin n → BlochVector) (j : Fin n) :
+    ∑ β : ({k : Fin n // k ≠ j} → Fin 4), ∏ k : {k : Fin n // k ≠ j}, (bloch k.val).q (β k) =
+    ∏ k : {k : Fin n // k ≠ j}, ∑ m : Fin 4, (bloch k.val).q m := by
+  -- This is the finite Fubini theorem: ∑_f ∏_i f(i) = ∏_i ∑_x x
+  rw [Fintype.prod_sum]
+
 /-! ## Factorization Lemma (L2-08)
 
 When α_j = ℓ is fixed and ℓ ≠ 0, the sum over α factors.
@@ -99,8 +183,24 @@ theorem sum_q_eq_two (v : BlochVector) : ∑ m : Fin 4, v.q m = 2 :=
 /-- Factorization: ∑_{α : α_j = ℓ} p_α = 2^{2-2n} * q_j^ℓ * ∏_{k≠j} (∑_m q_k^m) -/
 theorem factorization_lemma (bloch : Fin n → BlochVector) (j : Fin n) (ℓ : Fin 4) :
     partialSum bloch j ℓ =
-    (2 : ℝ)^(2 - 2*(n : ℤ)) * (bloch j).q ℓ * ∏ k : {k : Fin n // k ≠ j}, ∑ m : Fin 4, (bloch k.val).q m := by
-  sorry -- Factorization over independent coordinates
+    (2 : ℝ)^(2 - 2*(n : ℤ)) * (bloch j).q ℓ *
+      ∏ k : {k : Fin n // k ≠ j}, ∑ m : Fin 4, (bloch k.val).q m := by
+  unfold partialSum probability
+  -- Step 1: Use multiIndex_decompose to reindex the sum
+  rw [multiIndex_decompose j ℓ (fun α => (2 : ℝ)^(2 - 2*(n : ℤ)) * qProduct bloch α)]
+  -- Step 2: Factor out constant and use qProduct_factor_fixed_j
+  simp only [qProduct_factor_fixed_j]
+  -- Step 3: Rearrange: ∑ (a * (b * c)) = a * b * ∑ c
+  have h1 : ∀ β : ({k : Fin n // k ≠ j} → Fin 4),
+      (2 : ℝ)^(2 - 2*(n : ℤ)) * ((bloch j).q ℓ * ∏ k, (bloch k.val).q (β k)) =
+      (2 : ℝ)^(2 - 2*(n : ℤ)) * (bloch j).q ℓ * ∏ k, (bloch k.val).q (β k) := by
+    intro β
+    ring
+  simp_rw [h1]
+  rw [← Finset.mul_sum]
+  congr 1
+  -- Step 4: Apply sum_prod_factor (Fubini)
+  exact sum_prod_factor bloch j
 
 /-! ## Simplification Using q_sum = 2 (L2-09)
 
@@ -109,7 +209,29 @@ Each factor ∑_m q_k^m = 2, so the product gives 2^{n-1}
 
 theorem partial_sum_simplified (bloch : Fin n → BlochVector) (j : Fin n) (ℓ : Fin 4) (hℓ : ℓ ≠ 0) :
     partialSum bloch j ℓ = (2 : ℝ)^(1 - (n : ℤ)) * (bloch j).q ℓ := by
-  sorry -- Uses sum_q_eq_two and simplification
+  -- Step 1: Apply factorization_lemma
+  rw [factorization_lemma]
+  -- Step 2: Replace each ∑_m q_k^m with 2
+  have h_sum : ∀ k : {k : Fin n // k ≠ j}, ∑ m : Fin 4, (bloch k.val).q m = 2 := by
+    intro k
+    exact sum_q_eq_two (bloch k.val)
+  simp only [h_sum]
+  -- Step 3: Product of constant 2 is 2^{n-1}
+  rw [prod_const_two, card_complement_singleton]
+  -- Step 4: Simplify exponents: 2^{2-2n} * q * 2^{n-1} = 2^{1-n} * q
+  -- Goal: 2 ^ (2 - 2 * ↑n) * (bloch j).q ℓ * 2 ^ (n - 1) = 2 ^ (1 - ↑n) * (bloch j).q ℓ
+  -- Rearrange: (a * b) * c = (a * c) * b
+  rw [mul_assoc, mul_comm ((bloch j).q ℓ) ((2 : ℝ)^(n - 1 : ℕ)), ← mul_assoc]
+  congr 1
+  -- Now need: 2^{2-2n} * 2^{n-1 : ℕ} = 2^{1-n}
+  -- Convert 2^{n-1 : ℕ} to 2^{(n : ℤ) - 1}
+  have hn : n ≥ 1 := Fin.pos j
+  have hconv : ((2 : ℝ)^(n - 1 : ℕ) : ℝ) = (2 : ℝ)^((n : ℤ) - 1) := by
+    rw [← zpow_natCast]
+    congr 1
+    omega
+  rw [hconv]
+  exact exponent_simplify
 
 /-! ## Single-Qubit Influence Formula (L2-10)
 
@@ -159,7 +281,26 @@ theorem sum_nonzero_fin4 (f : Fin 4 → ℝ) :
 /-- Single-qubit influence is constant: I_j = 2^{1-n} -/
 theorem influence_j_formula (bloch : Fin n → BlochVector) (j : Fin n) :
     influence_j bloch j = (2 : ℝ)^(1 - (n : ℤ)) := by
-  sorry -- Uses partial_sum_simplified and q_nonzero_sum_eq_one
+  -- Step 1: Rewrite as sum of partialSums
+  rw [influence_j_eq_sum_partialSum]
+  -- Step 2: Apply partial_sum_simplified to each nonzero term
+  have h_simp : ∀ ℓ : Fin 4, ℓ ≠ 0 →
+      partialSum bloch j ℓ = (2 : ℝ)^(1 - (n : ℤ)) * (bloch j).q ℓ :=
+    fun ℓ hℓ => partial_sum_simplified bloch j ℓ hℓ
+  conv_lhs =>
+    arg 2
+    ext ℓ
+    rw [show (if ℓ ≠ 0 then partialSum bloch j ℓ else 0) =
+            (if ℓ ≠ 0 then (2 : ℝ)^(1 - (n : ℤ)) * (bloch j).q ℓ else 0) by
+      split_ifs with h
+      · exact h_simp ℓ h
+      · rfl]
+  -- Step 3: Factor out the constant
+  rw [factor_out_power]
+  -- Step 4: Sum of nonzero q's equals 1
+  rw [sum_nonzero_fin4]
+  rw [BlochVector.q_nonzero_sum_eq_one]
+  ring
 
 /-! ## Main Theorem: Influence Independence (L2-11) -/
 
