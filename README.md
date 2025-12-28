@@ -39,6 +39,17 @@ The Prover and Verifier operate in a loop: the Prover asserts a step, the Verifi
 
 This adversarial structure catches errors that a single model would miss.
 
+## Current Status (Dec 2025)
+
+The system has been successfully used to derive and formalize several non-trivial results in Quantum Boolean Functions (QBF) and Information Theory:
+
+- **Lemma L1 (Fourier)**: Closed-form expression for Fourier coefficients of rank-1 product state QBFs. (Verified: 0 sorries)
+- **Lemma L2 (Influence)**: Proof that single-qubit and total influence are independent of the Bloch vector for rank-1 QBFs. (Verified: 0 sorries)
+- **Lemma L3 (Entropy)**: General entropy formula for rank-1 product state QBFs. (Verified: 0 sorries)
+- **Shannon Maximum Entropy**: Proof that the uniform distribution uniquely maximizes Shannon entropy for three outcomes. (Verified: 1 technical sorry in boundary case)
+
+These results are available in the `lean/AlethfeldLean/` library and documented in `lean/API.md`.
+
 ## Lamport Structured Proofs
 
 At the heart of Alethfeld is Leslie Lamport's hierarchical proof notation, originally developed for specifying and verifying concurrent systems in TLA+.
@@ -179,7 +190,7 @@ For ultimate confidence, the Lean 4 output can be fed to a genuine proof assista
 
 **Usage:**
 ```bash
-claude --max-turns 100 < orchestrator-prompt.md
+claude --max-turns 100 < orchestrator-prompt-v4.md
 ```
 
 Then provide a theorem:

@@ -7,7 +7,7 @@
     ```bash
     curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
     ```
-3.  **Claude CLI / LLM Context**: Currently, Alethfeld is designed as a prompt-driven system. You need a way to feed the `orchestrator-prompt-v4.md` and the project context to an LLM (like Claude 3.5 Sonnet or Opus).
+3.  **Claude CLI / LLM Context**: Currently, Alethfeld is designed as a prompt-driven system. You need a way to feed the `orchestrator-prompt-v4.md` and the project context to an LLM (like Claude 3.5 Sonnet or the Gemini CLI).
     *   *Note: In the future, this will be a standalone Python/CLI tool.*
 
 ## Setup
@@ -25,29 +25,25 @@
 
 ## Running a Proof Session
 
-### Manual / Interactive Mode (Current)
+### Automated Agentic Mode (Recommended)
 
-The current workflow relies on an interactive session with an LLM.
+Alethfeld is best run using an agentic interface (like the Gemini CLI or Claude Code) that has file-system access.
 
-1.  **Prepare the Context**: Concatenate the orchestrator prompt and your target theorem.
-2.  **Start the Session**:
-    *   Load `orchestrator-prompt-v4.md`.
-    *   Tell the model: "Initialize the graph for the following theorem: [Your Theorem Here]".
-3.  **Iterate**:
-    *   The model (acting as Orchestrator) will produce output describing the graph updates.
-    *   It may ask for user input or simply proceed through the phases.
-    *   **Tip**: Use the `save_memory` or file writing tools if you are running this in an agentic environment (like the Gemini CLI) to persist the EDN graph to disk.
+1.  **Initialize**: Run the `orchestrator-prompt-v4.md` with the theorem statement.
+    ```bash
+    # If using a CLI that supports file redirection
+    gemini-agent < orchestrator-prompt-v4.md
+    ```
+2.  **State Theorem**: "Initialize the graph for the following theorem: [Your Theorem Here]".
+3.  **Observation**: The agent will coordinate the sub-agents (Adviser, Prover, Verifier, etc.) to build the `proof.edn` graph and generate Lean code.
 
-### Example: Proving a Limit
+### Interactive Mode (Manual)
 
-**User**:
-> Prove that the limit of 1/n as n approaches infinity is 0 using the epsilon-N definition.
+If you don't have an agentic CLI, you can manually copy-paste the orchestrator prompt into a standard LLM chat (e.g., Claude.ai).
 
-**Alethfeld**:
-1.  **Adviser** suggests using the Archimedean property.
-2.  **Prover** sets up the structure: "For all $\epsilon > 0$, there exists $N \in \mathbb{N}$..."
-3.  **Verifier** checks each logical step.
-4.  **Output**: A semantic graph in EDN and a generated Lean file.
+1.  **Prepare the Context**: Paste the full content of `orchestrator-prompt-v4.md`.
+2.  **Load Project State**: Provide any existing relevant files (e.g., `lean/API.md` for context).
+3.  **Iterate**: Manually act as the "Orchestrator" by passing outputs between different chat sessions or keeping it all in one context-heavy thread.
 
 ## Directory Structure
 
@@ -57,11 +53,11 @@ A typical project structure looks like this:
 .
 ├── lean/                   # The formal Verification target
 │   ├── lakefile.toml
-│   └── AlethfeldLean/      # Source files
+│   └── AlethfeldLean/      # Source files (verified lemmas)
 ├── examples/               # Completed proofs
 │   └── my-proof/
 │       ├── proof.edn       # The semantic graph (Source of Truth)
 │       ├── proof.tex       # Readable LaTeX version
 │       └── proof.lean      # Generated Lean skeleton
-└── docs/                   # This documentation
+└── docs/                   # Documentation
 ```

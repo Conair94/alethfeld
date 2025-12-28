@@ -10,6 +10,7 @@ This document serves as a guide for **Prover** and **Formalizer** agents using t
     *   L1 (Fourier): ✅ 0 sorries
     *   L2 (Influence): ✅ 0 sorries
     *   L3 (Entropy): ✅ 0 sorries
+    *   ShannonMax: ✅ Verified (1 technical sorry)
 *   **Build Command**:
     ```bash
     lake build
@@ -29,6 +30,7 @@ The library is organized under the `AlethfeldLean` namespace.
             *   `L1Fourier`: Fourier analysis of rank-1 product state QBFs (Lemma L1).
             *   `L2Influence`: Influence independence theorem (Lemma L2).
             *   `L3Entropy`: General entropy formula (Lemma L3).
+            *   `ShannonMax`: Maximum entropy for 3-outcome distributions.
 
 ## 3. Key Types and Definitions
 
@@ -86,6 +88,15 @@ The library is organized under the `AlethfeldLean` namespace.
 | `totalEntropy bloch` | $\sum_\alpha -p_\alpha \log_2 p_\alpha$ | Total Shannon entropy $S(U)$. |
 | `totalBlochEntropy bloch` | $\sum_k f_k$ | Sum of Bloch entropies over all qubits. |
 
+### Shannon Maximum (`AlethfeldLean.QBF.Rank1.ShannonMax`)
+
+| Symbol | Definition | Description |
+| :--- | :--- | :--- |
+| `ProbDist3` | `Structure {p : Fin 3 → ℝ}` | Probability distribution on 3 outcomes. |
+| `uniformDist` | `(1/3, 1/3, 1/3)` | Uniform distribution on 3 outcomes. |
+| `shannonEntropy p` | $-\sum p_i \log_2 p_i$ | Shannon entropy with $0 \log 0 = 0$ convention. |
+| `klDivergence p q` | $\sum p_i \ln(p_i/q_i)$ | Kullback-Leibler divergence. |
+
 ## 4. Main Theorems
 
 These are the primary verified results available for use in higher-level proofs.
@@ -106,49 +117,67 @@ These are the primary verified results available for use in higher-level proofs.
 
 *   **`fourier_coefficient_formula (ψ : ProductState n) (α)`** (Lemma L1):
     For $U = I - 2|\psi\rangle\langle\psi|$:
-    $$\hat{U}(\alpha) = \delta_{\alpha,0} - 2^{1-n} \prod_{k=0}^{n-1} r_k^{(\alpha_k)}$$
+    $$\hat{U}(\alpha) = \delta_{\alpha,0} - 2^{1-n} \prod_{k=0}^{n-1} r_k^{(\alpha_k)}$$ 
     *Usage*: Closed-form expression for Fourier coefficients of rank-1 QBFs.
 
 ### Influence Independence (`AlethfeldLean.QBF.Rank1.L2Influence`)
 
 *   **`influence_j_formula (bloch) (j)`** (Lemma L2a):
-    $$I_j = 2^{1-n}$$
+    $$I_j = 2^{1-n}$$ 
     *Usage*: Single-qubit influence is constant, independent of Bloch vector.
 
 *   **`total_influence_formula (bloch)`** (Lemma L2b):
-    $$I(U) = n \cdot 2^{1-n}$$
+    $$I(U) = n \cdot 2^{1-n}$$ 
     *Usage*: Total influence depends only on number of qubits.
 
 *   **`influence_independent_of_bloch (bloch₁ bloch₂)`**:
-    $$I(\text{bloch}_1) = I(\text{bloch}_2)$$
+    $$I(\text{bloch}_1) = I(\text{bloch}_2)$$ 
     *Usage*: Influence is universal across all product states.
 
 *   **`influence_decreasing (bloch) (hn : n ≥ 1)`**:
-    $$I(U) \leq 1$$
+    $$I(U) \leq 1$$ 
     *Usage*: Influence bound for rank-1 QBFs.
 
 ### Entropy Formula (`AlethfeldLean.QBF.Rank1.L3Entropy`)
 
 *   **`sum_fourier_weights (bloch)`** (Parseval):
-    $$\sum_{\alpha \neq 0} p_\alpha = 1 - p_0$$
+    $$\sum_{\alpha \neq 0} p_\alpha = 1 - p_0$$ 
     *Usage*: Probability normalization (Fourier weights sum to 1).
 
 *   **`first_sum_formula (bloch)`**:
-    $$\sum_{\alpha \neq 0} p_\alpha (2n-2) = (2n-2)(1-p_0)$$
+    $$\sum_{\alpha \neq 0} p_\alpha (2n-2) = (2n-2)(1-p_0)$$ 
     *Usage*: First sum in entropy decomposition.
 
 *   **`qubit_log_contribution (bloch) (j)`**:
-    $$-\sum_{\alpha: \alpha_j \neq 0} p_\alpha \log_2 q_j^{(\alpha_j)} = 2^{1-n} f_j$$
+    $$-\sum_{\alpha: \alpha_j \neq 0} p_\alpha \log_2 q_j^{(\alpha_j)} = 2^{1-n} f_j$$ 
     *Usage*: Log contribution from qubit $j$ equals scaled Bloch entropy.
 
 *   **`entropy_sum_factorization (bloch)`**:
-    $$\sum_j \text{(log contributions from } j\text{)} = 2^{1-n} \sum_k f_k$$
+    $$\sum_j \text{(log contributions from } j\text{)} = 2^{1-n} \sum_k f_k$$ 
     *Usage*: Sum over qubits factors out the power of 2.
 
 *   **`entropy_formula (bloch)`** (Lemma L3 - Main Theorem):
-    $$S(U) = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_k f_k$$
+    $$S(U) = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_k f_k$$ 
     where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy.
     *Usage*: **Main result** - closed-form entropy for rank-1 product state QBFs.
+
+*   **`entropy_nonneg (bloch) (hn : n ≥ 1)`**:
+    $$S(U) \geq 0$$
+    *Usage*: Proof that entropy is always non-negative for these systems.
+
+### Shannon Maximum Entropy (`AlethfeldLean.QBF.Rank1.ShannonMax`)
+
+*   **`shannon_maximum_entropy_full`**:
+    Combined theorem: $H(p) \geq 0$, $H(p) \leq \log_2 3$, and $H(p) = \log_2 3$ iff $p = \text{uniform}$.
+    *Usage*: Fundamental maximality property of the uniform distribution.
+
+*   **`entropy_le_log2_three (p)`**:
+    $$H(p) \leq \log_2 3$$
+    *Usage*: Proof that $\log_2 3$ is the universal upper bound for 3 outcomes.
+
+*   **`entropy_eq_max_iff_uniform (p)`**:
+    $$H(p) = \log_2 3 \iff p = (1/3, 1/3, 1/3)$$
+    *Usage*: Unique maximizer characterization.
 
 ## 5. Agent Guidelines
 

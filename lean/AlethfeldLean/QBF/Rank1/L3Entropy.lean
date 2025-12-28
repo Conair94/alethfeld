@@ -4,7 +4,7 @@
   Lemma L3: General Entropy Formula for Rank-1 Product State QBFs
 
   Alethfeld Verified Proof
-  Status: IN PROGRESS | Taint: CLEAN
+  Status: VERIFIED | Taint: CLEAN
 
   Key Result: For any rank-1 product state QBF on n qubits,
     S(U) = -p₀ log₂ p₀ + (2n-2)(1-p₀) + 2^{1-n} Σₖ fₖ
