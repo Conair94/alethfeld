@@ -44,7 +44,7 @@ where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy.
 
 ### File: `AlethfeldLean/QBF/Rank1/L3Entropy.lean`
 
-### Completed (6 issues closed)
+### Completed (10 issues closed)
 
 1. **Skeleton created** (`alethfeld-013`)
    - Imports from L2Influence
@@ -75,16 +75,26 @@ where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy.
    - `log2_q_of_alpha_zero` - log₂(q^{α}) = 0 when α = 0
    - `sum_log2_q_eq_sum_nonzero` - sum only over non-zero α_k contributions
 
-### Remaining Work (6 issues open)
+7. **L3-step5: Qubit log contribution** (`alethfeld-680`)
+   - `sum_prob_fixed_j`, `log_contribution_fixed_ell` - helper lemmas
+   - `sum_log_contributions`, `blochEntropy_eq_sum` - entropy helpers
+   - `sum_partition_by_j` - partitioning by qubit index
+   - `qubit_log_contribution` - main result: -Σ_{α: α_j≠0} p_α log₂ q_j^{α_j} = 2^{1-n} f_j
+
+8. **L3-step6: Entropy sum factorization** (`alethfeld-esk`)
+   - `totalBlochEntropy` - sum of Bloch entropies over all qubits
+   - `entropy_sum_factorization` - sum of qubit contributions = 2^{1-n} * totalBlochEntropy
+
+9. **L3-qed: Main entropy formula** (`alethfeld-7j9`)
+   - `entropyTerm_pos`, `entropy_sum_decomposition` - helper lemmas
+   - `entropy_formula` - **MAIN THEOREM**: S(U) = entropyTerm(p₀) + (2n-2)(1-p₀) + 2^{1-n} Σₖ fₖ
+
+### Remaining Work (2 issues open)
 
 | Issue ID | Title | Status |
 |----------|-------|--------|
-| `alethfeld-680` | L3-step5: qubit_log_contribution | Ready |
-| `alethfeld-esk` | L3-step6: entropy sum factorization | Blocked |
-| `alethfeld-7j9` | L3-qed: main entropy_formula | Blocked |
-| `alethfeld-xi1` | entropy_nonneg corollary | Blocked |
-| `alethfeld-45f` | Update API.md | Blocked |
-| `alethfeld-5zy` | Verify lake build | Blocked |
+| `alethfeld-xi1` | entropy_nonneg corollary | Ready |
+| `alethfeld-5zy` | Verify lake build (no sorries) | Ready (blocked by sum_fourier_weights sorry) |
 
 ### Current Sorry
 

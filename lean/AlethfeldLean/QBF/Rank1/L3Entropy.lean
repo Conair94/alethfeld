@@ -202,12 +202,235 @@ theorem sum_log2_q_eq_sum_nonzero (bloch : Fin n → BlochVector) (α : MultiInd
   · rfl
   · push_neg at h
     rw [h, log2_q_zero]
--- TODO: Prove qubit_log_contribution (alethfeld-680)
--- TODO: Prove entropy sum factorization (alethfeld-esk)
+/-! ### L3-step5: Qubit log contribution
+
+The log contribution from qubit j equals 2^{1-n} times the Bloch entropy f_j.
+-Σ_{α: α_j≠0} p_α log₂ q_j^{α_j} = 2^{1-n} f_j
+-/
+
+/-- Sum over α with α_j = ℓ of p_α equals partial sum (helper) -/
+theorem sum_prob_fixed_j (bloch : Fin n → BlochVector) (j : Fin n) (ℓ : Fin 4) :
+    ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α else 0) =
+    partialSum bloch j ℓ := rfl
+
+/-- Log contribution from qubit j for fixed α_j = ℓ -/
+theorem log_contribution_fixed_ell (bloch : Fin n → BlochVector) (j : Fin n) (ℓ : Fin 4) (hℓ : ℓ ≠ 0)
+    (hq : (bloch j).q ℓ > 0) :
+    ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α * log2 ((bloch j).q ℓ) else 0) =
+    (2 : ℝ)^(1 - (n : ℤ)) * (bloch j).q ℓ * log2 ((bloch j).q ℓ) := by
+  -- Factor out the log term (it's constant across all α with α_j = ℓ)
+  have factor_log : ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α * log2 ((bloch j).q ℓ) else 0) =
+      log2 ((bloch j).q ℓ) * ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α else 0) := by
+    rw [Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro α _
+    split_ifs <;> ring
+  rw [factor_log, sum_prob_fixed_j, partial_sum_simplified bloch j ℓ hℓ]
+  ring
+
+/-- Sum of log contributions for nonzero ℓ -/
+theorem sum_log_contributions (bloch : Fin n → BlochVector) (j : Fin n)
+    (hq : ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0) :
+    ∑ ℓ : Fin 4, (if ℓ ≠ 0 then
+      ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α * log2 ((bloch j).q ℓ) else 0)
+    else 0) =
+    (2 : ℝ)^(1 - (n : ℤ)) * ∑ ℓ : Fin 4, (if ℓ ≠ 0 then (bloch j).q ℓ * log2 ((bloch j).q ℓ) else 0) := by
+  simp only [Fin.sum_univ_four, Fin.isValue, ne_eq, Fin.reduceEq, not_true_eq_false, ↓reduceIte,
+    not_false_eq_true, zero_add]
+  -- Apply log_contribution_fixed_ell to each nonzero term
+  rw [log_contribution_fixed_ell bloch j 1 (by decide) (hq 1 (by decide)),
+      log_contribution_fixed_ell bloch j 2 (by decide) (hq 2 (by decide)),
+      log_contribution_fixed_ell bloch j 3 (by decide) (hq 3 (by decide))]
+  ring
+
+/-- Relating entropyTerm sum to direct computation -/
+theorem blochEntropy_eq_sum (v : BlochVector) (hq : ∀ ℓ : Fin 4, ℓ ≠ 0 → v.q ℓ > 0) :
+    blochEntropy v = -∑ ℓ : Fin 4, (if ℓ ≠ 0 then v.q ℓ * log2 (v.q ℓ) else 0) := by
+  unfold blochEntropy entropyTerm
+  simp only [Fin.sum_univ_four, Fin.isValue, ne_eq, Fin.reduceEq, not_true_eq_false, ↓reduceIte,
+    not_false_eq_true, zero_add]
+  simp only [hq 1 (by decide), hq 2 (by decide), hq 3 (by decide), ↓reduceIte]
+  ring
+
+/-- Partition the α-sum by value of α_j -/
+theorem sum_partition_by_j (bloch : Fin n → BlochVector) (j : Fin n) (f : MultiIndex n → ℝ) :
+    ∑ α : MultiIndex n, (if α j ≠ 0 then f α else 0) =
+    ∑ ℓ : Fin 4, (if ℓ ≠ 0 then ∑ α : MultiIndex n, (if α j = ℓ then f α else 0) else 0) := by
+  simp only [Fin.sum_univ_four, Fin.isValue, ne_eq, Fin.reduceEq, not_true_eq_false, ↓reduceIte,
+    not_false_eq_true, zero_add]
+  conv_lhs =>
+    arg 2
+    ext α
+    rw [show (if α j ≠ 0 then f α else 0) =
+            (if α j = 1 then f α else 0) + (if α j = 2 then f α else 0) +
+            (if α j = 3 then f α else 0) by
+      rcases Fin.eq_zero_or_eq_succ (α j) with h0 | ⟨k, hk⟩
+      · simp [h0]
+      · rcases Fin.eq_zero_or_eq_succ k with hk0 | ⟨k', hk'⟩
+        · simp [hk, hk0]
+        · rcases Fin.eq_zero_or_eq_succ k' with hk'0 | ⟨k'', hk''⟩
+          · simp [hk, hk', hk'0]
+          · have : k'' = 0 := Fin.eq_zero k''
+            simp [hk, hk', hk'', this]]
+  simp only [Finset.sum_add_distrib]
+
+/-- L3-step5: Qubit log contribution
+    The negative sum of p_α log₂(q_j^{α_j}) over α with α_j ≠ 0 equals 2^{1-n} * f_j -/
+theorem qubit_log_contribution (bloch : Fin n → BlochVector) (j : Fin n)
+    (hq : ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0) :
+    -∑ α : MultiIndex n, (if α j ≠ 0 then fourierWeight bloch α * log2 ((bloch j).q (α j)) else 0) =
+    (2 : ℝ)^(1 - (n : ℤ)) * blochEntropy (bloch j) := by
+  -- Step 1: Partition the sum by α_j = ℓ
+  rw [sum_partition_by_j bloch j (fun α => fourierWeight bloch α * log2 ((bloch j).q (α j)))]
+  -- Step 2: For each ℓ, the inner sum simplifies because log₂(q_j^{α_j}) = log₂(q_j^ℓ) when α_j = ℓ
+  have h_inner : ∀ ℓ : Fin 4, ℓ ≠ 0 →
+      ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α * log2 ((bloch j).q (α j)) else 0) =
+      ∑ α : MultiIndex n, (if α j = ℓ then fourierWeight bloch α * log2 ((bloch j).q ℓ) else 0) := by
+    intro ℓ _
+    apply Finset.sum_congr rfl
+    intro α _
+    split_ifs with h
+    · rw [h]
+    · rfl
+  simp only [Fin.sum_univ_four, Fin.isValue, ne_eq, Fin.reduceEq, not_true_eq_false, ↓reduceIte,
+    not_false_eq_true, zero_add]
+  rw [h_inner 1 (by decide), h_inner 2 (by decide), h_inner 3 (by decide)]
+  -- Step 3: Apply sum_log_contributions (but manually since we already expanded)
+  rw [log_contribution_fixed_ell bloch j 1 (by decide) (hq 1 (by decide)),
+      log_contribution_fixed_ell bloch j 2 (by decide) (hq 2 (by decide)),
+      log_contribution_fixed_ell bloch j 3 (by decide) (hq 3 (by decide))]
+  -- Step 4: Factor and use blochEntropy_eq_sum
+  rw [blochEntropy_eq_sum (bloch j) hq]
+  simp only [Fin.sum_univ_four, Fin.isValue, ne_eq, Fin.reduceEq, not_true_eq_false, ↓reduceIte,
+    not_false_eq_true, zero_add]
+  ring
+
+/-! ### L3-step6: Entropy sum factorization
+
+The sum over all qubits of log contributions equals 2^{1-n} times the sum of Bloch entropies.
+-/
+
+/-- Sum of Bloch entropies over all qubits -/
+noncomputable def totalBlochEntropy (bloch : Fin n → BlochVector) : ℝ :=
+  ∑ j, blochEntropy (bloch j)
+
+/-- L3-step6: Sum of qubit log contributions factors as 2^{1-n} * Σ_k f_k -/
+theorem entropy_sum_factorization (bloch : Fin n → BlochVector)
+    (hq : ∀ j : Fin n, ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0) :
+    ∑ j : Fin n, -∑ α : MultiIndex n,
+      (if α j ≠ 0 then fourierWeight bloch α * log2 ((bloch j).q (α j)) else 0) =
+    (2 : ℝ)^(1 - (n : ℤ)) * totalBlochEntropy bloch := by
+  unfold totalBlochEntropy
+  rw [Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro j _
+  exact qubit_log_contribution bloch j (hq j)
 
 /-! ## Main Theorem -/
 
--- TODO: Prove entropy_formula (alethfeld-7j9)
+/-- Expand entropyTerm when p > 0 -/
+theorem entropyTerm_pos (p : ℝ) (hp : p > 0) : entropyTerm p = -p * log2 p := by
+  unfold entropyTerm
+  simp [hp]
+
+/-- Sum of entropy terms equals decomposed form (helper) -/
+theorem entropy_sum_decomposition (bloch : Fin n → BlochVector)
+    (hq_all : ∀ j : Fin n, ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0)
+    (hp : ∀ α : MultiIndex n, (∃ k, α k ≠ 0) → fourierWeight bloch α > 0) :
+    ∑ α : MultiIndex n, (if ∃ k, α k ≠ 0 then entropyTerm (fourierWeight bloch α) else 0) =
+    ∑ α : MultiIndex n, (if ∃ k, α k ≠ 0 then fourierWeight bloch α * (2*(n : ℤ) - 2) else 0) -
+    ∑ α : MultiIndex n, (if ∃ k, α k ≠ 0 then
+      fourierWeight bloch α * ∑ k, log2 ((bloch k).q (α k)) else 0) := by
+  -- Expand entropyTerm using log_decomposition
+  have h_expand : ∀ α : MultiIndex n, (∃ k, α k ≠ 0) →
+      entropyTerm (fourierWeight bloch α) =
+      fourierWeight bloch α * (2*(n : ℤ) - 2) -
+      fourierWeight bloch α * ∑ k, log2 ((bloch k).q (α k)) := by
+    intro α hα
+    have hpos := hp α hα
+    rw [entropyTerm_pos _ hpos]
+    -- Need hypothesis that all q values are positive for log_decomposition
+    have hq : ∀ k, (bloch k).q (α k) > 0 := by
+      intro k
+      by_cases hk : α k = 0
+      · rw [hk, BlochVector.q_zero_eq_one]; norm_num
+      · exact hq_all k (α k) hk
+    rw [log_decomposition bloch α hq]
+    ring
+  rw [← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro α _
+  split_ifs with h
+  · exact h_expand α h
+  · ring
+
+/-- L3-qed: General Entropy Formula for Rank-1 Product State QBFs
+
+For any rank-1 product state QBF on n qubits with generic Bloch vectors:
+  S(U) = entropyTerm(p₀) + (2n-2)(1-p₀) + 2^{1-n} Σₖ fₖ
+
+where:
+- p₀ = (1 - 2^{1-n})² is the Fourier weight of the zero index
+- fₖ = H(xₖ², yₖ², zₖ²) is the Bloch entropy of qubit k
+-/
+theorem entropy_formula (bloch : Fin n → BlochVector)
+    (hq_all : ∀ j : Fin n, ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0)
+    (hp : ∀ α : MultiIndex n, (∃ k, α k ≠ 0) → fourierWeight bloch α > 0) :
+    totalEntropy bloch =
+    entropyTerm (p_zero n) + (2*(n : ℤ) - 2) * (1 - p_zero n) +
+    (2 : ℝ)^(1 - (n : ℤ)) * totalBlochEntropy bloch := by
+  unfold totalEntropy
+  -- Step 1: Apply entropy_sum_decomposition
+  rw [entropy_sum_decomposition bloch hq_all hp]
+  -- Step 2: The first sum gives (2n-2)(1-p₀) by first_sum_formula
+  rw [first_sum_formula]
+  -- Step 3: The second sum needs to be converted to entropy_sum_factorization form
+  -- We need to exchange sum over α with sum over k
+  have h_exchange : ∑ α : MultiIndex n, (if ∃ k, α k ≠ 0 then
+        fourierWeight bloch α * ∑ k, log2 ((bloch k).q (α k)) else 0) =
+      ∑ j : Fin n, ∑ α : MultiIndex n,
+        (if α j ≠ 0 then fourierWeight bloch α * log2 ((bloch j).q (α j)) else 0) := by
+    -- First, use sum_log2_q_eq_sum_nonzero to only sum over nonzero α_k
+    conv_lhs =>
+      arg 2
+      ext α
+      rw [show (if ∃ k, α k ≠ 0 then fourierWeight bloch α * ∑ k, log2 ((bloch k).q (α k)) else 0) =
+              (if ∃ k, α k ≠ 0 then fourierWeight bloch α *
+                ∑ k, (if α k ≠ 0 then log2 ((bloch k).q (α k)) else 0) else 0) by
+        split_ifs with h
+        · rw [sum_log2_q_eq_sum_nonzero]
+        · rfl]
+    -- Distribute the product into the sum
+    conv_lhs =>
+      arg 2
+      ext α
+      rw [show (if ∃ k, α k ≠ 0 then fourierWeight bloch α *
+                ∑ k, (if α k ≠ 0 then log2 ((bloch k).q (α k)) else 0) else 0) =
+              ∑ k, (if ∃ j, α j ≠ 0 then
+                (if α k ≠ 0 then fourierWeight bloch α * log2 ((bloch k).q (α k)) else 0) else 0) by
+        split_ifs with h
+        · rw [Finset.mul_sum]
+          apply Finset.sum_congr rfl
+          intro k _
+          split_ifs <;> ring
+        · simp]
+    -- Exchange sums
+    rw [Finset.sum_comm]
+    apply Finset.sum_congr rfl
+    intro j _
+    apply Finset.sum_congr rfl
+    intro α _
+    -- Simplify: if (∃k, αk≠0) ∧ (αj≠0) then ... else 0
+    -- But if αj≠0 then ∃k, αk≠0, so we can simplify
+    split_ifs with h1 h2
+    · rfl
+    · exfalso; exact h2 ⟨j, h1⟩
+    · rfl
+    · rfl
+  rw [h_exchange]
+  -- Step 4: Apply entropy_sum_factorization
+  rw [← entropy_sum_factorization bloch hq_all]
+  ring
 
 /-! ## Corollaries -/
 
