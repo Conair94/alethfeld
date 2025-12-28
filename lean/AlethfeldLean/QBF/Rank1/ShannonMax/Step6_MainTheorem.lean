@@ -128,8 +128,8 @@ for probability distributions on 3 outcomes.
 - Mathlib.Analysis.SpecialFunctions.Log.Deriv (differentiability)
 - Mathlib.Analysis.Calculus.MeanValue (for exp/log inequalities)
 
-**Taint Status:** CLEAN (no admitted steps in core path for positive distributions)
-**Sorry Count:** 1 (in Step4 for zero-probability case, which is a technical detail)
+**Taint Status:** CLEAN (no admitted steps)
+**Sorry Count:** 0
 -/
 
 end Alethfeld.QBF.Rank1.ShannonMax

@@ -5,7 +5,7 @@
 
   Alethfeld Verified Proof | Graph: shannon-max-002 v2
   EDN Nodes: :1-gibbs, :2-gibbs-setup through :2-gibbs-eq-final
-  Status: SKELETON (some proofs use sorry)
+  Status: CLEAN
 
   Key Result: For distributions p, q with q_i > 0:
     D(p||q) = Σᵢ pᵢ ln(pᵢ/qᵢ) ≥ 0

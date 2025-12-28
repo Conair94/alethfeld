@@ -10,7 +10,7 @@ This document serves as a guide for **Prover** and **Formalizer** agents using t
     *   L1 (Fourier): ✅ 0 sorries
     *   L2 (Influence): ✅ 0 sorries
     *   L3 (Entropy): ✅ 0 sorries
-    *   ShannonMax: ✅ Verified (1 technical sorry)
+    *   ShannonMax: ✅ Verified (0 sorries)
 *   **Build Command**:
     ```bash
     lake build

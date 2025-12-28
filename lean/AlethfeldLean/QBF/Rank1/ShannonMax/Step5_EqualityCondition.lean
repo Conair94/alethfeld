@@ -5,7 +5,7 @@
 
   Alethfeld Verified Proof | Graph: shannon-max-002 v2
   EDN Nodes: :1-H-equality, :2-eq-fwd, :2-eq-gibbs, :2-eq-conclude
-  Status: SKELETON (technical log manipulation uses sorry)
+  Status: CLEAN
 
   Key Result: H(p) = log₂(3) if and only if p = (1/3, 1/3, 1/3).
 
@@ -71,14 +71,7 @@ theorem entropy_kl_relation (p : ProbDist3) (hpos : ∀ i, p.p i > 0) :
   --    = -(p0*ln(p0)+p1*ln(p1)+p2*ln(p2)) / ln(2)
   --    = -(p0*log₂(p0) + p1*log₂(p1) + p2*log₂(p2))
   field_simp
-  -- Goal after field_simp:
-  -- -(p.p 0 * log(p.p 0) + p.p 1 * log(p.p 1) + p.p 2 * log(p.p 2)) =
-  -- log 3 - (p.p 0 * (log(p.p 0) + log 3) + p.p 1 * (log(p.p 1) + log 3) + p.p 2 * (log(p.p 2) + log 3))
-  -- Expanding RHS:
-  -- log 3 - (p.p 0 * log(p.p 0) + p.p 0 * log 3 + ... )
-  -- = log 3 - (Σ pᵢ log pᵢ + Σ pᵢ log 3)
-  -- = log 3 - (Σ pᵢ log pᵢ + log 3)  [since Σ pᵢ = 1]
-  -- = -Σ pᵢ log pᵢ = LHS
+  -- RHS expands to: log 3 - (Σ pᵢ log pᵢ + log 3) = -Σ pᵢ log pᵢ = LHS
   have hlog3 : (p.p 0 + p.p 1 + p.p 2) * Real.log 3 = Real.log 3 := by rw [hsum, one_mul]
   linarith
 
