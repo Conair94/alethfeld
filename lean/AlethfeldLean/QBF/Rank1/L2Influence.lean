@@ -71,6 +71,18 @@ theorem card_complement_singleton {n : ℕ} (j : Fin n) :
              Finset.card_erase_of_mem (Finset.mem_univ j)]
   simp only [Finset.card_fin]
 
+/-- Product of constant 2 over a type equals 2^|type| (L2-S2b) -/
+theorem prod_const_two {α : Type*} [Fintype α] :
+    ∏ _ : α, (2 : ℝ) = 2 ^ Fintype.card α := by
+  simp only [Finset.prod_const, Finset.card_univ]
+
+/-- Exponent arithmetic: 2^{2-2n} * 2^{n-1} = 2^{1-n} (L2-S2c) -/
+theorem exponent_simplify {n : ℕ} :
+    (2 : ℝ)^(2 - 2*(n : ℤ)) * (2 : ℝ)^((n : ℤ) - 1) = (2 : ℝ)^(1 - (n : ℤ)) := by
+  rw [← zpow_add₀ (by norm_num : (2 : ℝ) ≠ 0)]
+  congr 1
+  omega
+
 /-! ## Factorization Lemma (L2-08)
 
 When α_j = ℓ is fixed and ℓ ≠ 0, the sum over α factors.
