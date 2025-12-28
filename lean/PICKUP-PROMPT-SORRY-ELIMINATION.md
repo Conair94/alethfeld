@@ -35,7 +35,7 @@ bd show <id>          # View issue details
 
 ---
 
-## L3 Entropy Formula — IN PROGRESS
+## L3 Entropy Formula — COMPLETE
 
 **Goal:** Prove the General Entropy Formula for Rank-1 Product State QBFs:
 $$S = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_k f_k$$
@@ -44,7 +44,7 @@ where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy.
 
 ### File: `AlethfeldLean/QBF/Rank1/L3Entropy.lean`
 
-### Completed (10 issues closed)
+### Completed (11 issues closed)
 
 1. **Skeleton created** (`alethfeld-013`)
    - Imports from L2Influence
@@ -97,11 +97,19 @@ where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy.
     - `one_minus_p_zero` - algebraic identity
     - `sum_fourier_weights` - **FINAL LEMMA**: Σ_{α≠0} p_α = 1 - p₀
 
-### Remaining Work (1 issue open)
+11. **entropy_nonneg corollary** (`alethfeld-xi1`)
+    - `log2_nonpos_of_le_one` - log₂(x) ≤ 0 for 0 < x ≤ 1
+    - `entropyTerm_nonneg` - entropyTerm(p) ≥ 0 for 0 ≤ p ≤ 1
+    - `BlochVector.q_le_one` - Bloch q components bounded by 1
+    - `blochEntropy_nonneg` - Bloch entropy is non-negative
+    - `totalBlochEntropy_nonneg` - total Bloch entropy is non-negative
+    - `p_zero_nonneg`, `p_zero_le_one` - p₀ bounds
+    - `one_minus_p_zero_nonneg` - 1 - p₀ ≥ 0 for n ≥ 1
+    - `entropy_nonneg` - **COROLLARY**: S(U) ≥ 0 for n ≥ 1 qubits
 
-| Issue ID | Title | Status |
-|----------|-------|--------|
-| `alethfeld-xi1` | entropy_nonneg corollary | Ready (optional) |
+### Remaining Work (0 issues open)
+
+All L3 issues completed!
 
 ### ✅ L3 VERIFICATION COMPLETE
 

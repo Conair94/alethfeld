@@ -540,6 +540,121 @@ theorem entropy_formula (bloch : Fin n → BlochVector)
 
 /-! ## Corollaries -/
 
--- TODO: Prove entropy_nonneg (alethfeld-xi1)
+/-- log₂(x) ≤ 0 for 0 < x ≤ 1 -/
+theorem log2_nonpos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1) : log2 x ≤ 0 := by
+  unfold log2
+  apply div_nonpos_of_nonpos_of_nonneg
+  · exact Real.log_nonpos (le_of_lt hx0) hx1
+  · exact le_of_lt (Real.log_pos (by norm_num : (1 : ℝ) < 2))
+
+/-- entropyTerm is non-negative for 0 ≤ p ≤ 1 -/
+theorem entropyTerm_nonneg {p : ℝ} (hp0 : 0 ≤ p) (hp1 : p ≤ 1) : entropyTerm p ≥ 0 := by
+  unfold entropyTerm
+  split_ifs with h
+  · -- p > 0 case: need -p * log₂(p) ≥ 0
+    -- Since 0 < p ≤ 1, log₂(p) ≤ 0, so -log₂(p) ≥ 0, thus -p * log₂(p) ≥ 0
+    have hlog : log2 p ≤ 0 := log2_nonpos_of_le_one h hp1
+    have : -log2 p ≥ 0 := by linarith
+    calc -p * log2 p = p * (-log2 p) := by ring
+      _ ≥ 0 := mul_nonneg (le_of_lt h) this
+  · -- p ≤ 0 case: result is 0
+    linarith
+
+/-- Bloch vector q components are bounded: 0 ≤ q ℓ ≤ 1 for ℓ ∈ {1,2,3} -/
+theorem BlochVector.q_le_one (v : BlochVector) (ℓ : Fin 4) (hℓ : ℓ ≠ 0) : v.q ℓ ≤ 1 := by
+  -- v.q 1 = x², v.q 2 = y², v.q 3 = z²
+  -- Since x² + y² + z² = 1, each component is ≤ 1
+  have hsum : v.q 1 + v.q 2 + v.q 3 = 1 := by
+    unfold BlochVector.q
+    simp only [Fin.isValue, Fin.val_one, ↓reduceIte, Fin.reduceFinMk, Fin.reduceLT, Fin.val_two,
+      ite_true, ite_false]
+    have := v.norm_sq
+    linarith
+  have h1 : v.q 1 ≥ 0 := BlochVector.q_nonneg v 1
+  have h2 : v.q 2 ≥ 0 := BlochVector.q_nonneg v 2
+  have h3 : v.q 3 ≥ 0 := BlochVector.q_nonneg v 3
+  rcases Fin.eq_zero_or_eq_succ ℓ with h0 | ⟨k, hk⟩
+  · exact absurd h0 hℓ
+  · rcases Fin.eq_zero_or_eq_succ k with hk0 | ⟨k', hk'⟩
+    · -- ℓ = 1
+      simp only [hk, hk0] at hsum ⊢
+      linarith
+    · rcases Fin.eq_zero_or_eq_succ k' with hk'0 | ⟨k'', hk''⟩
+      · -- ℓ = 2
+        simp only [hk, hk', hk'0] at hsum ⊢
+        linarith
+      · -- ℓ = 3
+        have : k'' = 0 := Fin.eq_zero k''
+        simp only [hk, hk', hk'', this] at hsum ⊢
+        linarith
+
+/-- Bloch entropy is non-negative -/
+theorem blochEntropy_nonneg (v : BlochVector) : blochEntropy v ≥ 0 := by
+  unfold blochEntropy
+  have h1 : entropyTerm (v.q 1) ≥ 0 :=
+    entropyTerm_nonneg (BlochVector.q_nonneg v 1) (BlochVector.q_le_one v 1 (by decide))
+  have h2 : entropyTerm (v.q 2) ≥ 0 :=
+    entropyTerm_nonneg (BlochVector.q_nonneg v 2) (BlochVector.q_le_one v 2 (by decide))
+  have h3 : entropyTerm (v.q 3) ≥ 0 :=
+    entropyTerm_nonneg (BlochVector.q_nonneg v 3) (BlochVector.q_le_one v 3 (by decide))
+  linarith
+
+/-- Total Bloch entropy is non-negative -/
+theorem totalBlochEntropy_nonneg (bloch : Fin n → BlochVector) : totalBlochEntropy bloch ≥ 0 := by
+  unfold totalBlochEntropy
+  apply Finset.sum_nonneg
+  intro j _
+  exact blochEntropy_nonneg (bloch j)
+
+/-- p_zero n is non-negative -/
+theorem p_zero_nonneg (n : ℕ) : p_zero n ≥ 0 := by
+  unfold p_zero
+  exact sq_nonneg _
+
+/-- p_zero n ≤ 1 for n ≥ 1 -/
+theorem p_zero_le_one {n : ℕ} (hn : n ≥ 1) : p_zero n ≤ 1 := by
+  unfold p_zero
+  have h : (2 : ℝ)^(1 - (n : ℤ)) ≤ 1 := by
+    have hexp : 1 - (n : ℤ) ≤ 0 := by omega
+    calc (2 : ℝ)^(1 - (n : ℤ)) ≤ (2 : ℝ)^(0 : ℤ) := by
+          apply zpow_le_zpow_right (by norm_num : 1 ≤ (2 : ℝ)) hexp
+      _ = 1 := by simp
+  have hpos : (2 : ℝ)^(1 - (n : ℤ)) > 0 := zpow_pos (by norm_num : (0 : ℝ) < 2) _
+  have h' : 1 - (2 : ℝ)^(1 - (n : ℤ)) ≥ 0 := by linarith
+  have h'' : 1 - (2 : ℝ)^(1 - (n : ℤ)) ≤ 1 := by linarith
+  calc (1 - (2 : ℝ)^(1 - (n : ℤ)))^2 ≤ 1^2 := by
+        apply sq_le_sq'
+        · linarith
+        · linarith
+    _ = 1 := by ring
+
+/-- 1 - p_zero n ≥ 0 for n ≥ 1 -/
+theorem one_minus_p_zero_nonneg {n : ℕ} (hn : n ≥ 1) : 1 - p_zero n ≥ 0 := by
+  have h := p_zero_le_one hn
+  linarith
+
+/-- L3 Corollary: Entropy is non-negative
+
+For any rank-1 product state QBF on n ≥ 1 qubits:
+  S(U) ≥ 0
+-/
+theorem entropy_nonneg (bloch : Fin n → BlochVector)
+    (hn : n ≥ 1)
+    (hq_all : ∀ j : Fin n, ∀ ℓ : Fin 4, ℓ ≠ 0 → (bloch j).q ℓ > 0)
+    (hp : ∀ α : MultiIndex n, (∃ k, α k ≠ 0) → fourierWeight bloch α > 0) :
+    totalEntropy bloch ≥ 0 := by
+  rw [entropy_formula bloch hq_all hp]
+  have h1 : entropyTerm (p_zero n) ≥ 0 :=
+    entropyTerm_nonneg (p_zero_nonneg n) (p_zero_le_one hn)
+  have h2 : (2*(n : ℤ) - 2) * (1 - p_zero n) ≥ 0 := by
+    apply mul_nonneg
+    · have : (n : ℤ) ≥ 1 := by omega
+      linarith
+    · exact one_minus_p_zero_nonneg hn
+  have h3 : (2 : ℝ)^(1 - (n : ℤ)) * totalBlochEntropy bloch ≥ 0 := by
+    apply mul_nonneg
+    · exact le_of_lt (zpow_pos (by norm_num : (0 : ℝ) < 2) _)
+    · exact totalBlochEntropy_nonneg bloch
+  linarith
 
 end Alethfeld.QBF.Rank1.L3Entropy
