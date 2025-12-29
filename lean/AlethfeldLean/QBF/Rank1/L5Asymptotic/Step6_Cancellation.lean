@@ -23,6 +23,7 @@ namespace Alethfeld.QBF.Rank1.L5Asymptotic
 
 open scoped BigOperators
 open Real Filter Topology
+open Alethfeld.QBF.Rank1.L3Entropy
 
 /-! ## L5-step4-1: The key cancellation -/
 
@@ -52,7 +53,7 @@ theorem key_cancellation_div (n : ℕ) (hn : n ≥ 1) (hnn : n ≠ 0) :
 
     Apply the key cancellation to simplify g(n). -/
 theorem g_simplified {n : ℕ} (hn : n ≥ 2) :
-    ∃ R : ℝ, |R| ≤ 20 * epsilon n ∧
+    ∃ R : ℝ, |R| ≤ (10 / Real.log 2 + 2) * (1 + 1/(n : ℝ)) * epsilon n ∧
       g n = (1 / n) * (2 / Real.log 2 + 4*((n : ℝ) - 1)) + R := by
   obtain ⟨R, hR, hg⟩ := g_expansion hn
   use R
@@ -68,11 +69,11 @@ theorem g_simplified {n : ℕ} (hn : n ≥ 2) :
 
 /-- L5-step4-3a: Distribute (1/n): (1/n)[a + b] = a/n + b/n. -/
 theorem distribute_inv (n : ℝ) (a b : ℝ) (hn : n ≠ 0) :
-    (1/n) * (a + b) = a/n + b/n := by field_simp; ring
+    (1/n) * (a + b) = a/n + b/n := by field_simp
 
 /-- L5-step4-3: g(n) = 2/(n * ln 2) + 4(n-1)/n + O(epsilon). -/
 theorem g_distributed {n : ℕ} (hn : n ≥ 2) :
-    ∃ R : ℝ, |R| ≤ 20 * epsilon n ∧
+    ∃ R : ℝ, |R| ≤ (10 / Real.log 2 + 2) * (1 + 1/(n : ℝ)) * epsilon n ∧
       g n = 2 / (n * Real.log 2) + 4*((n : ℝ) - 1) / n + R := by
   obtain ⟨R, hR, hg⟩ := g_simplified hn
   use R
@@ -80,18 +81,17 @@ theorem g_distributed {n : ℕ} (hn : n ≥ 2) :
   · exact hR
   · rw [hg]
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-    field_simp
-    ring
+    ring_nf
 
 /-! ## Preparation for limit computation -/
 
 /-- 4(n-1)/n = 4 - 4/n (from L5-step4-4, L5-step4-4a, L5-step4-4b). -/
 theorem four_n_minus_one_div_n (n : ℝ) (hn : n ≠ 0) :
-    4 * (n - 1) / n = 4 - 4/n := by field_simp; ring
+    4 * (n - 1) / n = 4 - 4/n := by field_simp
 
 /-- L5-step4-5: g(n) = 2/(n * ln 2) + 4 - 4/n + O(epsilon). -/
 theorem g_final_form {n : ℕ} (hn : n ≥ 2) :
-    ∃ R : ℝ, |R| ≤ 20 * epsilon n ∧
+    ∃ R : ℝ, |R| ≤ (10 / Real.log 2 + 2) * (1 + 1/(n : ℝ)) * epsilon n ∧
       g n = 2 / (n * Real.log 2) + 4 - 4 / n + R := by
   obtain ⟨R, hR, hg⟩ := g_distributed hn
   use R
@@ -99,14 +99,8 @@ theorem g_final_form {n : ℕ} (hn : n ≥ 2) :
   · exact hR
   · rw [hg]
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
-    rw [four_n_minus_one_div_n (n : ℝ) hn0]
-
-/-- g(n) without remainder, for exact computation. -/
-theorem g_exact_form {n : ℕ} (hn : n ≥ 1) (hnn : n ≠ 0) :
-    g n = 2 / (n * Real.log 2) + 4 - 4/n +
-      ((2 : ℝ)^(n - 1) / n * (-p_zero n * log2 (p_zero n) + (2*(n : ℝ) - 2) * (1 - p_zero n)) -
-       (2 / (n * Real.log 2) + 4 - 4/n)) := by
-  rw [g_definition hnn]
-  ring
+    have h4 := four_n_minus_one_div_n (n : ℝ) hn0
+    rw [h4]
+    ring
 
 end Alethfeld.QBF.Rank1.L5Asymptotic
