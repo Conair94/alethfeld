@@ -143,6 +143,9 @@
    :depth 1
    :parent nil
    :display-order 4
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "fourier_coefficient_formula"
+               :api-ref "L1 (Fourier)"}
    :provenance {:created-at "2025-01-01T00:00:04Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-lem1-1
@@ -157,6 +160,8 @@
    :depth 2
    :parent :1-lem1
    :display-order 0
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "fourierCoeff_rank1_expand"}
    :provenance {:created-at "2025-01-01T00:00:05Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-lem1-2
@@ -171,6 +176,9 @@
    :depth 2
    :parent :1-lem1
    :display-order 1
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "term1_simplify"
+               :also-see ["AlethfeldLean.Quantum.Pauli.trace_pauliString'"]}
    :provenance {:created-at "2025-01-01T00:00:06Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-lem1-3
@@ -185,6 +193,8 @@
    :depth 2
    :parent :1-lem1
    :display-order 2
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "trace_rank1_projector_eq_expectation"}
    :provenance {:created-at "2025-01-01T00:00:07Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-lem1-4
@@ -199,6 +209,9 @@
    :depth 2
    :parent :1-lem1
    :display-order 3
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "single_qubit_factor"
+               :also-see ["AlethfeldLean.Quantum.Bloch.expectation_σ"]}
    :provenance {:created-at "2025-01-01T00:00:08Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-lem1-qed
@@ -213,6 +226,9 @@
    :depth 2
    :parent :1-lem1
    :display-order 4
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L1Fourier"
+               :theorem "fourier_coefficient_formula"
+               :note "QED combines all substep results"}
    :provenance {:created-at "2025-01-01T00:00:09Z" :created-by :prover :round 1 :revision-of nil}}
 
   :1-lem2
@@ -227,6 +243,9 @@
    :depth 1
    :parent nil
    :display-order 5
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L2Influence"
+               :theorem "probability"
+               :note "Definition of Fourier weight p_α"}
    :provenance {:created-at "2025-01-01T00:00:10Z" :created-by :prover :round 1 :revision-of nil}}
 
   ;; === PART II: INFLUENCE CALCULATION ===
@@ -242,6 +261,10 @@
    :depth 1
    :parent nil
    :display-order 6
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L2Influence"
+               :theorem "total_influence_formula"
+               :api-ref "L2 (Influence)"
+               :also-see ["influence_independent_of_bloch"]}
    :provenance {:created-at "2025-01-01T00:00:11Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm3-1
@@ -298,6 +321,8 @@
    :depth 2
    :parent :1-thm3
    :display-order 3
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L2Influence"
+               :theorem "influence_j_formula"}
    :provenance {:created-at "2025-01-01T00:00:15Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm3-qed
@@ -312,6 +337,8 @@
    :depth 2
    :parent :1-thm3
    :display-order 4
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L2Influence"
+               :theorem "total_influence_formula"}
    :provenance {:created-at "2025-01-01T00:00:16Z" :created-by :prover :round 1 :revision-of nil}}
 
   ;; === PART III: ENTROPY CALCULATION ===
@@ -327,6 +354,9 @@
    :depth 1
    :parent nil
    :display-order 7
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L3Entropy"
+               :theorem "totalEntropy"
+               :note "Definition of total Shannon entropy"}
    :provenance {:created-at "2025-01-01T00:00:17Z" :created-by :prover :round 1 :revision-of nil}}
 
   :1-thm5
@@ -341,6 +371,9 @@
    :depth 1
    :parent nil
    :display-order 8
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L3Entropy"
+               :theorem "entropy_formula"
+               :api-ref "L3 (Entropy)"}
    :provenance {:created-at "2025-01-01T00:00:18Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm5-1
@@ -454,6 +487,10 @@
    :depth 1
    :parent nil
    :display-order 9
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L4Maximum"
+               :theorem "l4_maximum_entropy"
+               :api-ref "L4 (Maximum)"
+               :also-see ["l4_maximum_total_entropy" "isMagicState"]}
    :provenance {:created-at "2025-01-01T00:00:26Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm6-1
@@ -510,6 +547,9 @@
    :depth 2
    :parent :1-thm6
    :display-order 3
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L4Maximum"
+               :theorem "blochEntropy_le_log2_three"
+               :also-see ["blochEntropy_eq_max_iff_magic" "ShannonMax.shannon_maximum_entropy_full"]}
    :provenance {:created-at "2025-01-01T00:00:30Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm6-qed
@@ -553,6 +593,10 @@
    :depth 1
    :parent nil
    :display-order 11
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.L5Asymptotic"
+               :theorem "l5_asymptotic_ratio"
+               :api-ref "L5 (Asymptotic)"
+               :also-see ["ratio_limit_approx" "g_tendsto_four"]}
    :provenance {:created-at "2025-01-01T00:00:33Z" :created-by :prover :round 1 :revision-of nil}}
 
   :2-thm8-0
@@ -711,6 +755,10 @@
    :depth 1
    :parent nil
    :display-order 15
+   :lean4-ref {:module "AlethfeldLean.QBF.Rank1.QBFRank1MasterTheorem"
+               :theorem "qbfRank1Master"
+               :api-ref "QBF Rank-1 Master Theorem"
+               :note "Complete proof combining L1-L5"}
    :provenance {:created-at "2025-01-01T00:00:44Z" :created-by :prover :round 1 :revision-of nil}}}
 
  :external-refs
@@ -733,7 +781,7 @@
 
  :metadata
  {:created-at "2025-01-01T00:00:00Z"
-  :last-modified "2025-12-28T12:00:00Z"
+  :last-modified "2025-12-29T15:00:00Z"
   :proof-mode :formal-physics
   :iteration-counts {:verification {:round-1 42} :expansion {} :strategy 0}
   :verification-summary {:total-nodes 42
@@ -741,4 +789,8 @@
                          :challenged 3
                          :revisions-applied 3
                          :final-status :all-verified}
-  :context-budget {:max-tokens 100000 :current-estimate 12500}}}
+  :context-budget {:max-tokens 100000 :current-estimate 12500}
+  :lean4-mapping {:status :complete
+                  :modules ["L1Fourier" "L2Influence" "L3Entropy" "L4Maximum" "L5Asymptotic" "QBFRank1MasterTheorem"]
+                  :verification-status "All modules verified (0 sorries)"
+                  :api-doc "lean/API.md"}}}
