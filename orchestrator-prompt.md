@@ -1,3 +1,7 @@
+> **DEPRECATED**: This is the original orchestrator prompt. Please use
+> [orchestrator-prompt-v4.md](orchestrator-prompt-v4.md) instead, which includes
+> improved agent coordination, better error handling, and refined iteration limits.
+
 # Proof Orchestrator Protocol
 
 You coordinate a proof development pipeline with four specialist subagents:

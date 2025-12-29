@@ -1,1 +1,41 @@
-{:lemmas [] :proofs []}
+{:lemmas
+ [{:id :L1Fourier
+   :title "Fourier Coefficients for Rank-1 QBFs"
+   :file "lean/AlethfeldLean/QBF/Rank1/L1Fourier.lean"
+   :status :verified
+   :sorries 0}
+  {:id :L2Influence
+   :title "Influence Independence from Bloch Vectors"
+   :file "lean/AlethfeldLean/QBF/Rank1/L2Influence.lean"
+   :status :verified
+   :sorries 0}
+  {:id :L3Entropy
+   :title "General Entropy Formula for Rank-1 QBFs"
+   :file "lean/AlethfeldLean/QBF/Rank1/L3Entropy.lean"
+   :status :verified
+   :sorries 0}
+  {:id :ShannonMax
+   :title "Shannon Maximum Entropy for Three Outcomes"
+   :file "lean/AlethfeldLean/QBF/Rank1/ShannonMax.lean"
+   :status :verified
+   :sorries 0}
+  {:id :L4Maximum
+   :title "Maximum Entropy at Magic State"
+   :file "lean/AlethfeldLean/QBF/Rank1/L4Maximum.lean"
+   :status :verified
+   :sorries 0}
+  {:id :L5Asymptotic
+   :title "Asymptotic Behavior of Entropy-Influence Ratio"
+   :file "lean/AlethfeldLean/QBF/Rank1/L5Asymptotic.lean"
+   :status :verified
+   :sorries 0}]
+
+ :proofs
+ [{:id :QBFRank1MasterTheorem
+   :title "QBF Rank-1 Master Theorem"
+   :file "lean/AlethfeldLean/QBF/Rank1/QBFRank1MasterTheorem.lean"
+   :status :verified
+   :sorries 0
+   :combines [:L1Fourier :L2Influence :L3Entropy :L4Maximum :L5Asymptotic]}]
+
+ :last-updated "2025-12-29"}

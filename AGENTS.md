@@ -12,17 +12,26 @@ bd close <id>         # Complete work
 bd sync               # Sync with git
 ```
 
-## Current Focus: L4Maximum Proofs
+## Current Status: QBF Rank-1 Proofs Complete
 
-**Status:** BLOCKED on Mathematical Inequalities
+**Status:** ✅ ALL LEMMAS VERIFIED (0 sorries)
 
-We are currently trying to eliminate `sorry` statements from `L4Maximum.lean`. The file has been split into:
-- `ShannonLemma.lean`: Contains the core mathematical inequalities ($H(p) \le \log 3$).
-- `L4Maximum.lean`: Contains the quantum definitions and application of the lemma.
+The QBF Rank-1 project is complete. All lemmas L1-L5 are fully verified:
+
+| Lemma | File | Status |
+|-------|------|--------|
+| L1 Fourier | `lean/AlethfeldLean/QBF/Rank1/L1Fourier.lean` | ✅ 0 sorries |
+| L2 Influence | `lean/AlethfeldLean/QBF/Rank1/L2Influence.lean` | ✅ 0 sorries |
+| L3 Entropy | `lean/AlethfeldLean/QBF/Rank1/L3Entropy.lean` | ✅ 0 sorries |
+| Shannon Max | `lean/AlethfeldLean/QBF/Rank1/ShannonMax.lean` | ✅ 0 sorries |
+| L4 Maximum | `lean/AlethfeldLean/QBF/Rank1/L4Maximum.lean` | ✅ 0 sorries |
+| L5 Asymptotic | `lean/AlethfeldLean/QBF/Rank1/L5Asymptotic.lean` | ✅ 0 sorries |
+| Master Theorem | `lean/AlethfeldLean/QBF/Rank1/QBFRank1MasterTheorem.lean` | ✅ 0 sorries |
 
 **Next Agent's Priority:**
-1.  **Fix `ShannonLemma.lean`**: Use standard Mathlib convexity/concavity arguments instead of manual inequality manipulation with `linarith`.
-2.  **Fix `L4Maximum.lean`**: Resolve `norm_sq` and index type mismatch errors.
+1. Check `bd ready` for available work
+2. Run `lake build` to verify no regressions
+3. See `lean/API.md` for full documentation
 
 ## Landing the Plane (Session Completion)
 
