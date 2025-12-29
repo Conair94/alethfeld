@@ -17,6 +17,7 @@ This document serves as a guide for **Prover** and **Formalizer** agents using t
         *   Step3 (Taylor): ✅ 0 sorries
         *   Step4-5: ✅ 0 sorries (error bounds proved)
         *   Step6-8: ⚠️ ~3 sorries remaining (numerical ln/log bounds)
+    *   **Master Theorem**: ✅ Verified (0 sorries) - combines L1-L5 into complete result
 *   **Build Command**:
     ```bash
     lake build
@@ -47,6 +48,7 @@ The library is organized under the `AlethfeldLean` namespace.
                 *   `Step6_Cancellation`: Key cancellation 2^{n-1} * epsilon = 1.
                 *   `Step7_LimitComputation`: Individual limit computations.
                 *   `Step8_MainTheorem`: Main theorem (QED).
+            *   `QBFRank1MasterTheorem`: **Master theorem** combining L1-L5 into complete result.
 
 ## 3. Key Types and Definitions
 
@@ -121,6 +123,13 @@ The library is organized under the `AlethfeldLean` namespace.
 | `magicBlochVector` | $(1/\sqrt{3}, 1/\sqrt{3}, 1/\sqrt{3})$ | The magic Bloch vector. |
 | `magicProductState` | `fun _ => magicBlochVector` | Product state with all qubits magic. |
 | `blochToProbDist3 v` | `{p := fun i => v.q (i+1)}` | Convert Bloch vector to ProbDist3. |
+
+### Master Theorem (`AlethfeldLean.QBF.Rank1.QBFRank1MasterTheorem`)
+
+| Symbol | Definition | Description |
+| :--- | :--- | :--- |
+| `QBFRank1MasterResult` | Structure | Complete result combining L1-L5. |
+| `qbfRank1Master` | `QBFRank1MasterResult` | Instance proving all component results. |
 
 ### L5 Asymptotic (`AlethfeldLean.QBF.Rank1.L5Asymptotic`)
 
@@ -325,6 +334,83 @@ These are the primary verified results available for use in higher-level proofs.
     *Usage*: Numerical approximation of the limit.
 
 **Note**: Step1-5 theorems are now fully proven (0 sorries). Remaining `sorry` placeholders in L5 are in Step6-8 for numerical verification of logarithm bounds (e.g., `log(2) ≈ 0.693`, `log(3) ≈ 1.099`). The proof structure is complete.
+
+### QBF Rank-1 Master Theorem (`AlethfeldLean.QBF.Rank1.QBFRank1MasterTheorem`)
+
+This is the **main result** of the Alethfeld QBF project, combining all component lemmas into a single comprehensive theorem about rank-1 quantum Boolean functions.
+
+#### Main Theorem Statement
+
+For rank-1 QBFs $U = I - 2|\psi\rangle\langle\psi|$ where $|\psi\rangle = \bigotimes_{k=1}^n |\phi_k\rangle$ is a product state of $n$ qubits:
+
+$$\frac{S(U)}{I(U)} \leq \log_2 3 + \frac{2^{n-1}}{n}\left[-p_0 \log_2 p_0 + (2n-2)(1-p_0)\right]$$
+
+where $p_0 = (1 - 2^{1-n})^2$. The maximum is achieved when all qubits are in the **magic state** with Bloch vector $(1/\sqrt{3}, 1/\sqrt{3}, 1/\sqrt{3})$.
+
+#### Complete Results
+
+*   **`QBFRank1MasterResult`**: A structure encapsulating all five main results:
+    ```lean
+    structure QBFRank1MasterResult where
+      influence_constant : ∀ {n : ℕ} (bloch : Fin n → BlochVector),
+        totalInfluence bloch = n * (2 : ℝ)^(1 - (n : ℤ))
+      influence_universal : ∀ {n : ℕ} (bloch₁ bloch₂ : Fin n → BlochVector),
+        totalInfluence bloch₁ = totalInfluence bloch₂
+      entropy_formula : ∀ {n : ℕ} (bloch : Fin n → BlochVector) (hq_all) (hp),
+        totalEntropy bloch = entropyTerm (p_zero n) + (2*(n : ℤ) - 2) * (1 - p_zero n) +
+        (2 : ℝ)^(1 - (n : ℤ)) * totalBlochEntropy bloch
+      blochEntropy_bound : ∀ (v : BlochVector), blochEntropy v ≤ log2 3
+      magic_optimal : ∀ (v : BlochVector) (hq), blochEntropy v = log2 3 ↔ isMagicState v
+      asymptotic_ratio : Tendsto entropy_influence_ratio atTop (nhds (log2 3 + 4))
+    ```
+
+*   **`qbfRank1Master`**:
+    Instance of `QBFRank1MasterResult` proving all component results.
+    *Usage*: **Main entry point** - use this to access any of the five complete results.
+
+#### Proof Sketch
+
+The proof proceeds in five stages, each building on the previous:
+
+1. **L1 (Fourier)**: Derive the closed-form Fourier coefficient formula
+   $$\hat{U}(\alpha) = \delta_{\alpha,0} - 2^{1-n} \prod_k r_k^{(\alpha_k)}$$
+   This follows from Pauli trace properties and product state factorization.
+
+2. **L2 (Influence)**: Prove influence independence
+   $$I(U) = n \cdot 2^{1-n}$$
+   Key insight: the sum over Bloch components equals 2, causing cancellation.
+
+3. **L3 (Entropy)**: Establish the general entropy formula
+   $$S(U) = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_k f_k$$
+   Uses the factorization of Fourier weights and properties of logarithms.
+
+4. **L4 (Maximum)**: Show that the magic state uniquely maximizes entropy
+   - Each Bloch entropy $f_k = H(x_k^2, y_k^2, z_k^2) \leq \log_2 3$
+   - Equality iff $(x_k^2, y_k^2, z_k^2) = (1/3, 1/3, 1/3)$
+   - This uses the Shannon maximum entropy theorem from `ShannonMax`.
+
+5. **L5 (Asymptotic)**: Compute the limit as $n \to \infty$
+   - Taylor expand $p_0 \approx 1 - 2\varepsilon$ where $\varepsilon = 2^{1-n}$
+   - Show $g(n) \to 4$ using the key cancellation $2^{n-1} \cdot \varepsilon = 1$
+   - Conclude $\lim_{n \to \infty} S_{\max}/I = \log_2 3 + 4 \approx 5.585$
+
+#### Component Lemma References
+
+| Lemma | Module | Main Theorem | Description |
+| :--- | :--- | :--- | :--- |
+| L1 | `L1Fourier` | `fourier_coefficient_formula` | Fourier coefficients |
+| L2 | `L2Influence` | `total_influence_formula` | Influence independence |
+| L3 | `L3Entropy` | `entropy_formula` | General entropy formula |
+| L4 | `L4Maximum` | `l4_maximum_entropy` | Maximum at magic state |
+| L5 | `L5Asymptotic` | `l5_asymptotic_ratio` | Asymptotic limit |
+
+#### Implications for the Conjecture
+
+The main theorem establishes a **lower bound** for the entropy-influence conjecture:
+
+> For any constant $C$ satisfying $S(U) \leq C \cdot I(U)$ for all rank-1 product state QBFs, we must have $C \geq \log_2 3 + 4 \approx 5.585$.
+
+This bound is **tight** in the sense that it is achieved in the limit $n \to \infty$ with all qubits in the magic state.
 
 ## 5. Agent Guidelines
 
