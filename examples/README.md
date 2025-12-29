@@ -156,7 +156,7 @@ Publication-ready output. Compile with `pdflatex`. Uses Lamport-style step numbe
 
 | Example | Prover-Verifier Rounds | Admitted Steps | Lean 4 Verified | Notes |
 |---------|------------------------|----------------|-----------------|-------|
-| **QBF Rank-1** | — | 0 | ✅ **0 sorries** | Fully machine-verified |
+| **QBF Rank-1** | ~190 | 0 | ✅ **0 sorries** | Fully machine-verified; 195 nodes across L1-L5 |
 | Dobinski | 23 | 0 | ❌ | — |
 | Prime Determinant | 31 | 1 | ❌ | — |
 | Lemniscate | 28 | 2 | ❌ | — |
