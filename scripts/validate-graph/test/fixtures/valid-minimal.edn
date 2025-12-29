@@ -1,0 +1,34 @@
+{:graph-id "test-minimal-001"
+ :version 1
+ :theorem {:id :theorem
+           :statement "For all x, P(x) implies Q(x)"
+           :content-hash "fedcba9876543210"}
+ :nodes {:1-abc123 {:id :1-abc123
+                    :type :assumption
+                    :statement "Let x be arbitrary"
+                    :content-hash "0123456789abcdef"
+                    :dependencies #{}
+                    :scope #{}
+                    :justification :assumption
+                    :status :verified
+                    :taint :clean
+                    :depth 0
+                    :parent nil
+                    :display-order 0
+                    :provenance {:created-at "2024-01-01T00:00:00"
+                                 :created-by :prover
+                                 :round 1
+                                 :revision-of nil}}}
+ :symbols {}
+ :external-refs {}
+ :lemmas {}
+ :obligations []
+ :archived-nodes {}
+ :metadata {:created-at "2024-01-01T00:00:00"
+            :last-modified "2024-01-01T00:00:00"
+            :proof-mode :strict-mathematics
+            :iteration-counts {:verification {}
+                               :expansion {}
+                               :strategy 0}
+            :context-budget {:max-tokens 100000
+                             :current-estimate 1000}}}

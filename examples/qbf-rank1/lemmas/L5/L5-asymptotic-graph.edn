@@ -1,220 +1,235 @@
-{:graph-id "L5-asymptotic-v1"
- :version 1
- :theorem
- {:id :theorem
-  :statement "$\\lim_{n \\to \\infty} \\frac{S_{\\max}}{I} = \\log_2 3 + 4 \\approx 5.585$"
-  :content-hash "b5c6d7e8"}
-
- :metadata
- {:created-at "2025-12-28T17:07:00Z"
-  :last-modified "2025-12-28T17:07:00Z"
-  :proof-mode :strict-mathematics
-  :iteration-counts {:verification {} :expansion {} :strategy 0}
-  :context-budget {:max-tokens 100000 :current-estimate 2500}}
-
+{:theorem
+ {:id :theorem,
+  :statement
+  "$\\lim_{n \\to \\infty} \\frac{S_{\\max}}{I} = \\log_2 3 + 4 \\approx 5.585$",
+  :content-hash "f02dc907bf14cf72"},
+ :obligations [],
+ :archived-nodes {},
+ :external-refs {},
  :nodes
- {:0-L4cor
-  {:id :0-L4cor
-   :type :assumption
-   :statement "$\\frac{S}{I} = \\log_2 3 + \\frac{2^{n-1}}{n}[-p_0 \\log_2 p_0 + (2n-2)(1-p_0)]$"
-   :dependencies #{}
-   :scope #{}
-   :justification :assumption
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 0
-   :assumption-label :A1
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :orchestrator
-                :round 0
-                :revision-of nil}}
-
-  :0-D-eps
-  {:id :0-D-eps
-   :type :definition
-   :statement "Define $\\varepsilon = 2^{1-n}$, so $\\varepsilon \\to 0$ as $n \\to \\infty$."
-   :dependencies #{}
-   :scope #{}
-   :justification :definition-expansion
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 1
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :orchestrator
-                :round 0
-                :revision-of nil}}
-
-  :L5-root
-  {:id :L5-root
-   :type :claim
-   :statement "$\\lim_{n \\to \\infty} \\frac{S_{\\max}}{I} = \\log_2 3 + 4$"
-   :dependencies #{:0-L4cor}
-   :scope #{}
-   :justification :conjunction-intro
-   :status :proposed
-   :taint :clean
-   :depth 1
-   :parent nil
-   :display-order 2
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
-  :L5-assume
-  {:id :L5-assume
-   :type :local-assume
-   :statement "Let $\\varepsilon = 2^{1-n}$, so $p_0 = (1-\\varepsilon)^2$ and $1-p_0 = 2\\varepsilon - \\varepsilon^2$."
-   :introduces "$\\varepsilon = 2^{1-n}$"
-   :dependencies #{:0-D-eps}
-   :scope #{}
-   :justification :local-assumption
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 0
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
-  :L5-step1
-  {:id :L5-step1
-   :type :claim
-   :statement "Using $\\log(1-x) \\approx -x/\\ln 2$ for small $x$: $-p_0 \\log_2 p_0 \\approx 2\\varepsilon/\\ln 2$"
-   :dependencies #{:L5-assume}
-   :scope #{:L5-assume}
-   :justification :algebraic-rewrite
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 1
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
-  :L5-step2
-  {:id :L5-step2
-   :type :claim
-   :statement "$(2n-2)(1-p_0) = (2n-2)(2\\varepsilon - \\varepsilon^2) \\approx 4(n-1)\\varepsilon$"
-   :dependencies #{:L5-assume}
-   :scope #{:L5-assume}
-   :justification :algebraic-rewrite
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 2
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
-  :L5-step3
-  {:id :L5-step3
-   :type :claim
-   :statement "$g(n) = \\frac{2^{n-1}}{n} \\cdot [\\frac{2\\varepsilon}{\\ln 2} + 4(n-1)\\varepsilon]$"
-   :dependencies #{:L5-step1 :L5-step2 :0-L4cor}
-   :scope #{:L5-assume}
-   :justification :substitution
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 3
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
+ {:L5-discharge
+  {:statement "Discharging $\\varepsilon = 2^{1-n}$ assumption.",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "1f2b48756f263d23",
+   :display-order 5,
+   :type :local-discharge,
+   :scope #{:L5-assume},
+   :justification :discharge,
+   :status :proposed,
+   :id :L5-discharge,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :discharges :L5-assume,
+   :dependencies #{:L5-step4}},
   :L5-step4
-  {:id :L5-step4
-   :type :claim
-   :statement "$g(n) = \\frac{2}{n \\ln 2} + 4 - \\frac{4}{n} \\to 4$ as $n \\to \\infty$"
-   :dependencies #{:L5-step3}
-   :scope #{:L5-assume}
-   :justification :algebraic-rewrite
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 4
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
-  :L5-discharge
-  {:id :L5-discharge
-   :type :local-discharge
-   :statement "Discharging $\\varepsilon = 2^{1-n}$ assumption."
-   :discharges :L5-assume
-   :dependencies #{:L5-step4}
-   :scope #{:L5-assume}
-   :justification :discharge
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 5
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}
-
+  {:statement
+   "$g(n) = \\frac{2}{n \\ln 2} + 4 - \\frac{4}{n} \\to 4$ as $n \\to \\infty$",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "3b3ed788f99f504f",
+   :display-order 4,
+   :type :claim,
+   :scope #{:L5-assume},
+   :justification :algebraic-rewrite,
+   :status :proposed,
+   :id :L5-step4,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:L5-step3}},
+  :0-D-eps
+  {:statement
+   "Define $\\varepsilon = 2^{1-n}$, so $\\varepsilon \\to 0$ as $n \\to \\infty$.",
+   :taint :clean,
+   :parent nil,
+   :content-hash "19a5503c60ee5e19",
+   :display-order 1,
+   :type :definition,
+   :scope #{},
+   :justification :definition-expansion,
+   :status :verified,
+   :id :0-D-eps,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{}},
+  :L5-step2
+  {:statement
+   "$(2n-2)(1-p_0) = (2n-2)(2\\varepsilon - \\varepsilon^2) \\approx 4(n-1)\\varepsilon$",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "7fab846b287a3309",
+   :display-order 2,
+   :type :claim,
+   :scope #{:L5-assume},
+   :justification :algebraic-rewrite,
+   :status :proposed,
+   :id :L5-step2,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:L5-assume}},
+  :L5-assume
+  {:statement
+   "Let $\\varepsilon = 2^{1-n}$, so $p_0 = (1-\\varepsilon)^2$ and $1-p_0 = 2\\varepsilon - \\varepsilon^2$.",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "add0de5c83b5dfa6",
+   :introduces "$\\varepsilon = 2^{1-n}$",
+   :display-order 0,
+   :type :local-assume,
+   :scope #{},
+   :justification :local-assumption,
+   :status :proposed,
+   :id :L5-assume,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:0-D-eps}},
   :L5-qed
-  {:id :L5-qed
-   :type :qed
-   :statement "$S/I \\to \\log_2 3 + 4 \\approx 5.585$ as $n \\to \\infty$. QED."
-   :dependencies #{:L5-discharge :0-L4cor}
-   :scope #{}
-   :justification :qed
-   :status :proposed
-   :taint :clean
-   :depth 2
-   :parent :L5-root
-   :display-order 6
-   :provenance {:created-at "2025-12-28T17:07:00Z"
-                :created-by :prover
-                :round 1
-                :revision-of nil}}}
-
+  {:statement
+   "$S/I \\to \\log_2 3 + 4 \\approx 5.585$ as $n \\to \\infty$. QED.",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "58cd6dfd50d75fe1",
+   :display-order 6,
+   :type :qed,
+   :scope #{},
+   :justification :qed,
+   :status :proposed,
+   :id :L5-qed,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:L5-discharge :0-L4cor}},
+  :0-L4cor
+  {:statement
+   "$\\frac{S}{I} = \\log_2 3 + \\frac{2^{n-1}}{n}[-p_0 \\log_2 p_0 + (2n-2)(1-p_0)]$",
+   :taint :clean,
+   :parent nil,
+   :content-hash "fd03c6ab6952b289",
+   :display-order 0,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :0-L4cor,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{},
+   :assumption-label :A1},
+  :L5-step1
+  {:statement
+   "Using $\\log(1-x) \\approx -x/\\ln 2$ for small $x$: $-p_0 \\log_2 p_0 \\approx 2\\varepsilon/\\ln 2$",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "e0a899daef877a4e",
+   :display-order 1,
+   :type :claim,
+   :scope #{:L5-assume},
+   :justification :algebraic-rewrite,
+   :status :proposed,
+   :id :L5-step1,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:L5-assume}},
+  :L5-step3
+  {:statement
+   "$g(n) = \\frac{2^{n-1}}{n} \\cdot [\\frac{2\\varepsilon}{\\ln 2} + 4(n-1)\\varepsilon]$",
+   :taint :clean,
+   :parent :L5-root,
+   :content-hash "d8da6328480b9053",
+   :display-order 3,
+   :type :claim,
+   :scope #{:L5-assume},
+   :justification :substitution,
+   :status :proposed,
+   :id :L5-step3,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:L5-step2 :0-L4cor :L5-step1}},
+  :L5-root
+  {:statement
+   "$\\lim_{n \\to \\infty} \\frac{S_{\\max}}{I} = \\log_2 3 + 4$",
+   :taint :clean,
+   :parent nil,
+   :content-hash "51faf2f48f65e909",
+   :display-order 2,
+   :type :claim,
+   :scope #{},
+   :justification :conjunction-intro,
+   :status :proposed,
+   :id :L5-root,
+   :provenance
+   {:created-at "2025-12-28T17:07:00Z",
+    :created-by :prover,
+    :round 1,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:0-L4cor}}},
+ :graph-id "L5-asymptotic-v1",
+ :version 1,
+ :lemmas {},
+ :metadata
+ {:created-at "2025-12-28T17:07:00Z",
+  :last-modified "2025-12-28T17:07:00Z",
+  :proof-mode :strict-mathematics,
+  :iteration-counts {:verification {}, :expansion {}, :strategy 0},
+  :context-budget {:max-tokens 100000, :current-estimate 2500}},
  :symbols
  {:sym-eps
-  {:id :sym-eps
-   :name "epsilon"
-   :type "Small parameter"
-   :tex "\\varepsilon = 2^{1-n}"
-   :constraints "$\\varepsilon \\to 0$ as $n \\to \\infty$"
-   :scope :lemma
-   :introduced-at :0-D-eps}
-
+  {:id :sym-eps,
+   :name "epsilon",
+   :type "Small parameter",
+   :tex "\\varepsilon = 2^{1-n}",
+   :constraints "$\\varepsilon \\to 0$ as $n \\to \\infty$",
+   :scope :lemma,
+   :introduced-at :0-D-eps},
   :sym-p0
-  {:id :sym-p0
-   :name "p_0"
-   :type "Probability"
-   :tex "p_0 = (1-\\varepsilon)^2"
-   :constraints "$0 < p_0 < 1$"
-   :scope :lemma
-   :introduced-at :L5-assume}
-
+  {:id :sym-p0,
+   :name "p_0",
+   :type "Probability",
+   :tex "p_0 = (1-\\varepsilon)^2",
+   :constraints "$0 < p_0 < 1$",
+   :scope :lemma,
+   :introduced-at :L5-assume},
   :sym-gn
-  {:id :sym-gn
-   :name "g(n)"
-   :type "Correction term"
-   :tex "g(n) = \\frac{S}{I} - \\log_2 3"
-   :constraints "$g(n) \\to 4$ as $n \\to \\infty$"
-   :scope :lemma
-   :introduced-at :L5-step3}}
-
- :external-refs {}
- :lemmas {}
- :obligations []
- :archived-nodes {}}
+  {:id :sym-gn,
+   :name "g(n)",
+   :type "Correction term",
+   :tex "g(n) = \\frac{S}{I} - \\log_2 3",
+   :constraints "$g(n) \\to 4$ as $n \\to \\infty$",
+   :scope :lemma,
+   :introduced-at :L5-step3}}}

@@ -1,103 +1,155 @@
-{:graph-id "L2-influence-verify-2024"
- :version 1
- :phase :init
-
- :theorem
- {:id :theorem
-  :statement "For any rank-1 product state QBF: $I(U) = n \\cdot 2^{1-n}$. This is independent of the choice of Bloch vectors."
-  :content-hash "d4e5f6a7"}
-
+{:theorem
+ {:id :theorem,
+  :statement
+  "For any rank-1 product state QBF: $I(U) = n \\cdot 2^{1-n}$. This is independent of the choice of Bloch vectors.",
+  :content-hash "6736bae1c0bfe162"},
+ :obligations [],
+ :archived-nodes {},
+ :phase :init,
+ :external-refs {},
  :nodes
  {:0-assume1
-  {:id :0-assume1
-   :type :assumption
-   :statement "Let $U = I - 2\\ket{\\psi}\\bra{\\psi}$ be a rank-1 QBF with $\\ket{\\psi} = \\bigotimes_{k=1}^n \\ket{\\phi_k}$ a product state."
-   :dependencies #{}
-   :scope #{}
-   :justification :assumption
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 0
-   :assumption-label :A1
-   :provenance {:created-at "2024-12-28T00:00:00" :created-by :orchestrator :round 0 :revision-of nil}}
-
+  {:statement
+   "Let $U = I - 2\\ket{\\psi}\\bra{\\psi}$ be a rank-1 QBF with $\\ket{\\psi} = \\bigotimes_{k=1}^n \\ket{\\phi_k}$ a product state.",
+   :taint :clean,
+   :parent nil,
+   :content-hash "07f3e5947ad03e73",
+   :display-order 0,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :0-assume1,
+   :provenance
+   {:created-at "2024-12-28T00:00:00",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{},
+   :assumption-label :A1},
   :0-assume2
-  {:id :0-assume2
-   :type :assumption
-   :statement "Each qubit $k$ has Bloch vector $\\vec{r}_k = (x_k, y_k, z_k)$ with $x_k^2 + y_k^2 + z_k^2 = 1$."
-   :dependencies #{}
-   :scope #{}
-   :justification :assumption
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 1
-   :assumption-label :D1
-   :provenance {:created-at "2024-12-28T00:00:00" :created-by :orchestrator :round 0 :revision-of nil}}
-
+  {:statement
+   "Each qubit $k$ has Bloch vector $\\vec{r}_k = (x_k, y_k, z_k)$ with $x_k^2 + y_k^2 + z_k^2 = 1$.",
+   :taint :clean,
+   :parent nil,
+   :content-hash "8790be5a08afc008",
+   :display-order 1,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :0-assume2,
+   :provenance
+   {:created-at "2024-12-28T00:00:00",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{},
+   :assumption-label :D1},
   :0-assume3
-  {:id :0-assume3
-   :type :assumption
-   :statement "Define $q_k^{(0)} = 1$ and $(q_k^{(1)}, q_k^{(2)}, q_k^{(3)}) = (x_k^2, y_k^2, z_k^2)$."
-   :dependencies #{}
-   :scope #{}
-   :justification :assumption
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 2
-   :assumption-label :D2
-   :provenance {:created-at "2024-12-28T00:00:00" :created-by :orchestrator :round 0 :revision-of nil}}
-
+  {:statement
+   "Define $q_k^{(0)} = 1$ and $(q_k^{(1)}, q_k^{(2)}, q_k^{(3)}) = (x_k^2, y_k^2, z_k^2)$.",
+   :taint :clean,
+   :parent nil,
+   :content-hash "3e668dbe46c7b375",
+   :display-order 2,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :0-assume3,
+   :provenance
+   {:created-at "2024-12-28T00:00:00",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{},
+   :assumption-label :D2},
   :0-lemma-L1
-  {:id :0-lemma-L1
-   :type :lemma-ref
-   :statement "Fourier coefficient formula: $\\hat{U}(\\alpha) = \\delta_{\\alpha,0} - 2^{1-n} \\prod_k r_k^{(\\alpha_k)}$"
-   :dependencies #{}
-   :scope #{}
-   :lemma-id "L1-fourier"
-   :justification :lemma-application
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 3
-   :provenance {:created-at "2024-12-28T00:00:00" :created-by :orchestrator :round 0 :revision-of nil}}
-
+  {:statement
+   "Fourier coefficient formula: $\\hat{U}(\\alpha) = \\delta_{\\alpha,0} - 2^{1-n} \\prod_k r_k^{(\\alpha_k)}$",
+   :taint :clean,
+   :parent nil,
+   :content-hash "58b4444db84323ff",
+   :display-order 3,
+   :type :lemma-ref,
+   :scope #{},
+   :lemma-id "L1-fourier",
+   :justification :lemma-application,
+   :status :verified,
+   :id :0-lemma-L1,
+   :provenance
+   {:created-at "2024-12-28T00:00:00",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{}},
   :0-lemma-L1cor
-  {:id :0-lemma-L1cor
-   :type :lemma-ref
-   :statement "Probability distribution: $p_\\alpha = |\\hat{U}(\\alpha)|^2 = 2^{2-2n} \\prod_k q_k^{(\\alpha_k)}$ for $\\alpha \\neq 0$."
-   :dependencies #{:0-lemma-L1}
-   :scope #{}
-   :lemma-id "L1-corollary"
-   :justification :lemma-application
-   :status :verified
-   :taint :clean
-   :depth 0
-   :parent nil
-   :display-order 4
-   :provenance {:created-at "2024-12-28T00:00:00" :created-by :orchestrator :round 0 :revision-of nil}}}
-
- :symbols
- {:sym-I {:id :sym-I :name "I" :type "Total influence: R" :tex "I(U)" :scope :global}
-  :sym-Ij {:id :sym-Ij :name "I_j" :type "Influence of qubit j: R" :tex "I_j" :scope :global}
-  :sym-n {:id :sym-n :name "n" :type "Number of qubits: N" :tex "n" :scope :global}
-  :sym-palpha {:id :sym-palpha :name "p_alpha" :type "Probability of outcome alpha: R" :tex "p_\\alpha" :scope :global}
-  :sym-q {:id :sym-q :name "q_k^(m)" :type "Squared Bloch component: R" :tex "q_k^{(m)}" :scope :global}}
-
- :external-refs {}
- :lemmas {}
- :obligations []
- :archived-nodes {}
-
+  {:statement
+   "Probability distribution: $p_\\alpha = |\\hat{U}(\\alpha)|^2 = 2^{2-2n} \\prod_k q_k^{(\\alpha_k)}$ for $\\alpha \\neq 0$.",
+   :taint :clean,
+   :parent nil,
+   :content-hash "9592c6c12da8a418",
+   :display-order 4,
+   :type :lemma-ref,
+   :scope #{},
+   :lemma-id "L1-corollary",
+   :justification :lemma-application,
+   :status :verified,
+   :id :0-lemma-L1cor,
+   :provenance
+   {:created-at "2024-12-28T00:00:00",
+    :created-by :orchestrator,
+    :round 0,
+    :revision-of nil},
+   :depth 0,
+   :dependencies #{:0-lemma-L1}}},
+ :graph-id "L2-influence-verify-2024",
+ :version 1,
+ :lemmas {},
  :metadata
- {:created-at "2024-12-28T00:00:00"
-  :last-modified "2024-12-28T00:00:00"
-  :proof-mode :strict-mathematics
-  :iteration-counts {:verification {} :expansion {} :strategy 0}
-  :context-budget {:max-tokens 100000 :current-estimate 2500}}}
+ {:created-at "2024-12-28T00:00:00",
+  :last-modified "2024-12-28T00:00:00",
+  :proof-mode :strict-mathematics,
+  :iteration-counts {:verification {}, :expansion {}, :strategy 0},
+  :context-budget {:max-tokens 100000, :current-estimate 2500}},
+ :symbols
+ {:sym-I
+  {:id :sym-I,
+   :name "I",
+   :type "Total influence: R",
+   :tex "I(U)",
+   :scope :global,
+   :introduced-at :unknown},
+  :sym-Ij
+  {:id :sym-Ij,
+   :name "I_j",
+   :type "Influence of qubit j: R",
+   :tex "I_j",
+   :scope :global,
+   :introduced-at :unknown},
+  :sym-n
+  {:id :sym-n,
+   :name "n",
+   :type "Number of qubits: N",
+   :tex "n",
+   :scope :global,
+   :introduced-at :unknown},
+  :sym-palpha
+  {:id :sym-palpha,
+   :name "p_alpha",
+   :type "Probability of outcome alpha: R",
+   :tex "p_\\alpha",
+   :scope :global,
+   :introduced-at :unknown},
+  :sym-q
+  {:id :sym-q,
+   :name "q_k^(m)",
+   :type "Squared Bloch component: R",
+   :tex "q_k^{(m)}",
+   :scope :global,
+   :introduced-at :unknown}}}
