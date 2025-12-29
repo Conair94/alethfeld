@@ -1,0 +1,965 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{braket}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\geometry{margin=1in}
+
+% Theorem environments (Lamport-style numbering)
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% Custom commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\sgn}{\operatorname{sgn}}
+
+% Alethfeld metadata
+\newcommand{\alethfeldid}[1]{\textsuperscript{\tiny\texttt{#1}}}
+\newcommand{\lean}[1]{\textcolor{blue!70!black}{\texttt{#1}}}
+
+% Proof step environments
+\newenvironment{proofstep}[1][]{\par\noindent\textbf{#1}\quad}{\par\smallskip}
+\newenvironment{substep}[1][]{\par\noindent\hspace{2em}\textit{#1}\quad}{\par}
+
+% Verification box
+\newtcolorbox{verificationbox}{
+  colback=green!5!white,
+  colframe=green!75!black,
+  title=Lean4 Verification Status
+}
+
+\title{Entropy-Influence Bound for Rank-1 Product State\\Quantum Boolean Functions\\[6pt]\large A Comprehensive Formal Treatment}
+\author{Alethfeld Proof System v4\\[4pt]
+\small Lean4 Verification: \texttt{AlethfeldLean.QBF.Rank1}}
+\date{Graph ID: \texttt{qbf-rank1-entropy-influence}\\
+Version: 2 (Verified) $\bullet$ Sorries: 0\\[6pt]
+December 2025}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We establish an explicit upper bound on the entropy-to-influence ratio for rank-1 quantum Boolean functions (QBFs) constructed from product states. For the QBF $U = I - 2\ket{\psi}\bra{\psi}$ where $\ket{\psi} = \bigotimes_{k=1}^n \ket{\phi_k}$ is a product state, we prove that the influence $I(U) = n \cdot 2^{1-n}$ is independent of the choice of single-qubit states, while the entropy $S(U)$ is maximized when all qubits are in the ``magic'' state with Bloch vector $(1/\sqrt{3}, 1/\sqrt{3}, 1/\sqrt{3})$. The ratio $S/I$ approaches $\log_2 3 + 4 \approx 5.585$ as $n \to \infty$, establishing a lower bound on any universal constant $C$ satisfying $S(U) \leq C \cdot I(U)$.
+
+All results are formally verified in Lean4 using Mathlib v4.26.0, with 0 sorries remaining in the proof.
+\end{abstract}
+
+\begin{verificationbox}
+\textbf{Mathlib Version:} v4.26.0\\
+\textbf{Lean Version:} 4.26.0\\
+\textbf{Proof Status:} Complete\\
+\textbf{Sorry Count:} 0\\
+\textbf{Last Build:} 2025-12-29\\
+\textbf{Modules:} L1Fourier, L2Influence, L3Entropy, ShannonMax, L4Maximum, L5Asymptotic, QBFRank1MasterTheorem
+\end{verificationbox}
+
+\tableofcontents
+\newpage
+
+%===============================================================================
+\section{Introduction and Main Result}
+%===============================================================================
+
+\subsection{The Entropy-Influence Conjecture}
+
+The entropy-influence conjecture for Boolean functions posits the existence of a universal constant $C$ such that $S(f) \leq C \cdot I(f)$ for all Boolean functions $f$. For quantum Boolean functions (QBFs), this conjecture extends to unitaries acting on $n$-qubit systems.
+
+\subsection{Main Theorem}
+
+\begin{theorem}[Master Theorem]\label{thm:master}\alethfeldid{:theorem}
+For the rank-1 QBF $U = I - 2\ket{\psi}\bra{\psi}$ where $\ket{\psi} = \bigotimes_{k=1}^n \ket{\phi_k}$ is a product state:
+\begin{equation}
+\frac{S(U)}{I(U)} \leq \log_2 3 + \frac{2^{n-1}}{n}\left[-p_0 \log_2 p_0 + (2n-2)(1-p_0)\right]
+\end{equation}
+where $p_0 = (1 - 2^{1-n})^2$. The maximum is achieved when all qubits are in the magic state with Bloch vector $\left(\frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}, \frac{1}{\sqrt{3}}\right)$.
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{QBFRank1MasterTheorem.qbfRank1Master}
+\end{theorem}
+
+The proof proceeds through five lemmas:
+\begin{enumerate}
+\item \textbf{L1 (Fourier):} Derive the Fourier coefficient formula
+\item \textbf{L2 (Influence):} Prove influence is independent of Bloch vectors
+\item \textbf{L3 (Entropy):} Establish the general entropy formula
+\item \textbf{L4 (Maximum):} Show the magic state uniquely maximizes entropy
+\item \textbf{L5 (Asymptotic):} Compute the limit as $n \to \infty$
+\end{enumerate}
+
+%===============================================================================
+\section{Preliminaries}
+%===============================================================================
+
+\subsection{Setup and Assumptions}
+
+\begin{assumption}[Product State QBF]\label{ass:setup}\alethfeldid{:0-A1}
+Let $U = I - 2\ket{\psi}\bra{\psi}$ be a rank-1 QBF where $\ket{\psi} = \bigotimes_{k=1}^n \ket{\phi_k}$ is a product state with each $\ket{\phi_k} \in \C^2$.
+\end{assumption}
+
+\begin{definition}[Bloch Vector]\label{def:bloch}\alethfeldid{:0-D1}
+Each single-qubit state $\ket{\phi_k}$ has Bloch vector $\vec{r}_k = (x_k, y_k, z_k)$ with
+\begin{equation}
+|\vec{r}_k|^2 = x_k^2 + y_k^2 + z_k^2 = 1.
+\end{equation}
+
+\noindent\textbf{Lean4 Reference:} \lean{Quantum.Basic.BlochVector}
+\end{definition}
+
+\begin{definition}[Extended Bloch Coefficients]\label{def:qk}\alethfeldid{:0-D2}
+Define the extended coefficients:
+\begin{equation}
+q_k^{(0)} = 1, \qquad \left(q_k^{(1)}, q_k^{(2)}, q_k^{(3)}\right) = \left(x_k^2, y_k^2, z_k^2\right).
+\end{equation}
+These satisfy $\sum_{\ell=0}^3 q_k^{(\ell)} = 1 + x_k^2 + y_k^2 + z_k^2 = 2$.
+\end{definition}
+
+\begin{definition}[Bloch Entropy]\label{def:bloch-entropy}\alethfeldid{:0-D3}
+The Bloch entropy of qubit $k$ is
+\begin{equation}
+f_k = H(x_k^2, y_k^2, z_k^2) = -\sum_{\ell=1}^3 q_k^{(\ell)} \log_2 q_k^{(\ell)}.
+\end{equation}
+This is the Shannon entropy of the squared Bloch components, viewed as a probability distribution on 3 outcomes.
+
+\noindent\textbf{Lean4 Reference:} \lean{Quantum.BlochEntropy.blochEntropy}
+\end{definition}
+
+\begin{remark}
+The Bloch entropy $f_k$ measures the ``spread'' of the Bloch vector across coordinate axes. It is \emph{not} the von Neumann entropy of the qubit state (which is zero for pure states).
+\end{remark}
+
+%===============================================================================
+\section{Lemma L1: Fourier Coefficient Formula}
+%===============================================================================
+
+\begin{lemma}[L1: Fourier Coefficients]\label{lem:L1}\alethfeldid{:L1-root}
+For $U = I - 2\ket{\psi}\bra{\psi}$ where $\ket{\psi}$ is a product state:
+\begin{equation}
+\hat{U}(\alpha) = \delta_{\alpha,0} - 2^{1-n} \prod_{k=1}^n r_k^{(\alpha_k)}
+\end{equation}
+where $r_k^{(0)} = 1$, $r_k^{(1)} = x_k$, $r_k^{(2)} = y_k$, $r_k^{(3)} = z_k$.
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{L1Fourier.fourier\_coefficient\_formula}
+\end{lemma}
+
+\begin{proof}
+We proceed through four steps.
+
+\begin{proofstep}[Step 1 (Definition Expansion)]\alethfeldid{:L1-step1}
+By definition of the Pauli-Fourier expansion:
+\begin{equation}
+\hat{U}(\alpha) = 2^{-n}\Tr(\sigma^\alpha U) = 2^{-n}\Tr(\sigma^\alpha) - 2^{1-n}\Tr(\sigma^\alpha \ket{\psi}\bra{\psi}).
+\end{equation}
+This follows from linearity of trace and $U = I - 2\ket{\psi}\bra{\psi}$.
+\end{proofstep}
+
+\begin{proofstep}[Step 2 (Pauli Trace)]\alethfeldid{:L1-step2}
+The trace of Pauli strings satisfies:
+\begin{equation}
+\Tr(\sigma^\alpha) = 2^n \delta_{\alpha,0}
+\end{equation}
+
+\begin{substep}[2.1]
+For the single-qubit Pauli matrices: $\Tr(\sigma_0) = \Tr(I_2) = 2$ and $\Tr(\sigma_i) = 0$ for $i \in \{1,2,3\}$.
+\end{substep}
+
+\begin{substep}[2.2]
+For tensor products: $\Tr(\sigma^{\alpha_1} \otimes \cdots \otimes \sigma^{\alpha_n}) = \prod_{k=1}^n \Tr(\sigma^{\alpha_k})$.
+\end{substep}
+
+\begin{substep}[2.3]
+Therefore $\Tr(\sigma^\alpha) \neq 0$ only when all $\alpha_k = 0$, giving $\Tr(\sigma^{\vec{0}}) = 2^n$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 3 (Cyclic Property)]\alethfeldid{:L1-step3}
+By the cyclic property of trace:
+\begin{equation}
+\Tr(\sigma^\alpha \ket{\psi}\bra{\psi}) = \bra{\psi}\sigma^\alpha\ket{\psi}.
+\end{equation}
+This is a standard linear algebra identity: $\Tr(A \ket{v}\bra{v}) = \bra{v}A\ket{v}$.
+\end{proofstep}
+
+\begin{proofstep}[Step 4 (Product Factorization)]\alethfeldid{:L1-step4}
+For a product state $\ket{\psi} = \bigotimes_k \ket{\phi_k}$, the expectation value factorizes:
+\begin{equation}
+\bra{\psi}\sigma^\alpha\ket{\psi} = \prod_k \bra{\phi_k}\sigma^{\alpha_k}\ket{\phi_k} = \prod_k r_k^{(\alpha_k)}.
+\end{equation}
+
+\begin{substep}[4.1]
+The tensor product structure gives: $\bra{\bigotimes_k \phi_k}(\bigotimes_k \sigma^{\alpha_k})\ket{\bigotimes_k \phi_k} = \prod_k \bra{\phi_k}\sigma^{\alpha_k}\ket{\phi_k}$.
+\end{substep}
+
+\begin{substep}[4.2]
+For a pure qubit state with Bloch vector $(x_k, y_k, z_k)$:
+\begin{align}
+\bra{\phi_k}\sigma_0\ket{\phi_k} &= 1 = r_k^{(0)} \\
+\bra{\phi_k}\sigma_1\ket{\phi_k} &= x_k = r_k^{(1)} \\
+\bra{\phi_k}\sigma_2\ket{\phi_k} &= y_k = r_k^{(2)} \\
+\bra{\phi_k}\sigma_3\ket{\phi_k} &= z_k = r_k^{(3)}
+\end{align}
+\end{substep}
+\end{proofstep}
+
+\noindent\textbf{QED}\alethfeldid{:L1-qed}: Combining Steps 1--4:
+\begin{equation}
+\hat{U}(\alpha) = 2^{-n} \cdot 2^n \delta_{\alpha,0} - 2^{1-n} \prod_k r_k^{(\alpha_k)} = \delta_{\alpha,0} - 2^{1-n} \prod_{k=1}^n r_k^{(\alpha_k)}. \qedhere
+\end{equation}
+\end{proof}
+
+\begin{corollary}[Probability Distribution]\label{cor:prob}\alethfeldid{:0-L1cor}
+The Fourier weight distribution is:
+\begin{equation}
+p_\alpha = |\hat{U}(\alpha)|^2 = \begin{cases}
+(1 - 2^{1-n})^2 & \alpha = 0 \\[4pt]
+2^{2-2n} \displaystyle\prod_{k=1}^n q_k^{(\alpha_k)} & \alpha \neq 0
+\end{cases}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+For $\alpha = 0$: $|\hat{U}(0)|^2 = |1 - 2^{1-n}|^2 = (1 - 2^{1-n})^2 = p_0$.
+
+For $\alpha \neq 0$: $|\hat{U}(\alpha)|^2 = |{-}2^{1-n} \prod_k r_k^{(\alpha_k)}|^2 = 2^{2-2n} \prod_k |r_k^{(\alpha_k)}|^2 = 2^{2-2n} \prod_k q_k^{(\alpha_k)}$.
+\end{proof}
+
+%===============================================================================
+\section{Lemma L2: Influence Independence}
+%===============================================================================
+
+\begin{lemma}[L2: Influence Independence]\label{lem:L2}\alethfeldid{:theorem-L2}
+For any rank-1 product state QBF:
+\begin{equation}
+I(U) = n \cdot 2^{1-n}.
+\end{equation}
+This is \textbf{independent of the choice of Bloch vectors}.
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{L2Influence.total\_influence\_formula}
+\end{lemma}
+
+\begin{proof}
+We prove this in five steps.
+
+\begin{proofstep}[Step 1 (Influence Definition)]\alethfeldid{:1-step1}
+The influence of qubit $j$ is:
+\begin{equation}
+I_j = \sum_{\alpha: \alpha_j \neq 0} p_\alpha.
+\end{equation}
+
+\begin{substep}[1.1]
+By definition, influence measures how much the output depends on qubit $j$.
+\end{substep}
+
+\begin{substep}[1.2]
+For classical Boolean functions: $I_j(f) = \Pr_x[f(x) \neq f(x^{\oplus j})]$ where $x^{\oplus j}$ flips bit $j$.
+\end{substep}
+
+\begin{substep}[1.3]
+For QBFs, this generalizes to the Fourier form: $I_j = \sum_{\alpha: \alpha_j \neq 0} |\hat{U}(\alpha)|^2$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 2 (Factorization)]\alethfeldid{:1-step2}
+For $\ell \in \{1,2,3\}$:
+\begin{equation}
+\sum_{\alpha: \alpha_j = \ell} p_\alpha = 2^{2-2n} \cdot q_j^{(\ell)} \cdot \prod_{k \neq j} \sum_{m=0}^3 q_k^{(m)}.
+\end{equation}
+
+\begin{substep}[2.1]
+From L1-corollary: $p_\alpha = 2^{2-2n} \prod_{k=1}^n q_k^{(\alpha_k)}$ for $\alpha \neq 0$.
+\end{substep}
+
+\begin{substep}[2.2]
+Fixing $\alpha_j = \ell$, the product splits: $\prod_k q_k^{(\alpha_k)} = q_j^{(\ell)} \cdot \prod_{k \neq j} q_k^{(\alpha_k)}$.
+\end{substep}
+
+\begin{substep}[2.3]
+Summing over all $(\alpha_k)_{k \neq j} \in \{0,1,2,3\}^{n-1}$:
+\begin{equation}
+\sum_{\alpha: \alpha_j = \ell} \prod_{k \neq j} q_k^{(\alpha_k)} = \prod_{k \neq j} \sum_{m=0}^3 q_k^{(m)}.
+\end{equation}
+This uses the distributive law for finite products over sums.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 3 (Unit Sphere Simplification)]\alethfeldid{:1-step3}
+Since $\sum_{m=0}^3 q_k^{(m)} = 2$:
+\begin{equation}
+\sum_{\alpha: \alpha_j = \ell} p_\alpha = 2^{1-n} q_j^{(\ell)}.
+\end{equation}
+
+\begin{substep}[3.1]
+By Definition~\ref{def:qk}: $\sum_{m=0}^3 q_k^{(m)} = 1 + x_k^2 + y_k^2 + z_k^2$.
+\end{substep}
+
+\begin{substep}[3.2]
+By the Bloch constraint (Definition~\ref{def:bloch}): $x_k^2 + y_k^2 + z_k^2 = 1$.
+\end{substep}
+
+\begin{substep}[3.3]
+Therefore $\sum_{m=0}^3 q_k^{(m)} = 1 + 1 = 2$.
+\end{substep}
+
+\begin{substep}[3.4]
+Substituting: $2^{2-2n} \cdot q_j^{(\ell)} \cdot 2^{n-1} = 2^{2-2n+n-1} q_j^{(\ell)} = 2^{1-n} q_j^{(\ell)}$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 4 (Single-Qubit Influence)]\alethfeldid{:1-step4}
+\begin{equation}
+I_j = 2^{1-n} \sum_{\ell=1}^3 q_j^{(\ell)} = 2^{1-n}
+\end{equation}
+This is independent of $j$ and the Bloch vector.
+
+\begin{substep}[4.1]
+From Step 1: $I_j = \sum_{\alpha: \alpha_j \neq 0} p_\alpha = \sum_{\ell=1}^3 \sum_{\alpha: \alpha_j = \ell} p_\alpha$.
+\end{substep}
+
+\begin{substep}[4.2]
+Applying Step 3: $I_j = \sum_{\ell=1}^3 2^{1-n} q_j^{(\ell)} = 2^{1-n} \sum_{\ell=1}^3 q_j^{(\ell)}$.
+\end{substep}
+
+\begin{substep}[4.3]
+From Definition~\ref{def:qk} and \ref{def:bloch}: $\sum_{\ell=1}^3 q_j^{(\ell)} = x_j^2 + y_j^2 + z_j^2 = 1$.
+\end{substep}
+
+\begin{substep}[4.4]
+Therefore $I_j = 2^{1-n} \cdot 1 = 2^{1-n}$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 5 (Total Influence)]\alethfeldid{:1-qed}
+\begin{equation}
+I(U) = \sum_{j=1}^n I_j = n \cdot 2^{1-n}.
+\end{equation}
+
+\begin{substep}[5.1]
+Total influence sums individual qubit influences: $I(U) = \sum_{j=1}^n I_j$.
+\end{substep}
+
+\begin{substep}[5.2]
+From Step 4: each $I_j = 2^{1-n}$, independent of $j$ and Bloch vectors.
+\end{substep}
+
+\begin{substep}[5.3]
+Summing $n$ copies: $I(U) = n \cdot 2^{1-n}$. \qedhere
+\end{substep}
+\end{proofstep}
+\end{proof}
+
+%===============================================================================
+\section{Lemma L3: General Entropy Formula}
+%===============================================================================
+
+\begin{lemma}[L3: Entropy Formula]\label{lem:L3}\alethfeldid{:theorem-L3}
+\begin{equation}
+S = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_{k=1}^n f_k
+\end{equation}
+where $f_k = H(x_k^2, y_k^2, z_k^2)$ is the Bloch entropy of qubit $k$.
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{L3Entropy.entropy\_formula}
+\end{lemma}
+
+\begin{proof}
+We proceed through seven steps.
+
+\begin{proofstep}[Step 1 (Shannon Entropy Definition)]\alethfeldid{:L3-lem4}
+\begin{equation}
+S = -p_0 \log_2 p_0 - \sum_{\alpha \neq 0} p_\alpha \log_2 p_\alpha.
+\end{equation}
+
+\begin{substep}[1.1]
+Shannon entropy: $S = -\sum_\alpha p_\alpha \log_2 p_\alpha$.
+\end{substep}
+
+\begin{substep}[1.2]
+The index set $\{0,1,2,3\}^n$ partitions as $\{\vec{0}\} \cup \{\alpha : \alpha \neq 0\}$.
+\end{substep}
+
+\begin{substep}[1.3]
+Splitting the sum gives the stated form.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 2 (Logarithm Expansion)]\alethfeldid{:L3-step1}
+For $\alpha \neq 0$:
+\begin{equation}
+-p_\alpha \log_2 p_\alpha = p_\alpha(2n-2) - p_\alpha \sum_k \log_2 q_k^{(\alpha_k)}.
+\end{equation}
+
+\begin{substep}[2.1]
+From Corollary~\ref{cor:prob}: $\log_2 p_\alpha = \log_2(2^{2-2n} \prod_k q_k^{(\alpha_k)})$.
+\end{substep}
+
+\begin{substep}[2.2]
+By log rules: $\log_2(2^{2-2n} \prod_k q_k) = (2-2n) + \sum_k \log_2 q_k^{(\alpha_k)}$.
+\end{substep}
+
+\begin{substep}[2.3]
+Multiplying by $-p_\alpha$: $-p_\alpha \log_2 p_\alpha = -p_\alpha(2-2n) - p_\alpha \sum_k \log_2 q_k$.
+\end{substep}
+
+\begin{substep}[2.4]
+Sign simplification: $-(2-2n) = 2n-2$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 3 (Constant Factor Sum)]\alethfeldid{:L3-step2}
+\begin{equation}
+\sum_{\alpha \neq 0} p_\alpha(2n-2) = (2n-2)(1 - p_0).
+\end{equation}
+
+\begin{substep}[3.1]
+Factor out constant: $\sum_{\alpha \neq 0} p_\alpha(2n-2) = (2n-2) \sum_{\alpha \neq 0} p_\alpha$.
+\end{substep}
+
+\begin{substep}[3.2]
+Probability normalization: $\sum_\alpha p_\alpha = 1$.
+\end{substep}
+
+\begin{substep}[3.3]
+Therefore $\sum_{\alpha \neq 0} p_\alpha = 1 - p_0$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 4 (Case Split on $\alpha_j$)]\alethfeldid{:L3-step3}
+For $\alpha_j = 0$: $\log_2 q_j^{(0)} = 0$, so only $\alpha_j \neq 0$ contributes.
+
+\begin{substep}[4.1]
+From Definition~\ref{def:qk}: $q_j^{(0)} = 1$.
+\end{substep}
+
+\begin{substep}[4.2]
+$\log_2(1) = 0$ by definition.
+\end{substep}
+
+\begin{substep}[4.3]
+Therefore $-p_\alpha \log_2 q_j^{(0)} = -p_\alpha \cdot 0 = 0$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 5 (Application of L2)]\alethfeldid{:L3-step4}
+From Lemma~\ref{lem:L2}:
+\begin{equation}
+\sum_{\alpha: \alpha_j = \ell} p_\alpha = 2^{1-n} q_j^{(\ell)} \quad \text{for } \ell \in \{1,2,3\}.
+\end{equation}
+\end{proofstep}
+
+\begin{proofstep}[Step 6 (Bloch Entropy Identification)]\alethfeldid{:L3-step5}
+\begin{equation}
+-\sum_{\alpha: \alpha_j \neq 0} p_\alpha \log_2 q_j^{(\alpha_j)} = 2^{1-n} f_j.
+\end{equation}
+
+\begin{substep}[6.1]
+Partition: $\sum_{\alpha: \alpha_j \neq 0} = \sum_{\ell=1}^3 \sum_{\alpha: \alpha_j = \ell}$.
+\end{substep}
+
+\begin{substep}[6.2]
+For fixed $\ell$, $\log_2 q_j^{(\ell)}$ is constant across the inner sum.
+\end{substep}
+
+\begin{substep}[6.3]
+Applying Step 5: $-\sum_{\ell=1}^3 2^{1-n} q_j^{(\ell)} \log_2 q_j^{(\ell)}$.
+\end{substep}
+
+\begin{substep}[6.4]
+By Definition~\ref{def:bloch-entropy}: $-\sum_{\ell=1}^3 q_j^{(\ell)} \log_2 q_j^{(\ell)} = f_j$.
+\end{substep}
+
+\begin{substep}[6.5]
+Therefore: $2^{1-n} \cdot f_j$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 7 (Sum Over All Qubits)]\alethfeldid{:L3-step6}
+\begin{equation}
+-\sum_{\alpha \neq 0} p_\alpha \sum_k \log_2 q_k^{(\alpha_k)} = 2^{1-n} \sum_k f_k.
+\end{equation}
+
+\begin{substep}[7.1]
+Exchange order of summation: $\sum_\alpha \sum_k = \sum_k \sum_\alpha$ (Fubini for finite sums).
+\end{substep}
+
+\begin{substep}[7.2]
+When $\alpha_k = 0$: $\log_2 q_k^{(0)} = 0$ (by Step 4), so these terms contribute zero.
+\end{substep}
+
+\begin{substep}[7.3]
+Applying Step 6 for each $k$: $\sum_{k=1}^n 2^{1-n} f_k = 2^{1-n} \sum_{k=1}^n f_k$.
+\end{substep}
+\end{proofstep}
+
+\noindent\textbf{QED}\alethfeldid{:L3-qed}: Combining Steps 1--7:
+\begin{equation}
+S = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_k f_k. \qedhere
+\end{equation}
+\end{proof}
+
+%===============================================================================
+\section{Lemma L4: Maximum at Magic State}
+%===============================================================================
+
+\begin{lemma}[Shannon Maximum Entropy]\label{lem:shannon}\alethfeldid{:ext-shannon}
+For any probability distribution $(p_1, \ldots, p_m)$ with $\sum_i p_i = 1$:
+\begin{equation}
+H(p_1, \ldots, p_m) = -\sum_{i=1}^m p_i \log_2 p_i \leq \log_2 m
+\end{equation}
+with equality if and only if $p_i = 1/m$ for all $i$ (uniform distribution).
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{ShannonMax.shannon\_entropy\_le\_log}
+\end{lemma}
+
+\begin{lemma}[L4: Maximum Ratio]\label{lem:L4}\alethfeldid{:theorem-L4}
+The ratio $S/I$ is maximized when all qubits are in the magic state:
+\begin{equation}
+(x_k^2, y_k^2, z_k^2) = \left(\frac{1}{3}, \frac{1}{3}, \frac{1}{3}\right).
+\end{equation}
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{L4Maximum.l4\_maximum\_entropy}
+\end{lemma}
+
+\begin{proof}
+We proceed through six steps.
+
+\begin{proofstep}[Step 1 (Influence Constancy)]\alethfeldid{:1-main}
+Maximizing $S/I$ is equivalent to maximizing $S$.
+
+\begin{substep}[1.1]
+By Lemma~\ref{lem:L2}: $I(U) = n \cdot 2^{1-n}$ is constant w.r.t.\ Bloch vectors.
+\end{substep}
+
+\begin{substep}[1.2]
+For $n \geq 1$: $I(U) = n \cdot 2^{1-n} > 0$.
+\end{substep}
+
+\begin{substep}[1.3]
+For $c > 0$ constant: $\arg\max f/c = \arg\max f$. Apply with $c = I(U)$, $f = S(U)$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 2 (Bloch Dependence)]\alethfeldid{:2-main}
+Only $2^{1-n} \sum_k f_k$ depends on Bloch vectors in $S$.
+
+\begin{substep}[2.1]
+$-p_0 \log_2 p_0$ depends only on $n$ (since $p_0 = (1-2^{1-n})^2$).
+\end{substep}
+
+\begin{substep}[2.2]
+$(2n-2)(1-p_0)$ depends only on $n$.
+\end{substep}
+
+\begin{substep}[2.3]
+$\sum_k f_k$ depends on Bloch vectors via $f_k = H(x_k^2, y_k^2, z_k^2)$.
+\end{substep}
+
+\begin{substep}[2.4]
+Therefore $\max S \Leftrightarrow \max \sum_k f_k$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 3 (Shannon Entropy on 3 Outcomes)]\alethfeldid{:3-main}
+Each $f_k$ is Shannon entropy on 3 outcomes.
+
+\begin{substep}[3.1]
+Let $q_1 = x_k^2$, $q_2 = y_k^2$, $q_3 = z_k^2$. Then $f_k = H(q_1, q_2, q_3)$.
+\end{substep}
+
+\begin{substep}[3.2]
+$(q_1, q_2, q_3)$ is a probability distribution: $q_i \geq 0$ and $q_1 + q_2 + q_3 = 1$ (by Definition~\ref{def:bloch}).
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 4 (Shannon Bound)]\alethfeldid{:4-main}
+$f_k \leq \log_2 3$ with equality iff $(x_k^2, y_k^2, z_k^2) = (1/3, 1/3, 1/3)$.
+
+\begin{substep}[4.1]
+By Lemma~\ref{lem:shannon}: $H(p_1, \ldots, p_m) \leq \log_2 m$ with equality iff uniform.
+\end{substep}
+
+\begin{substep}[4.2]
+Apply with $m = 3$: $f_k = H(x_k^2, y_k^2, z_k^2) \leq \log_2 3$.
+\end{substep}
+
+\begin{substep}[4.3]
+Equality requires uniform: $x_k^2 = y_k^2 = z_k^2 = 1/3$.
+\end{substep}
+
+\begin{substep}[4.4]
+This is the magic state: $(x_k, y_k, z_k) = \pm(1/\sqrt{3}, 1/\sqrt{3}, 1/\sqrt{3})$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 5 (Independence of Qubits)]\alethfeldid{:5-main}
+$\sum_k f_k$ is maximized when \emph{all} qubits are at the magic state.
+
+\begin{substep}[5.1]
+Terms $f_k$ are independent: each depends only on $(x_k, y_k, z_k)$.
+\end{substep}
+
+\begin{substep}[5.2]
+For independent terms: $\max \sum f_k = \sum \max f_k$ (separable optimization).
+\end{substep}
+
+\begin{substep}[5.3]
+Each $\max f_k = \log_2 3$ at magic (Step 4).
+\end{substep}
+
+\begin{substep}[5.4]
+Therefore $\max \sum_k f_k = n \log_2 3$, achieved when all qubits are at magic.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 6 (QED)]\alethfeldid{:final-qed}
+$S/I$ is maximized when all qubits are at the magic state $(1/3, 1/3, 1/3)$.
+
+Combining Steps 1--5: max $S/I$ $\Leftrightarrow$ max $S$ $\Leftrightarrow$ max $\sum_k f_k$ $\Leftrightarrow$ all qubits magic. \qedhere
+\end{proofstep}
+\end{proof}
+
+\begin{corollary}[Explicit Maximum]\label{cor:explicit}\alethfeldid{:corollary-L4}
+At the magic state:
+\begin{equation}
+\frac{S_{\max}}{I} = \log_2 3 + \frac{2^{n-1}}{n}\left[-p_0 \log_2 p_0 + (2n-2)(1-p_0)\right]
+\end{equation}
+where $p_0 = (1 - 2^{1-n})^2$.
+\end{corollary}
+
+\begin{proof}
+At magic: $f_k = \log_2 3$ for all $k$. From Lemma~\ref{lem:L3}:
+\begin{equation}
+S_{\max} = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \cdot n \cdot \log_2 3.
+\end{equation}
+Dividing by $I = n \cdot 2^{1-n}$ and rearranging yields the result.
+\end{proof}
+
+%===============================================================================
+\section{Lemma L5: Asymptotic Analysis}
+%===============================================================================
+
+\begin{lemma}[L5: Limiting Behavior]\label{lem:L5}\alethfeldid{:theorem-L5}
+\begin{equation}
+\lim_{n \to \infty} \frac{S_{\max}}{I} = \log_2 3 + 4 \approx 5.585.
+\end{equation}
+
+\medskip
+\noindent\textbf{Lean4 Reference:} \lean{L5Asymptotic.l5\_asymptotic\_ratio}
+\end{lemma}
+
+\begin{proof}
+Let $\varepsilon = 2^{1-n}$.
+
+\begin{proofstep}[Setup]\alethfeldid{:L5-assume}
+Define $\varepsilon = 2^{1-n}$. Then:
+\begin{itemize}
+\item $\varepsilon > 0$ for all $n \geq 1$
+\item $\varepsilon < 1$ for $n \geq 2$
+\item $p_0 = (1-\varepsilon)^2$
+\item $1 - p_0 = 2\varepsilon - \varepsilon^2$
+\end{itemize}
+\end{proofstep}
+
+\begin{proofstep}[Step 1 (Taylor Expansion for Entropy Term)]\alethfeldid{:L5-step1}
+\begin{equation}
+-p_0 \log_2 p_0 = \frac{2\varepsilon}{\ln 2} + O(\varepsilon^2).
+\end{equation}
+
+\begin{substep}[1.1]
+Taylor series: $\ln(1-x) = -x - x^2/2 - \cdots$ for $|x| < 1$ (Mercator series).
+\end{substep}
+
+\begin{substep}[1.2]
+Change of base: $\log_2(1-\varepsilon) = \ln(1-\varepsilon)/\ln 2 = (-\varepsilon + O(\varepsilon^2))/\ln 2$.
+\end{substep}
+
+\begin{substep}[1.3]
+$\log_2(p_0) = \log_2((1-\varepsilon)^2) = 2\log_2(1-\varepsilon) = -2\varepsilon/\ln 2 + O(\varepsilon^2)$.
+\end{substep}
+
+\begin{substep}[1.4]
+$-p_0 \log_2 p_0 = -p_0 \cdot (-2\varepsilon/\ln 2) + O(\varepsilon^2) = 2p_0\varepsilon/\ln 2 + O(\varepsilon^2)$.
+\end{substep}
+
+\begin{substep}[1.5]
+Since $p_0 = 1 - 2\varepsilon + \varepsilon^2 = 1 + O(\varepsilon)$: $p_0\varepsilon = \varepsilon + O(\varepsilon^2)$.
+\end{substep}
+
+\begin{substep}[1.6]
+Therefore: $-p_0 \log_2 p_0 = 2\varepsilon/\ln 2 + O(\varepsilon^2)$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 2 (Influence Term)]\alethfeldid{:L5-step2}
+\begin{equation}
+(2n-2)(1-p_0) = 4(n-1)\varepsilon + O(n\varepsilon^2).
+\end{equation}
+
+\begin{substep}[2.1]
+From Setup: $1 - p_0 = 2\varepsilon - \varepsilon^2$.
+\end{substep}
+
+\begin{substep}[2.2]
+$(2n-2)(2\varepsilon - \varepsilon^2) = (2n-2) \cdot 2\varepsilon - (2n-2)\varepsilon^2$.
+\end{substep}
+
+\begin{substep}[2.3]
+$(2n-2) \cdot 2\varepsilon = 4(n-1)\varepsilon$.
+\end{substep}
+
+\begin{substep}[2.4]
+Error: $(2n-2)\varepsilon^2 \leq 2n \cdot 4^{1-n} = O(n \cdot 4^{-n})$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 3 (Substitution into $g(n)$)]\alethfeldid{:L5-step3}
+Define $g(n) = S/I - \log_2 3$:
+\begin{equation}
+g(n) = \frac{2^{n-1}}{n} \cdot \varepsilon \cdot \left[\frac{2}{\ln 2} + 4(n-1)\right] + O(\text{error}).
+\end{equation}
+
+\begin{substep}[3.1]
+From Corollary~\ref{cor:explicit}: $g(n) = \frac{2^{n-1}}{n}[-p_0 \log_2 p_0 + (2n-2)(1-p_0)]$.
+\end{substep}
+
+\begin{substep}[3.2]
+Substitute Step 1: $-p_0 \log_2 p_0 = 2\varepsilon/\ln 2 + O(\varepsilon^2)$.
+\end{substep}
+
+\begin{substep}[3.3]
+Substitute Step 2: $(2n-2)(1-p_0) = 4(n-1)\varepsilon + O(n\varepsilon^2)$.
+\end{substep}
+
+\begin{substep}[3.4]
+Factor out $\varepsilon$: $g(n) = \frac{2^{n-1}}{n} \cdot \varepsilon \cdot [2/\ln 2 + 4(n-1)] + O(\text{error})$.
+\end{substep}
+\end{proofstep}
+
+\begin{proofstep}[Step 4 (Key Cancellation and Limit)]\alethfeldid{:L5-step4}
+\begin{equation}
+g(n) = \frac{2}{n \ln 2} + 4 - \frac{4}{n} + O(\varepsilon) \to 4 \quad \text{as } n \to \infty.
+\end{equation}
+
+\begin{substep}[4.1]
+\textbf{Key identity:} $2^{n-1} \cdot \varepsilon = 2^{n-1} \cdot 2^{1-n} = 2^0 = 1$.
+\end{substep}
+
+\begin{substep}[4.2]
+Therefore: $g(n) = \frac{1}{n}[2/\ln 2 + 4(n-1)] + O(\varepsilon) = \frac{2}{n\ln 2} + 4 - \frac{4}{n} + O(\varepsilon)$.
+\end{substep}
+
+\begin{substep}[4.3]
+As $n \to \infty$: $2/(n\ln 2) \to 0$.
+\end{substep}
+
+\begin{substep}[4.4]
+As $n \to \infty$: $4/n \to 0$.
+\end{substep}
+
+\begin{substep}[4.5]
+As $n \to \infty$: $\varepsilon = 2^{1-n} \to 0$.
+\end{substep}
+
+\begin{substep}[4.6]
+By limit arithmetic: $\lim_{n \to \infty} g(n) = 0 + 4 - 0 + 0 = 4$.
+\end{substep}
+\end{proofstep}
+
+\noindent\textbf{QED}\alethfeldid{:L5-qed}:
+\begin{equation}
+\frac{S_{\max}}{I} = \log_2 3 + g(n) \to \log_2 3 + 4 \approx 1.585 + 4 = 5.585. \qedhere
+\end{equation}
+\end{proof}
+
+%===============================================================================
+\section{Finite-$n$ Values and Numerical Verification}
+%===============================================================================
+
+\begin{theorem}[Finite $n$ Values]\label{thm:finite}
+The ratio $S_{\max}/I$ for small $n$:
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+$n$ & Formula & Numerical Value \\
+\midrule
+1 & $\log_2 3$ & 1.585 \\
+2 & $2 + \log_2 3$ & 3.585 \\
+3 & explicit & 4.541 \\
+4 & explicit & 4.987 \\
+5 & explicit & 5.209 \\
+10 & explicit & 5.469 \\
+20 & explicit & 5.529 \\
+$\infty$ & $\log_2 3 + 4$ & 5.585 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{theorem}
+
+\begin{proof}
+Direct substitution into the formula from Corollary~\ref{cor:explicit}.
+\end{proof}
+
+%===============================================================================
+\section{Implications for the Entropy-Influence Conjecture}
+%===============================================================================
+
+\begin{theorem}[Supremum]\label{thm:supremum}
+\begin{equation}
+\sup_{n,\, \text{product states}} \frac{S}{I} = \log_2 3 + 4 \approx 5.585.
+\end{equation}
+This supremum is achieved in the limit $n \to \infty$ with all qubits in the magic state.
+\end{theorem}
+
+\begin{theorem}[Conjecture Lower Bound]\label{thm:conjecture}
+For the entropy-influence conjecture $S(U) \leq C \cdot I(U)$ to hold for all rank-1 product state QBFs:
+\begin{equation}
+\boxed{C \geq \log_2 3 + 4 \approx 5.585}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+For any $C < \log_2 3 + 4$, there exists $n$ sufficiently large such that $S_{\max}/I > C$ (since the limit is $\log_2 3 + 4$). Hence any universal bound requires $C \geq \log_2 3 + 4$.
+\end{proof}
+
+%===============================================================================
+\section{Summary of Results}
+%===============================================================================
+
+For rank-1 QBFs from product states, we have proven:
+
+\begin{enumerate}
+\item \textbf{Fourier Coefficients (L1):}
+\begin{equation}
+\hat{U}(\alpha) = \delta_{\alpha,0} - 2^{1-n} \prod_{k=1}^n r_k^{(\alpha_k)}.
+\end{equation}
+
+\item \textbf{Influence Independence (L2):}
+\begin{equation}
+I(U) = n \cdot 2^{1-n} \quad \text{(independent of Bloch vectors)}.
+\end{equation}
+
+\item \textbf{Entropy Formula (L3):}
+\begin{equation}
+S(U) = -p_0 \log_2 p_0 + (2n-2)(1-p_0) + 2^{1-n} \sum_{k=1}^n f_k.
+\end{equation}
+
+\item \textbf{Maximum at Magic State (L4):}
+\begin{equation}
+\max_{(\vec{r}_k)} \frac{S}{I} \text{ achieved when } (x_k^2, y_k^2, z_k^2) = \left(\frac{1}{3}, \frac{1}{3}, \frac{1}{3}\right) \text{ for all } k.
+\end{equation}
+
+\item \textbf{Asymptotic Limit (L5):}
+\begin{equation}
+\lim_{n \to \infty} \frac{S_{\max}}{I} = \log_2 3 + 4 \approx 5.585.
+\end{equation}
+
+\item \textbf{Conjecture Bound:}
+\begin{equation}
+C \geq \log_2 3 + 4 \approx 5.585.
+\end{equation}
+\end{enumerate}
+
+%===============================================================================
+\section*{References}
+%===============================================================================
+
+\begin{thebibliography}{9}
+\bibitem{Shannon1948}
+C.~E.~Shannon,
+\emph{A Mathematical Theory of Communication},
+Bell System Technical Journal, vol.~27, pp.~379--423, 623--656, 1948.
+\end{thebibliography}
+
+%===============================================================================
+\appendix
+\section{Lean4 Verification Details}
+%===============================================================================
+
+\subsection{Module Structure}
+
+\begin{verbatim}
+AlethfeldLean.QBF.Rank1/
+├── L1Fourier.lean          -- Fourier coefficient formula
+├── L2Influence.lean        -- Influence independence
+├── L3Entropy.lean          -- General entropy formula
+├── L4Maximum.lean          -- Maximum at magic state
+├── L5Asymptotic/
+│   ├── Step1_Setup.lean
+│   ├── Step2_EpsilonSetup.lean
+│   ├── Step3_TaylorExpansion.lean
+│   ├── Step4_InfluenceTerm.lean
+│   ├── Step5_GnSubstitution.lean
+│   ├── Step6_Cancellation.lean
+│   ├── Step7_LimitComputation.lean
+│   └── Step8_MainTheorem.lean
+├── ShannonMax.lean         -- Shannon maximum entropy theorem
+└── QBFRank1MasterTheorem.lean  -- Master theorem combining L1-L5
+\end{verbatim}
+
+\subsection{Main Theorem Structure}
+
+\begin{verbatim}
+structure QBFRank1MasterResult where
+  influence_constant : ∀ {n : ℕ} (bloch : Fin n → BlochVector),
+    totalInfluence bloch = n * (2 : ℝ)^(1 - (n : ℤ))
+  influence_universal : ∀ {n : ℕ} (bloch₁ bloch₂ : Fin n → BlochVector),
+    totalInfluence bloch₁ = totalInfluence bloch₂
+  entropy_formula : ∀ {n : ℕ} (bloch : Fin n → BlochVector) (hq_all) (hp),
+    totalEntropy bloch = entropyTerm (p_zero n) + ...
+  blochEntropy_bound : ∀ (v : BlochVector), blochEntropy v ≤ log2 3
+  magic_optimal : ∀ (v : BlochVector) (hq),
+    blochEntropy v = log2 3 ↔ isMagicState v
+  asymptotic_ratio : Tendsto entropy_influence_ratio atTop (nhds (log2 3 + 4))
+
+def qbfRank1Master : QBFRank1MasterResult := { ... }
+\end{verbatim}
+
+\subsection{Alethfeld Graph Metadata}
+
+\begin{verbatim}
+Graph ID:         qbf-rank1-entropy-influence
+Version:          2
+Proof Mode:       formal-physics
+Status:           VERIFIED
+
+Nodes:            42 (42 verified, 0 proposed, 0 admitted)
+Lemmas:           5 (L1-L5)
+External Refs:    1 (Shannon entropy theorem)
+Taint:            ALL CLEAN
+Obligations:      NONE
+
+Lean4 Verification:
+  - Mathlib v4.26.0
+  - All modules: 0 sorries
+  - Build status: SUCCESS
+  - Last verified: 2025-12-29
+
+Verification Summary:
+  - Total nodes verified: 42
+  - Initially accepted:   39
+  - Challenged:           3
+  - Revisions applied:    3
+  - Final status:         ALL VERIFIED
+\end{verbatim}
+
+\end{document}
