@@ -51,11 +51,32 @@ theorem epsilon_abs_lt_one {n : ℕ} (hn : n ≥ 2) : |epsilon n| < 1 := by
 theorem log2_eq_log_div_log (x : ℝ) :
     log2 x = Real.log x / Real.log 2 := rfl
 
-/-- First-order approximation: log(1-eps) = -eps + O(eps^2) -/
+/-- First-order approximation: log(1-eps) = -eps + O(eps^2).
+
+Proof sketch (requires tsum manipulation for full formalization):
+- From Mercator series: log(1-eps) = -∑' n, eps^(n+1)/(n+1) = -eps - eps^2/2 - eps^3/3 - ...
+- log(1-eps) + eps = -eps^2/2 - eps^3/3 - ... = -eps^2 * ∑' n, eps^n/(n+2)
+- |log(1-eps) + eps| ≤ eps^2 * ∑' n, |eps|^n/(n+2)
+- Since 1/(n+2) ≤ 1/2 for all n ≥ 0:
+  ∑' n, |eps|^n/(n+2) ≤ (1/2) * ∑' n, |eps|^n = 1/(2(1-|eps|))
+- Therefore |log(1-eps) + eps| ≤ eps^2/(2(1-|eps|))
+
+The full proof requires:
+1. Splitting the Mercator series to extract the first term (eps)
+2. Reindexing ∑' n≥1, eps^(n+1)/(n+1) to ∑' n, eps^(n+2)/(n+2)
+3. Factoring out eps^2 from the tail
+4. Bounding the remaining series by geometric series
+-/
 theorem log_one_minus_eps_approx (eps : ℝ) (heps : |eps| < 1) :
     ∃ R : ℝ, |R| ≤ eps^2 / (2 * (1 - |eps|)) ∧
       Real.log (1 - eps) = -eps + R := by
-  sorry -- Taylor remainder theorem
+  have h1 : 1 - |eps| > 0 := by linarith
+  use Real.log (1 - eps) + eps
+  constructor
+  · -- See docstring for proof sketch
+    -- Full proof requires tsum index shifting and comparison lemmas
+    sorry
+  · ring
 
 /-- L5-step1-2: log_2(1-epsilon) = (-epsilon - epsilon^2/2 + O(epsilon^3)) / ln(2) -/
 theorem log2_one_minus_eps {n : ℕ} (hn : n ≥ 2) :
