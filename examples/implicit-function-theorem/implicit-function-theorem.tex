@@ -1,0 +1,132 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\by}[1]{\marginpar{\footnotesize #1}}
+\DeclareMathOperator{\id}{id}
+
+\begin{document}
+
+\title{Proof of the Implicit Function Theorem}
+\author{Alethfeld Proof Orchestrator}
+\date{Graph: \texttt{graph-2ca5ea-e3d673} v55}
+
+\maketitle
+
+\begin{theorem}[Implicit Function Theorem]\label{thm:ift}
+Let $U \subseteq \mathbb{R}^n$ and $V \subseteq \mathbb{R}^m$ be open sets, and let $F: U \times V \to \mathbb{R}^m$ be continuously differentiable. Suppose $(a, b) \in U \times V$ satisfies $F(a, b) = 0$ and the partial derivative $D_y F(a, b): \mathbb{R}^m \to \mathbb{R}^m$ is invertible. Then there exist open neighborhoods $U_0 \subseteq U$ of $a$ and $V_0 \subseteq V$ of $b$, and a unique continuously differentiable function $g: U_0 \to V_0$ such that:
+\begin{enumerate}
+  \item[(i)] $g(a) = b$,
+  \item[(ii)] $F(x, g(x)) = 0$ for all $x \in U_0$, and
+  \item[(iii)] $Dg(x) = -[D_y F(x, g(x))]^{-1} D_x F(x, g(x))$ for all $x \in U_0$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\textbf{Assumptions.} \by{A1--A4}
+Let $U \subseteq \mathbb{R}^n$ and $V \subseteq \mathbb{R}^m$ be open sets.
+Let $F: U \times V \to \mathbb{R}^m$ be a continuously differentiable ($C^1$) function.
+Let $(a, b) \in U \times V$ satisfy $F(a, b) = 0$.
+Assume the partial derivative $D_y F(a, b): \mathbb{R}^m \to \mathbb{R}^m$ is an invertible linear map.
+
+\medskip
+\textbf{Step 1: Auxiliary Map.} \by{D1, C1--C2}
+Define the auxiliary map $\Phi: U \times V \to \mathbb{R}^n \times \mathbb{R}^m$ by
+\[
+  \Phi(x, y) := (x, F(x, y)).
+\]
+The map $\Phi$ is continuously differentiable ($C^1$) on $U \times V$, since $F$ is $C^1$ and the identity map $x \mapsto x$ is smooth.
+
+The derivative of $\Phi$ at $(x, y)$ is the block matrix
+\[
+  D\Phi(x, y) = \begin{pmatrix} I_n & 0 \\ D_x F(x, y) & D_y F(x, y) \end{pmatrix},
+\]
+where $I_n$ is the $n \times n$ identity matrix.
+
+\medskip
+\textbf{Step 2: Invertibility of $D\Phi(a,b)$.} \by{C3--C5}
+At the point $(a, b)$:
+\[
+  D\Phi(a, b) = \begin{pmatrix} I_n & 0 \\ D_x F(a, b) & D_y F(a, b) \end{pmatrix}.
+\]
+For a block lower-triangular matrix $\begin{pmatrix} A & 0 \\ C & D \end{pmatrix}$, the determinant equals $\det(A) \cdot \det(D)$, and invertibility holds if and only if both $A$ and $D$ are invertible.
+
+Since $I_n$ is invertible and $D_y F(a, b)$ is invertible by assumption, $D\Phi(a, b)$ is invertible.
+
+\medskip
+\textbf{Step 3: Application of Inverse Function Theorem.} \by{C6--C8}
+Note that
+\[
+  \Phi(a, b) = (a, F(a, b)) = (a, 0).
+\]
+By the \textbf{Inverse Function Theorem} applied to $\Phi$ at $(a, b)$: since $\Phi$ is $C^1$ and $D\Phi(a, b)$ is invertible, there exist open neighborhoods $W_1 \subseteq U \times V$ of $(a, b)$ and $W_2 \subseteq \mathbb{R}^n \times \mathbb{R}^m$ of $(a, 0)$ such that $\Phi: W_1 \to W_2$ is a $C^1$ diffeomorphism with $C^1$ inverse $\Psi: W_2 \to W_1$.
+
+There exists an open neighborhood $U_0 \subseteq \mathbb{R}^n$ of $a$ such that $U_0 \times \{0\} \subseteq W_2$.
+
+\medskip
+\textbf{Step 4: Definition of Implicit Function.} \by{D2, C9}
+For $x \in U_0$, define
+\[
+  g(x) := \pi_y(\Psi(x, 0)),
+\]
+where $\pi_y: \mathbb{R}^n \times \mathbb{R}^m \to \mathbb{R}^m$ is the projection onto the second factor.
+
+The function $g: U_0 \to \mathbb{R}^m$ is $C^1$, since $\Psi$ is $C^1$ and projection is smooth.
+
+\medskip
+\textbf{Step 5: Verification of Property (i).} \by{C10}
+\[
+  g(a) = \pi_y(\Psi(a, 0)) = \pi_y((a, b)) = b,
+\]
+since $\Phi(a, b) = (a, 0)$ implies $\Psi(a, 0) = (a, b)$.
+
+\medskip
+\textbf{Step 6: Verification of Property (ii).} \by{C11--C15}
+For all $x \in U_0$, we have $\Psi(x, 0) = (\pi_x(\Psi(x, 0)), g(x))$ by definition of $g$.
+
+Since $\Phi \circ \Psi = \id$ on $W_2$:
+\[
+  \Phi(\Psi(x, 0)) = (x, 0) \quad \text{for all } x \in U_0.
+\]
+Write $\Psi(x, 0) = (\xi(x), g(x))$ for some function $\xi: U_0 \to \mathbb{R}^n$. Then
+\[
+  \Phi(\xi(x), g(x)) = (\xi(x), F(\xi(x), g(x))) = (x, 0).
+\]
+Comparing first components: $\xi(x) = x$ for all $x \in U_0$.
+
+Comparing second components: $F(x, g(x)) = 0$ for all $x \in U_0$.
+
+\medskip
+\textbf{Step 7: Verification of Property (iii).} \by{C16--C18}
+Differentiating $F(x, g(x)) = 0$ with respect to $x$ using the chain rule:
+\[
+  D_x F(x, g(x)) + D_y F(x, g(x)) \cdot Dg(x) = 0.
+\]
+By continuity of $D_y F$ and invertibility at $(a, b)$, shrinking $U_0$ if necessary, $D_y F(x, g(x))$ is invertible for all $x \in U_0$.
+
+Solving the chain rule equation:
+\[
+  Dg(x) = -[D_y F(x, g(x))]^{-1} D_x F(x, g(x)) \quad \text{for all } x \in U_0.
+\]
+
+\medskip
+\textbf{Step 8: Uniqueness.} \by{C19--C20}
+Let $V_0 := g(U_0) \subseteq V$. Since $g$ is continuous and $U_0$ is open containing $a$ with $g(a) = b$, $V_0$ contains a neighborhood of $b$.
+
+Suppose $h: U_0 \to V$ is another $C^1$ function with $h(a) = b$ and $F(x, h(x)) = 0$ for all $x$ in some neighborhood of $a$. Then for $x$ in this neighborhood, $(x, h(x)) \in W_1$ and
+\[
+  \Phi(x, h(x)) = (x, F(x, h(x))) = (x, 0),
+\]
+so $(x, h(x)) = \Psi(x, 0) = (x, g(x))$, hence $h(x) = g(x)$.
+
+\medskip
+\textbf{Conclusion.} \by{QED}
+The Implicit Function Theorem is established: there exist open neighborhoods $U_0$ of $a$ and $V_0$ of $b$, and a unique $C^1$ function $g: U_0 \to V_0$ satisfying $g(a) = b$, $F(x, g(x)) = 0$ for all $x \in U_0$, and
+\[
+  Dg(x) = -[D_y F(x, g(x))]^{-1} D_x F(x, g(x)).
+\]
+\end{proof}
+
+\end{document}
