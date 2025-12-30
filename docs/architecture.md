@@ -75,3 +75,22 @@ graph TD
     *   If accepted, they become part of the graph.
 4.  **Maintenance**: The Lemma Decomposer watches for opportunities to clean up the graph.
 5.  **Finalization**: Once the theorem is reached (QED), the Reference Checker validates sources, and the Formalizer generates the Lean artifacts.
+
+## The CLI Tool
+
+All graph mutations go through the `alethfeld` CLI, ensuring consistent validation and taint propagation.
+
+```bash
+cd alethfeld
+clojure -M:run <command> [options]
+```
+
+**Key commands:**
+- `init` - Create new graph from theorem
+- `add-node` - Add nodes (claims, assumptions, definitions)
+- `update-status` - Mark nodes as verified/rejected/admitted
+- `replace-node` - Replace rejected nodes with revisions
+- `extract-lemma` - Extract verified subgraphs as lemmas
+- `validate` - Check graph integrity
+
+See [CLI Reference](cli-reference.md) for complete documentation.

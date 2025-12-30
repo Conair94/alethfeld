@@ -308,38 +308,47 @@ Alethfeld is a field for cultivating unconcealed proofs: every step visible, eve
 
 ## Tools
 
-### validate-graph
+### alethfeld CLI
 
-A Clojure CLI tool for validating semantic proof graph EDN files. Located in [`scripts/validate-graph/`](scripts/validate-graph/).
-
-```bash
-cd scripts/validate-graph
-clojure -M:run path/to/proof.edn
-```
-
-**Features:**
-- Schema validation using Malli (types, required fields, enum values)
-- Referential integrity checks (all references point to existing entities)
-- Acyclicity verification (dependency graph is a valid DAG)
-- Scope tracking validation (local assumptions correctly managed)
-- Taint propagation checks (admitted/rejected status propagates correctly)
-
-**Options:**
-- `-v, --verbose` — Detailed error output
-- `-q, --quiet` — Minimal output (for CI/CD)
-- `-s, --schema-only` — Skip semantic checks
-
-See the [validate-graph README](scripts/validate-graph/README.md) for full documentation.
-
-### fix-schema.clj
-
-A utility script for fixing common schema issues in proof graph files:
+The primary CLI tool for all semantic proof graph operations. Located in [`alethfeld/`](alethfeld/).
 
 ```bash
-clojure scripts/validate-graph/fix-schema.clj input.edn output.edn
+cd alethfeld
+clojure -M:run <command> [options]
 ```
 
-Automatically adds missing fields, fixes content hashes, and normalizes timestamps.
+**Commands:**
+- `init` — Initialize a new proof graph from a theorem
+- `add-node` — Add nodes (claims, assumptions, definitions)
+- `update-status` — Update verification status (verified/rejected/admitted)
+- `replace-node` — Replace rejected nodes with revisions
+- `delete-node` — Archive leaf nodes
+- `extract-lemma` — Extract verified subgraphs as independent lemmas
+- `external-ref` — Manage literature citations
+- `validate` — Schema and semantic validation
+- `stats` — Display graph statistics
+- `recompute` — Recalculate taint propagation
+
+**Example workflow:**
+```bash
+# Initialize a proof
+clojure -M:run init "For all continuous f,g: (g \\circ f) is continuous" -o proof.edn
+
+# Add a claim
+clojure -M:run add-node proof.edn step1.edn
+
+# Verify it
+clojure -M:run update-status proof.edn :1-abc123 verified
+
+# Extract as lemma
+clojure -M:run extract-lemma proof.edn --name "Composition" --root :1-abc123 --nodes :1-abc123
+```
+
+See [docs/cli-reference.md](docs/cli-reference.md) for complete documentation.
+
+### validate-graph (Legacy)
+
+The original validation tool in [`scripts/validate-graph/`](scripts/validate-graph/) is superseded by `alethfeld validate` but remains available for compatibility.
 
 ## Contributing
 
