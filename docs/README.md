@@ -27,5 +27,5 @@ Welcome to the documentation for **Alethfeld**, a system for developing rigorous
 ## Quick Links
 
 - **Project Root**: See the top-level [README](../README.md) for a quick start.
-- **Orchestrator Protocol**: The definitive source of truth for the AI behavior is [orchestrator-prompt-v4.md](../orchestrator-prompt-v4.md).
+- **Orchestrator Protocol**: The definitive source of truth for the AI behavior is [orchestrator-prompt-v5.md](../orchestrator-prompt-v5.md).
 - **Examples**: Check [examples/qbf-rank1](../examples/qbf-rank1) for a complete derivation of the Entropy-Influence bound.

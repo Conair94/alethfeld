@@ -190,7 +190,7 @@ For ultimate confidence, the Lean 4 output can be fed to a genuine proof assista
 
 **Usage:**
 ```bash
-claude --max-turns 100 < orchestrator-prompt-v4.md
+cat orchestrator-prompt-v5.md | your-llm-tool
 ```
 
 Then provide a theorem:

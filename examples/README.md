@@ -229,17 +229,13 @@ If you verify one of these proofs (or find errors), please open an issue or PR. 
 
 ## Reproducing These Examples
 
-To regenerate any example using orchestrator v5:
+To regenerate any example using the orchestrator:
 
 ```bash
 # Read the orchestrator prompt and provide a theorem
 cat orchestrator-prompt-v5.md
-
-# Or use Claude Code with the alethfeld CLI
-cd alethfeld
-clj -M:run init output/my-proof.edn --theorem "Your theorem here"
 ```
 
-Then follow the orchestrator workflow: Strategy → Skeleton → Verification → Finalization.
+Then provide your theorem statement to the system and follow the orchestrator workflow: Strategy → Skeleton → Verification → Finalization.
 
 Note that results may vary between runs—the system is not deterministic.

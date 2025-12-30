@@ -7,7 +7,7 @@
     ```bash
     curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
     ```
-3.  **Claude CLI / LLM Context**: Currently, Alethfeld is designed as a prompt-driven system. You need a way to feed the `orchestrator-prompt-v4.md` and the project context to an LLM (like Claude 3.5 Sonnet or the Gemini CLI).
+3.  **Claude CLI / LLM Context**: Currently, Alethfeld is designed as a prompt-driven system. You need a way to feed the `orchestrator-prompt-v5.md` and the project context to an LLM (like Claude 3.5 Sonnet or another capable model).
     *   *Note: In the future, this will be a standalone Python/CLI tool.*
 
 ## Setup
@@ -27,12 +27,12 @@
 
 ### Automated Agentic Mode (Recommended)
 
-Alethfeld is best run using an agentic interface (like the Gemini CLI or Claude Code) that has file-system access.
+Alethfeld is best run using an agentic interface (like Claude Code or similar) that has file-system access.
 
-1.  **Initialize**: Run the `orchestrator-prompt-v4.md` with the theorem statement.
+1.  **Initialize**: Run the `orchestrator-prompt-v5.md` with the theorem statement.
     ```bash
     # If using a CLI that supports file redirection
-    gemini-agent < orchestrator-prompt-v4.md
+    cat orchestrator-prompt-v5.md | your-llm-tool
     ```
 2.  **State Theorem**: "Initialize the graph for the following theorem: [Your Theorem Here]".
 3.  **Observation**: The agent will coordinate the sub-agents (Adviser, Prover, Verifier, etc.) to build the `proof.edn` graph and generate Lean code.
@@ -41,7 +41,7 @@ Alethfeld is best run using an agentic interface (like the Gemini CLI or Claude 
 
 If you don't have an agentic CLI, you can manually copy-paste the orchestrator prompt into a standard LLM chat (e.g., Claude.ai).
 
-1.  **Prepare the Context**: Paste the full content of `orchestrator-prompt-v4.md`.
+1.  **Prepare the Context**: Paste the full content of `orchestrator-prompt-v5.md`.
 2.  **Load Project State**: Provide any existing relevant files (e.g., `lean/API.md` for context).
 3.  **Iterate**: Manually act as the "Orchestrator" by passing outputs between different chat sessions or keeping it all in one context-heavy thread.
 

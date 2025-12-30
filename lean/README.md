@@ -1,13 +1,26 @@
 # AlethfeldLean
 
-## GitHub configuration
+A Lean 4 library of formalized mathematical proofs developed using the Alethfeld system.
 
-To set up your new GitHub repository, follow these steps:
+## Quick Start
 
-* Under your repository name, click **Settings**.
-* In the **Actions** section of the sidebar, click "General".
-* Check the box **Allow GitHub Actions to create and approve pull requests**.
-* Click the **Pages** section of the settings sidebar.
-* In the **Source** dropdown menu, select "GitHub Actions".
+```bash
+cd lean
+lake build
+```
 
-After following the steps above, you can remove this section from the README file.
+## Library Structure
+
+The library is organized by mathematical domain:
+
+```
+AlethfeldLean/
+├── QBF/
+│   └── Rank1/          # Quantum Boolean Function rank-1 results (fully verified)
+```
+
+## Verified Results
+
+- **QBF Rank-1 Master Theorem**: Entropy-influence bound for rank-1 QBFs (0 sorries across all lemmas)
+
+See `lean/API.md` for full documentation of available lemmas and their proofs.
