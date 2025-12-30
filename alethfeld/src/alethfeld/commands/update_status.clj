@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [clojure.edn :as edn]
             [alethfeld.io :as io]
-            [alethfeld.ops.update-status :as update-status]))
+            [alethfeld.ops.update-status :as update-status]
+            [alethfeld.result :as r]))
 
 (def cli-options
   [["-d" "--dry-run" "Validate but don't write changes"]
@@ -35,62 +36,67 @@
   (try
     (let [parsed (edn/read-string s)]
       (if (keyword? parsed)
-        {:ok parsed}
-        {:error (str "Node ID must be a keyword, got: " (type parsed))}))
+        (r/ok parsed)
+        (r/err (str "Node ID must be a keyword, got: " (type parsed)))))
     (catch Exception e
-      {:error (str "Failed to parse node ID: " (.getMessage e))})))
+      (r/err (str "Failed to parse node ID: " (.getMessage e))))))
 
 (defn parse-status [s]
   (let [status (keyword s)]
     (if (contains? update-status/valid-statuses status)
-      {:ok status}
-      {:error (str "Invalid status '" s "'. Valid: proposed, verified, admitted, rejected")})))
+      (r/ok status)
+      (r/err (str "Invalid status '" s "'. Valid: proposed, verified, admitted, rejected")))))
 
-(defn format-errors [errors]
-  (str/join \newline
-            (map (fn [e] (str "  [" (name (:type e)) "] " (:message e)))
-                 errors)))
+(defn- do-update-status
+  "Execute the update-status operation with result threading."
+  [graph-path node-id new-status options]
+  (r/let-ok [graph (io/read-graph graph-path)
+             new-graph (update-status/update-status graph node-id new-status)]
+    (if (:dry-run options)
+      (r/ok {:dry-run true
+             :node-id node-id
+             :new-status new-status})
+      (r/let-ok [_ (io/write-graph (or (:output options) graph-path) new-graph)]
+        (r/ok {:node-id node-id
+               :new-status new-status
+               :graph-version (:version new-graph)})))))
 
-(defn run-update [graph-path node-id new-status options]
-  (let [graph-result (io/read-graph graph-path)]
-    (if (:error graph-result)
-      {:exit-code 2 :message (str "Error reading graph: " (:error graph-result))}
-      (let [update-result (update-status/update-status (:ok graph-result) node-id new-status)]
-        (if (:error update-result)
-          {:exit-code 1
-           :message (str "Error: Operation failed\n" (format-errors (:error update-result)))}
-          (if (:dry-run options)
-            {:exit-code 0
-             :message (str "OK: Validation passed (dry-run)\n"
-                           "  Node " node-id " would be set to " new-status)}
-            (let [output-path (or (:output options) graph-path)
-                  write-result (io/write-graph output-path (:ok update-result))]
-              (if (:error write-result)
-                {:exit-code 2 :message (str "Error writing graph: " (:error write-result))}
-                {:exit-code 0
-                 :message (io/format-edn
-                           {:status :ok
-                            :message (str "Node " node-id " status updated to " new-status)
-                            :graph-version (:version (:ok update-result))})}))))))))
+(defn- format-success [result]
+  (if (:dry-run result)
+    (str "OK: Validation passed (dry-run)\n  Node " (:node-id result) " would be set to " (:new-status result))
+    (io/format-edn {:status :ok
+                    :message (str "Node " (:node-id result) " status updated to " (:new-status result))
+                    :graph-version (:graph-version result)})))
+
+(defn- format-update-error [result]
+  (let [errors (:error result)]
+    (cond
+      (string? errors)
+      (r/exit-err 2 (str "Error: " errors))
+
+      (vector? errors)
+      (r/exit-err 1 (str "Error: Operation failed\n" (r/format-op-errors errors)))
+
+      :else
+      (r/exit-err 1 (str "Error: " errors)))))
 
 (defn run [args options]
   (cond
     (:help options)
-    {:exit-code 0 :message (usage)}
+    (r/exit-ok (usage))
 
     (< (count args) 3)
-    {:exit-code 2 :message (str "Error: Missing arguments\n\n" (usage))}
+    (r/exit-err 2 (str "Error: Missing arguments\n\n" (usage)))
 
     :else
     (let [[graph-path node-id-str status-str] args
-          node-id-result (parse-node-id node-id-str)
-          status-result (parse-status status-str)]
-      (cond
-        (:error node-id-result)
-        {:exit-code 2 :message (:error node-id-result)}
-
-        (:error status-result)
-        {:exit-code 2 :message (:error status-result)}
-
-        :else
-        (run-update graph-path (:ok node-id-result) (:ok status-result) options)))))
+          parse-result (r/let-ok [node-id (parse-node-id node-id-str)
+                                  new-status (parse-status status-str)]
+                         (r/ok [node-id new-status]))]
+      (if (r/err? parse-result)
+        (r/exit-err 2 (:error parse-result))
+        (let [[node-id new-status] (:ok parse-result)
+              result (do-update-status graph-path node-id new-status options)]
+          (if (r/ok? result)
+            (r/exit-ok (format-success (:ok result)))
+            (format-update-error result)))))))
