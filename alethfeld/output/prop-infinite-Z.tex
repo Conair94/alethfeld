@@ -1,0 +1,102 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+
+\DeclareMathOperator{\UXP}{\mathbb{P}^{\mathrm{X}}}
+\DeclareMathOperator{\UXE}{\mathbb{E}^{\mathrm{X}}}
+\DeclareMathOperator{\URP}{\mathbb{P}^{\mathrm{R}}}
+\DeclareMathOperator{\URE}{\mathbb{E}^{\mathrm{R}}}
+\DeclareMathOperator{\Bij}{Bij}
+
+\newcommand{\by}[1]{\marginpar{\footnotesize #1}}
+
+\begin{document}
+
+\title{Proof of Proposition (Infinite-Z)}
+\author{Alethfeld Proof Orchestrator}
+\date{Graph: \texttt{graph-29d5d0-dd347c} v33}
+
+\maketitle
+
+\begin{proposition}\label{prop:infinite-Z}
+For any random variable $F:\mathbf{Z}^N\to[0,\infty)$,
+\begin{equation}\label{eq:main}
+  \UXE(F) \le \frac{N^N}{N!} \URE(F).
+\end{equation}
+Suppose $|\mathbf{Z}|\ge N$. The bound is tight and attained on a non-zero indicator function.
+Moreover, there exists an event $A$ in $\mathbf{Z}^N$ such that
+\[
+  \URP(A) = \frac{N!}{N^N} \le 1 = \UXP(A).
+\]
+\end{proposition}
+
+\begin{proof}
+\textbf{Setup.} \by{A1--A4}
+Let $\mathbf{Z}$ be a set with $|\mathbf{Z}| \ge N$, where $N \ge 1$.
+Define:
+\begin{align*}
+\UXE(F) &:= \frac{1}{|\Bij([N],\mathbf{Z})|} \sum_{\sigma \in \Bij([N],\mathbf{Z})} F(\sigma), \\
+\URE(F) &:= \frac{1}{|\mathbf{Z}|^N} \sum_{f:[N]\to\mathbf{Z}} F(f),
+\end{align*}
+where $\Bij([N],\mathbf{Z})$ denotes the set of bijections (injections) from $[N]$ to $\mathbf{Z}$.
+Let $F:\mathbf{Z}^N \to [0,\infty)$ be non-negative.
+
+\medskip
+\textbf{Step 1: Main Inequality.} \by{S1--S7}
+Since bijections are functions, $\Bij([N],\mathbf{Z}) \subseteq \mathbf{Z}^N$.
+The number of bijections is
+\[
+  |\Bij([N],\mathbf{Z})| = \frac{|\mathbf{Z}|!}{(|\mathbf{Z}|-N)!}.
+\]
+Since $F \ge 0$, summing over a subset gives
+\[
+  \sum_{\sigma \in \Bij} F(\sigma) \le \sum_{f \in \mathbf{Z}^N} F(f).
+\]
+Thus
+\[
+  \UXE(F) = \frac{\sum_\sigma F(\sigma)}{|\Bij|}
+  \le \frac{\sum_f F(f)}{|\Bij|}
+  = \frac{|\mathbf{Z}|^N}{|\Bij|} \cdot \URE(F).
+\]
+
+\textbf{Key bound:} For $M = |\mathbf{Z}| \ge N$, we claim
+\[
+  \frac{M^N}{M!/(M-N)!} \le \frac{N^N}{N!}.
+\]
+This follows since for each $k \in \{0,\ldots,N-1\}$:
+\[
+  \frac{M}{M-k} = 1 + \frac{k}{M-k} \le 1 + \frac{k}{N-k} = \frac{N}{N-k},
+\]
+where the inequality uses $M \ge N \Rightarrow M-k \ge N-k > 0$.
+Taking the product over $k$:
+\[
+  \frac{M^N}{M(M-1)\cdots(M-N+1)} = \prod_{k=0}^{N-1} \frac{M}{M-k}
+  \le \prod_{k=0}^{N-1} \frac{N}{N-k} = \frac{N^N}{N!}.
+\]
+Combining: $\UXE(F) \le \frac{N^N}{N!} \URE(F)$.
+
+\medskip
+\textbf{Step 2: Tightness.} \by{S8--S11}
+For tightness, take $|\mathbf{Z}| = N$ and define
+\[
+  A := \Bij([N],\mathbf{Z}) \subseteq \mathbf{Z}^N.
+\]
+Then:
+\begin{itemize}
+  \item $\UXP(A) = 1$ since $X$ is always a bijection.
+  \item $\URP(A) = \frac{|A|}{|\mathbf{Z}^N|} = \frac{N!}{N^N}$.
+\end{itemize}
+For $F = \mathbf{1}_A$:
+\[
+  \frac{\UXE(F)}{\URE(F)} = \frac{\UXP(A)}{\URP(A)} = \frac{1}{N!/N^N} = \frac{N^N}{N!}.
+\]
+This achieves the bound exactly.
+
+\medskip
+\textbf{Conclusion.} The event $A = \Bij([N],\mathbf{Z})$ satisfies
+$\URP(A) = N!/N^N \le 1 = \UXP(A)$, completing the proof.
+\end{proof}
+
+\end{document}
