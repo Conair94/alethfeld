@@ -213,14 +213,14 @@
                             :node-id nid
                             :message (str "Node " nid " not found in graph")})))
 
-    ;; Check 3: All nodes must be verified
+    ;; Check 3: All nodes must be verified or admitted (admitted results in tainted lemma)
     (doseq [nid node-ids-set]
       (let [node (get nodes nid)]
-        (when (and node (not= :verified (:status node)))
+        (when (and node (not (#{:verified :admitted} (:status node))))
           (swap! errors conj {:type :node-not-verified
                               :node-id nid
                               :status (:status node)
-                              :message (str "Node " nid " has status " (:status node) ", must be :verified")}))))
+                              :message (str "Node " nid " has status " (:status node) ", must be :verified or :admitted")}))))
 
     ;; Check 4: Only root can be depended on from outside
     (doseq [nid node-ids-set]

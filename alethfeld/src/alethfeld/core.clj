@@ -7,7 +7,11 @@
             [alethfeld.commands.update-status :as update-status]
             [alethfeld.commands.delete-node :as delete-node]
             [alethfeld.commands.replace-node :as replace-node]
-            [alethfeld.commands.external-ref :as external-ref])
+            [alethfeld.commands.external-ref :as external-ref]
+            [alethfeld.commands.extract-lemma :as extract-lemma]
+            [alethfeld.commands.init :as init]
+            [alethfeld.commands.stats :as stats]
+            [alethfeld.commands.recompute :as recompute])
   (:gen-class))
 
 ;; =============================================================================
@@ -32,7 +36,19 @@
                    :options replace-node/cli-options}
    "external-ref" {:fn external-ref/run
                    :desc "Manage external references (citations)"
-                   :options external-ref/cli-options}})
+                   :options external-ref/cli-options}
+   "extract-lemma" {:fn extract-lemma/run
+                    :desc "Extract verified subgraph as independent lemma"
+                    :options extract-lemma/cli-options}
+   "init" {:fn init/run
+           :desc "Initialize a new semantic proof graph"
+           :options init/cli-options}
+   "stats" {:fn stats/run
+            :desc "Display graph statistics"
+            :options stats/cli-options}
+   "recompute" {:fn recompute/run
+                :desc "Recompute taint propagation"
+                :options recompute/cli-options}})
 
 ;; =============================================================================
 ;; Global Options
