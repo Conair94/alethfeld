@@ -193,8 +193,7 @@
                             (assoc-in [:nodes (:id node)] completed-node)
                             (graph/increment-version)
                             (graph/update-last-modified)
-                            (graph/update-context-budget)
-                            (graph/invalidate-caches))]
+                            (graph/update-context-budget))]
           {:ok new-graph})))))
 
 (defn generate-node-id

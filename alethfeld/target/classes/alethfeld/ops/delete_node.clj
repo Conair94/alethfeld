@@ -69,7 +69,6 @@
           graph (-> graph
                     (graph/increment-version)
                     (graph/update-last-modified)
-                    (graph/update-context-budget)
-                    (graph/invalidate-caches))]
+                    (graph/update-context-budget))]
 
       {:ok graph})))

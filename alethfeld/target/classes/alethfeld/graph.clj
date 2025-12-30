@@ -36,31 +36,10 @@
 ;; Dependency Graph Queries
 ;; =============================================================================
 
-(defn- build-reverse-deps
-  "Build a reverse dependency map (dependents by node ID).
-   Caches result in graph metadata for reuse."
-  [graph]
-  (if-let [cached (get-in (meta graph) [:_reverse-deps])]
-    cached
-    (let [dependents (reduce (fn [acc [nid node]]
-                               (reduce (fn [a dep]
-                                         (update a dep (fnil conj #{}) nid))
-                                       acc
-                                       (:dependencies node)))
-                             {}
-                             (:nodes graph))]
-      dependents)))
-
-(defn- get-reverse-deps
-  "Get or build the reverse dependency map, with caching via metadata."
-  [graph]
-  (or (get-in (meta graph) [:_reverse-deps])
-      (build-reverse-deps graph)))
-
 (defn get-ancestors
-   "Get all transitive dependencies of a node (ancestors in the DAG).
-    Does not include the node itself."
-   [graph node-id]
+  "Get all transitive dependencies of a node (ancestors in the DAG).
+   Does not include the node itself."
+  [graph node-id]
   (let [nodes (:nodes graph)]
     (loop [stack [node-id]
            visited #{}]
@@ -77,7 +56,15 @@
   "Get all nodes that transitively depend on this node.
    Does not include the node itself."
   [graph node-id]
-  (let [dependents (get-reverse-deps graph)]
+  (let [nodes (:nodes graph)
+        ;; Build reverse dependency map
+        dependents (reduce (fn [acc [nid node]]
+                             (reduce (fn [a dep]
+                                       (update a dep (fnil conj #{}) nid))
+                                     acc
+                                     (:dependencies node)))
+                           {}
+                           nodes)]
     (loop [stack [node-id]
            visited #{}]
       (if (empty? stack)
@@ -306,16 +293,6 @@
   [graph]
   (assoc-in graph [:metadata :context-budget :current-estimate]
             (estimate-graph-tokens graph)))
-
-;; =============================================================================
-;; Cache Management
-;; =============================================================================
-
-(defn invalidate-caches
-  "Invalidate cached reverse dependencies when graph structure changes.
-   Returns a new graph with caches cleared."
-  [graph]
-  (vary-meta graph dissoc :_reverse-deps))
 
 ;; =============================================================================
 ;; Graph Modification Helpers

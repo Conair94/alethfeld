@@ -1,9 +1,8 @@
 (ns alethfeld.validators
   "Semantic validators for proof graphs beyond schema validation.
-    Checks referential integrity, acyclicity, scope validity, and taint correctness."
-   (:require [clojure.set :as set]
-             [clojure.string :as str]
-             [alethfeld.graph :as g]))
+   Checks referential integrity, acyclicity, scope validity, and taint correctness."
+  (:require [clojure.set :as set]
+            [clojure.string :as str]))
 
 ;; =============================================================================
 ;; Helper Functions
@@ -181,11 +180,26 @@
 ;; Scope Validation
 ;; =============================================================================
 
+(defn get-ancestors
+  "Get all transitive dependencies of a node (ancestors in the DAG)."
+  [graph node-id]
+  (let [nodes (:nodes graph)]
+    (loop [stack [node-id]
+           visited #{}]
+      (if (empty? stack)
+        (disj visited node-id)
+        (let [current (peek stack)
+              stack (pop stack)]
+          (if (contains? visited current)
+            (recur stack visited)
+            (let [deps (get-in nodes [current :dependencies] #{})]
+              (recur (into stack deps) (conj visited current)))))))))
+
 (defn compute-valid-scope
   "Compute which local-assume nodes are validly in scope for a node."
   [graph node-id]
   (let [nodes (:nodes graph)
-        ancestors (g/get-ancestors graph node-id)
+        ancestors (get-ancestors graph node-id)
         ;; Find local-assume nodes among ancestors
         assumes (->> ancestors
                      (filter #(= :local-assume (get-in nodes [% :type])))
@@ -218,7 +232,7 @@
         errors (for [[node-id node] nodes
                      :when (= :local-discharge (:type node))
                      :let [target (:discharges node)
-                           ancestors (g/get-ancestors graph node-id)
+                           ancestors (get-ancestors graph node-id)
                            in-scope (compute-valid-scope graph node-id)]]
                  (cond
                    (not (contains? ancestors target))
@@ -247,12 +261,27 @@
 ;; Taint Validation
 ;; =============================================================================
 
+(defn compute-taint
+  "Compute the expected taint for a node based on its status and dependencies."
+  [graph node-id]
+  (let [node (get-in graph [:nodes node-id])
+        status (:status node)]
+    (cond
+      (= :admitted status) :self-admitted
+      (= :rejected status) :tainted
+      :else
+      (let [deps (:dependencies node)
+            dep-taints (map #(get-in graph [:nodes % :taint]) deps)]
+        (if (some #{:tainted :self-admitted} dep-taints)
+          :tainted
+          :clean)))))
+
 (defn check-taint-correctness
   "Check that all nodes have correctly computed :taint values."
   [graph]
   (let [errors (for [[node-id node] (:nodes graph)
                      :let [actual-taint (:taint node)
-                           expected-taint (g/compute-taint graph node-id)]
+                           expected-taint (compute-taint graph node-id)]
                      :when (not= actual-taint expected-taint)]
                  {:type :incorrect-taint
                   :node-id node-id

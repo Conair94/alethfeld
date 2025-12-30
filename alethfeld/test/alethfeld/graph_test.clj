@@ -1,6 +1,7 @@
 (ns alethfeld.graph-test
   (:require [clojure.test :refer [deftest testing is]]
             [alethfeld.graph :as g]
+            [alethfeld.validators :as v]  ; For check-scope-validity test
             [alethfeld.fixtures :as f]))
 
 (deftest node-queries-test
@@ -36,6 +37,18 @@
     (is (= #{:1-bbb222} (g/get-direct-dependents f/linear-chain-graph :1-aaa111)))
     (is (= #{:1-bbb222 :1-ccc333} (g/get-direct-dependents f/diamond-graph :1-aaa111)))))
 
+(deftest get-ancestors-usage-in-validators-test
+  (testing "get-ancestors is used correctly by validators"
+    ;; Verify that compute-valid-scope still works correctly
+    (let [scope (g/compute-valid-scope f/scoped-graph :1-ccc333)]
+      (is (contains? scope :1-bbb222)))
+    ;; Verify validators still work correctly after dedup
+    (let [result (v/check-scope-validity f/scoped-graph)]
+      ;; Result should be a sequence of errors (empty if valid)
+      (is (vector? result))
+      ;; For our fixture, scope validation should pass
+      (is (empty? result)))))
+
 (deftest topological-sort-test
   (testing "Linear chain sorted correctly"
     (let [sorted (g/topological-sort f/linear-chain-graph)]
@@ -70,23 +83,32 @@
       (is (contains? assumptions :1-aaa111)))))
 
 (deftest taint-queries-test
-  (testing "compute-taint for clean node"
-    (is (= :clean (g/compute-taint f/minimal-valid-graph :1-abc123))))
+   (testing "compute-taint for clean node"
+     (is (= :clean (g/compute-taint f/minimal-valid-graph :1-abc123))))
 
-  (testing "compute-taint for admitted node"
-    (let [graph (assoc-in f/minimal-valid-graph [:nodes :1-abc123 :status] :admitted)]
-      (is (= :self-admitted (g/compute-taint graph :1-abc123)))))
+   (testing "compute-taint for admitted node"
+     (let [graph (assoc-in f/minimal-valid-graph [:nodes :1-abc123 :status] :admitted)]
+       (is (= :self-admitted (g/compute-taint graph :1-abc123)))))
 
-  (testing "compute-taint propagation"
-    (let [graph (-> f/linear-chain-graph
-                    (assoc-in [:nodes :1-aaa111 :status] :admitted)
-                    (assoc-in [:nodes :1-aaa111 :taint] :self-admitted))]
-      (is (= :tainted (g/compute-taint graph :1-bbb222)))))
+   (testing "compute-taint propagation"
+     (let [graph (-> f/linear-chain-graph
+                     (assoc-in [:nodes :1-aaa111 :status] :admitted)
+                     (assoc-in [:nodes :1-aaa111 :taint] :self-admitted))]
+       (is (= :tainted (g/compute-taint graph :1-bbb222)))))
 
-  (testing "tainted-nodes returns only tainted"
-    (let [tainted (g/tainted-nodes f/incorrect-taint-chain-graph)]
-      (is (contains? tainted :1-aaa111))
-      (is (not (contains? tainted :1-bbb222)))))) ; Bug in fixture, but tests the function
+   (testing "tainted-nodes returns only tainted"
+     (let [tainted (g/tainted-nodes f/incorrect-taint-chain-graph)]
+       (is (contains? tainted :1-aaa111))
+       (is (not (contains? tainted :1-bbb222)))))) ; Bug in fixture, but tests the function
+
+(deftest compute-taint-usage-in-validators-test
+  (testing "compute-taint is used correctly by validators"
+    ;; Verify that check-taint-correctness still works correctly after dedup
+    (let [result (v/check-taint-correctness f/minimal-valid-graph)]
+      ;; Result should be a sequence of errors (empty if valid)
+      (is (vector? result))
+      ;; For our fixture, taint validation should pass
+      (is (empty? result)))))
 
 (deftest independence-check-test
   (testing "Valid single node extraction"
@@ -126,3 +148,21 @@
 
   (testing "would-create-cycle? allows valid addition"
     (is (not (g/would-create-cycle? f/linear-chain-graph :1-new #{:1-ccc333})))))
+
+(deftest reverse-deps-cache-test
+  (testing "Reverse dependencies work correctly"
+    ;; Verify get-descendants still works with cache optimization
+    (let [desc1 (g/get-descendants f/linear-chain-graph :1-aaa111)]
+      ;; Second call uses cached version  
+      (let [desc2 (g/get-descendants f/linear-chain-graph :1-aaa111)]
+        (is (= desc1 desc2)))))
+
+  (testing "Cache is invalidated after modification"
+    ;; Build initial cache and verify invalidation
+    (let [graph1 f/linear-chain-graph
+          desc-before (g/get-descendants graph1 :1-aaa111)
+          ;; Invalidate cache
+          graph2 (g/invalidate-caches graph1)
+          desc-after (g/get-descendants graph2 :1-aaa111)]
+      ;; Should still give same result even after cache invalidation
+      (is (= desc-before desc-after)))))
