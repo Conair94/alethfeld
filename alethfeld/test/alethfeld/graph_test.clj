@@ -65,6 +65,55 @@
       (is (< (.indexOf sorted :1-ccc333)
              (.indexOf sorted :1-ddd444))))))
 
+(deftest topological-sort-partial-test
+  (testing "Partial sort for single target in linear chain"
+    ;; Target :1-bbb222 should include itself and ancestor :1-aaa111
+    (let [sorted (g/topological-sort f/linear-chain-graph nil :targets #{:1-bbb222})]
+      (is (= 2 (count sorted)))
+      (is (= [:1-aaa111 :1-bbb222] sorted))))
+
+  (testing "Partial sort for leaf in linear chain"
+    ;; Target :1-ccc333 should include all ancestors
+    (let [sorted (g/topological-sort f/linear-chain-graph nil :targets #{:1-ccc333})]
+      (is (= [:1-aaa111 :1-bbb222 :1-ccc333] sorted))))
+
+  (testing "Partial sort for root node returns just root"
+    (let [sorted (g/topological-sort f/linear-chain-graph nil :targets #{:1-aaa111})]
+      (is (= [:1-aaa111] sorted))))
+
+  (testing "Partial sort for diamond target"
+    ;; Target :1-ddd444 needs all four nodes
+    (let [sorted (g/topological-sort f/diamond-graph nil :targets #{:1-ddd444})]
+      (is (= 4 (count sorted)))
+      ;; Verify order constraints
+      (is (< (.indexOf sorted :1-aaa111)
+             (.indexOf sorted :1-ddd444)))
+      (is (< (.indexOf sorted :1-bbb222)
+             (.indexOf sorted :1-ddd444)))
+      (is (< (.indexOf sorted :1-ccc333)
+             (.indexOf sorted :1-ddd444)))))
+
+  (testing "Partial sort for middle diamond nodes"
+    ;; Target :1-bbb222 and :1-ccc333 - both depend on :1-aaa111
+    (let [sorted (g/topological-sort f/diamond-graph nil :targets #{:1-bbb222 :1-ccc333})]
+      (is (= 3 (count sorted)))
+      (is (some #{:1-aaa111} sorted))
+      (is (some #{:1-bbb222} sorted))
+      (is (some #{:1-ccc333} sorted))
+      ;; :1-ddd444 should NOT be included
+      (is (not (some #{:1-ddd444} sorted)))))
+
+  (testing "Partial sort with empty targets returns nil"
+    (is (nil? (g/topological-sort f/linear-chain-graph nil :targets #{}))))
+
+  (testing "Partial sort matches full sort when all nodes targeted"
+    (let [full-sorted (g/topological-sort f/diamond-graph)
+          partial-sorted (g/topological-sort f/diamond-graph nil
+                                              :targets #{:1-aaa111 :1-bbb222 :1-ccc333 :1-ddd444})]
+      ;; Same nodes, same order constraints (though order may differ for parallel nodes)
+      (is (= (set full-sorted) (set partial-sorted)))
+      (is (= (count full-sorted) (count partial-sorted))))))
+
 (deftest scope-queries-test
   (testing "compute-valid-scope for node in scope"
     (let [scope (g/compute-valid-scope f/scoped-graph :1-ccc333)]

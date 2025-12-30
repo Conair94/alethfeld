@@ -100,7 +100,16 @@
 
 (defn topological-sort
   "Sort node IDs in topological order (dependencies first).
-   If node-ids is provided, only sort those nodes.
+
+   Arities:
+   - (topological-sort graph) - Sort all nodes
+   - (topological-sort graph node-ids) - Sort only specified nodes
+   - (topological-sort graph :targets target-ids) - Partial sort for targets only
+
+   Options (keyword args in 3rd arity):
+   - :targets - Set of target node IDs. Computes closure (ancestors + targets)
+                and sorts only those nodes. More efficient for single-node queries.
+
    Returns a vector of node IDs."
   ([graph]
    (topological-sort graph (node-ids graph)))
@@ -126,7 +135,20 @@
                       (conj result zero-in)
                       (reduce (fn [d n] (update d n dec)) in-degree dependents)))
              ;; Cycle detected - return partial result
-             result)))))))
+             result))))))
+  ([graph _ & {:keys [targets]}]
+   ;; Partial mode: compute only the closure needed for target nodes
+   ;; This avoids computing in-degrees for the entire graph
+   (when (seq targets)
+     (let [target-set (set targets)
+           ;; Compute closure: targets + all ancestors of targets
+           closure (reduce (fn [acc target]
+                             (into (conj acc target)
+                                   (get-ancestors graph target)))
+                           #{}
+                           target-set)]
+       ;; Sort only the closure
+       (topological-sort graph closure)))))
 
 ;; =============================================================================
 ;; Scope Queries
