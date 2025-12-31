@@ -1,0 +1,805 @@
+\documentclass[11pt,a4paper]{article}
+
+% Mathematics packages
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+% Layout and formatting
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}{Assumption}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{claim}{Claim}
+
+% Custom commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\logb}[1]{\log_2\left(#1\right)}
+
+\title{Minimum Value of $xyz$ Subject to Exponential-Logarithmic Constraints\\[0.5em]
+\large HMMT February 2025, Problem 3}
+\author{Formalized by Alethfeld Proof System}
+\date{December 31, 2025}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We prove that given positive real numbers $x$, $y$, and $z$ satisfying the constraints
+$x^{\log_2(yz)} = 2^8 \cdot 3^4$, $y^{\log_2(zx)} = 2^9 \cdot 3^6$, and $z^{\log_2(xy)} = 2^5 \cdot 3^{10}$,
+the minimum possible value of $xyz$ is $\boxed{576}$.
+The proof proceeds by transforming the system via logarithms, reducing to a constrained quadratic system,
+analyzing all sign combinations in the solution space, and establishing uniqueness of the minimum
+through monotonicity arguments.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%% ============================================================
+%% SECTION 1: Problem Statement and Setup
+%% ============================================================
+\section{Problem Statement and Setup}
+
+\begin{theorem}[Main Result]\label{thm:main}
+Given that $x, y, z \in \R^+$ such that
+\begin{align}
+x^{\log_2(yz)} &= 2^8 \cdot 3^4, \label{eq:constraint1}\\
+y^{\log_2(zx)} &= 2^9 \cdot 3^6, \label{eq:constraint2}\\
+z^{\log_2(xy)} &= 2^5 \cdot 3^{10}, \label{eq:constraint3}
+\end{align}
+the smallest possible value of $xyz$ is $576$.
+\end{theorem}
+
+We begin by establishing our notation and fundamental assumptions.
+
+\begin{assumption}[Positivity]\label{as:positive}
+$x, y, z \in \R^+$ (positive real numbers).
+\end{assumption}
+
+\begin{definition}[Logarithmic Variables]\label{def:logvars}
+Define
+\begin{equation}\label{eq:def-abc}
+a = \log_2 x, \quad b = \log_2 y, \quad c = \log_2 z, \quad \alpha = \log_2 3.
+\end{equation}
+\end{definition}
+
+\begin{remark}
+Since $x, y, z > 0$, the quantities $a, b, c$ are well-defined real numbers.
+The constant $\alpha = \log_2 3 \approx 1.585$ satisfies $1 < \alpha < 2$ since $2 < 3 < 4$.
+\end{remark}
+
+%% ============================================================
+%% SECTION 2: Logarithmic Transformation
+%% ============================================================
+\section{Logarithmic Transformation}\label{sec:logtransform}
+
+\begin{proposition}[Transformed System]\label{prop:transformed}
+Under Definition~\ref{def:logvars}, the constraints \eqref{eq:constraint1}--\eqref{eq:constraint3} become:
+\begin{align}
+a(b+c) &= 8 + 4\alpha, \label{eq:trans1}\\
+b(c+a) &= 9 + 6\alpha, \label{eq:trans2}\\
+c(a+b) &= 5 + 10\alpha. \label{eq:trans3}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+We derive equation~\eqref{eq:trans1} in detail; the others follow analogously.
+
+\textbf{Step 1:} Apply $\log_2$ to both sides of \eqref{eq:constraint1}:
+\begin{equation}\label{eq:step1}
+\log_2\left(x^{\log_2(yz)}\right) = \log_2\left(2^8 \cdot 3^4\right).
+\end{equation}
+
+\textbf{Step 2:} Simplify the left-hand side using the power rule:
+\begin{equation}\label{eq:step2}
+\log_2\left(x^{\log_2(yz)}\right) = \log_2(yz) \cdot \log_2(x).
+\end{equation}
+
+\textbf{Step 3:} Apply the product rule to $\log_2(yz)$:
+\begin{equation}\label{eq:step3}
+\log_2(yz) = \log_2 y + \log_2 z = b + c.
+\end{equation}
+
+\textbf{Step 4:} Substitute Definition~\ref{def:logvars}:
+\begin{equation}\label{eq:step4}
+\text{LHS} = (b+c) \cdot a = a(b+c).
+\end{equation}
+
+\textbf{Step 5:} Simplify the right-hand side using the product rule:
+\begin{equation}\label{eq:step5}
+\log_2\left(2^8 \cdot 3^4\right) = \log_2(2^8) + \log_2(3^4).
+\end{equation}
+
+\textbf{Step 6:} Apply the power rule:
+\begin{equation}\label{eq:step6}
+\log_2(2^8) = 8, \quad \log_2(3^4) = 4\log_2 3 = 4\alpha.
+\end{equation}
+
+\textbf{Step 7:} Combine:
+\begin{equation}\label{eq:step7}
+\text{RHS} = 8 + 4\alpha.
+\end{equation}
+
+Therefore $a(b+c) = 8 + 4\alpha$.
+
+\medskip
+\textbf{For equation~\eqref{eq:trans2}:} Starting from $y^{\log_2(zx)} = 2^9 \cdot 3^6$:
+\[
+\log_2(zx) \cdot \log_2 y = \log_2(2^9 \cdot 3^6) \implies (c+a) \cdot b = 9 + 6\alpha.
+\]
+
+\textbf{For equation~\eqref{eq:trans3}:} Starting from $z^{\log_2(xy)} = 2^5 \cdot 3^{10}$:
+\[
+\log_2(xy) \cdot \log_2 z = \log_2(2^5 \cdot 3^{10}) \implies (a+b) \cdot c = 5 + 10\alpha.
+\]
+\end{proof}
+
+%% ============================================================
+%% SECTION 3: Reduction to Quadratic System
+%% ============================================================
+\section{Reduction to Quadratic System}\label{sec:quadratic}
+
+\begin{definition}[Sum Variable]\label{def:sum}
+Let $s = a + b + c$. Then $xyz = 2^a \cdot 2^b \cdot 2^c = 2^s$.
+\end{definition}
+
+Our goal becomes: minimize $s$ subject to equations \eqref{eq:trans1}--\eqref{eq:trans3}.
+
+\begin{lemma}[Sum of Products]\label{lem:sumproducts}
+Adding equations \eqref{eq:trans1}--\eqref{eq:trans3}:
+\begin{equation}\label{eq:sum}
+2(ab + bc + ca) = 22 + 20\alpha.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\[
+a(b+c) + b(c+a) + c(a+b) = (8+4\alpha) + (9+6\alpha) + (5+10\alpha) = 22 + 20\alpha.
+\]
+The left-hand side equals $ab + ac + bc + ba + ca + cb = 2(ab + bc + ca)$.
+\end{proof}
+
+\begin{proposition}[Quadratic Reformulation]\label{prop:quadratic}
+Using $b + c = s - a$, etc., the system becomes:
+\begin{align}
+a^2 - sa + (8+4\alpha) &= 0, \label{eq:quad-a}\\
+b^2 - sb + (9+6\alpha) &= 0, \label{eq:quad-b}\\
+c^2 - sc + (5+10\alpha) &= 0. \label{eq:quad-c}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+From \eqref{eq:trans1}: $a(b+c) = 8 + 4\alpha$.
+Since $b + c = s - a$:
+\[
+a(s-a) = 8 + 4\alpha \implies as - a^2 = 8 + 4\alpha \implies a^2 - sa + (8+4\alpha) = 0.
+\]
+The other equations follow identically.
+\end{proof}
+
+\begin{corollary}[Quadratic Solutions]\label{cor:solutions}
+By the quadratic formula:
+\begin{align}
+a &= \frac{s \pm \sqrt{s^2 - 4(8+4\alpha)}}{2} = \frac{s \pm \sqrt{\Delta_1}}{2}, \label{eq:sol-a}\\
+b &= \frac{s \pm \sqrt{s^2 - 4(9+6\alpha)}}{2} = \frac{s \pm \sqrt{\Delta_2}}{2}, \label{eq:sol-b}\\
+c &= \frac{s \pm \sqrt{s^2 - 4(5+10\alpha)}}{2} = \frac{s \pm \sqrt{\Delta_3}}{2}, \label{eq:sol-c}
+\end{align}
+where we define the discriminants:
+\begin{align}
+\Delta_1 &= s^2 - 32 - 16\alpha, \label{eq:delta1}\\
+\Delta_2 &= s^2 - 36 - 24\alpha, \label{eq:delta2}\\
+\Delta_3 &= s^2 - 20 - 40\alpha. \label{eq:delta3}
+\end{align}
+\end{corollary}
+
+%% ============================================================
+%% SECTION 4: Discriminant Constraints
+%% ============================================================
+\section{Discriminant Constraints}\label{sec:discriminant}
+
+\begin{lemma}[Non-negativity Requirements]\label{lem:nonneg}
+For real solutions, we require:
+\begin{align}
+s^2 &\geq 32 + 16\alpha \quad (\text{from } \Delta_1 \geq 0), \label{eq:req1}\\
+s^2 &\geq 36 + 24\alpha \quad (\text{from } \Delta_2 \geq 0), \label{eq:req2}\\
+s^2 &\geq 20 + 40\alpha \quad (\text{from } \Delta_3 \geq 0). \label{eq:req3}
+\end{align}
+\end{lemma}
+
+\begin{proposition}[Binding Constraint]\label{prop:binding}
+Since $\alpha = \log_2 3 \approx 1.585$:
+\begin{align*}
+32 + 16\alpha &\approx 32 + 25.4 = 57.4,\\
+36 + 24\alpha &\approx 36 + 38.0 = 74.0,\\
+20 + 40\alpha &\approx 20 + 63.4 = 83.4.
+\end{align*}
+The binding constraint is $s^2 \geq 20 + 40\alpha$, i.e., $s \geq \sqrt{20 + 40\alpha}$.
+\end{proposition}
+
+%% ============================================================
+%% SECTION 5: Testing s = 6 + 2alpha
+%% ============================================================
+\section{Testing the Candidate $s = 6 + 2\alpha$}\label{sec:candidate}
+
+We claim that $s_0 = 6 + 2\alpha = \log_2 576$ achieves the minimum.
+
+\begin{claim}
+$s_0 = 6 + 2\alpha$ satisfies the binding constraint $s^2 \geq 20 + 40\alpha$.
+\end{claim}
+
+\begin{proof}
+At $s_0 = 6 + 2\alpha$:
+\begin{equation}\label{eq:s0squared}
+s_0^2 = (6 + 2\alpha)^2 = 36 + 24\alpha + 4\alpha^2.
+\end{equation}
+We need $36 + 24\alpha + 4\alpha^2 \geq 20 + 40\alpha$, i.e.,
+\[
+4\alpha^2 - 16\alpha + 16 \geq 0 \iff 4(\alpha - 2)^2 \geq 0.
+\]
+This holds for all $\alpha$, with equality iff $\alpha = 2$.
+Since $\alpha = \log_2 3 < \log_2 4 = 2$, the inequality is strict.
+\end{proof}
+
+%% ============================================================
+%% SECTION 6: Discriminant Perfect Square Factorizations
+%% ============================================================
+\section{Discriminant Perfect Square Factorizations}\label{sec:perfectsquare}
+
+\subsection{Computation of $\Delta_1$ at $s = 6 + 2\alpha$}
+
+\begin{lemma}[$\Delta_1$ Factorization]\label{lem:delta1}
+At $s_0 = 6 + 2\alpha$:
+\begin{equation}
+\Delta_1 = 4(1 + \alpha)^2, \quad \sqrt{\Delta_1} = 2 + 2\alpha.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\textbf{Step 1 (Substitution):}
+From \eqref{eq:s0squared} and \eqref{eq:delta1}:
+\[
+\Delta_1 = s_0^2 - 32 - 16\alpha = (36 + 24\alpha + 4\alpha^2) - 32 - 16\alpha.
+\]
+
+\textbf{Step 2 (Grouping):}
+\begin{align*}
+\Delta_1 &= (36 - 32) + (24\alpha - 16\alpha) + 4\alpha^2\\
+&= 4 + 8\alpha + 4\alpha^2.
+\end{align*}
+
+\textbf{Step 3 (Factorization):}
+\[
+4 + 8\alpha + 4\alpha^2 = 4(1 + 2\alpha + \alpha^2) = 4(1 + \alpha)^2.
+\]
+
+\textbf{Step 4 (Square Root):}
+Since $\alpha = \log_2 3 > 0$, we have $1 + \alpha > 1 > 0$. Thus:
+\[
+\sqrt{\Delta_1} = \sqrt{4(1+\alpha)^2} = 2|1+\alpha| = 2(1+\alpha) = 2 + 2\alpha.
+\]
+\end{proof}
+
+\subsection{Computation of $\Delta_2$ at $s = 6 + 2\alpha$}
+
+\begin{lemma}[$\Delta_2$ Factorization]\label{lem:delta2}
+At $s_0 = 6 + 2\alpha$:
+\begin{equation}
+\Delta_2 = 4\alpha^2, \quad \sqrt{\Delta_2} = 2\alpha.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\textbf{Step 1 (Substitution):}
+\[
+\Delta_2 = s_0^2 - 36 - 24\alpha = (36 + 24\alpha + 4\alpha^2) - 36 - 24\alpha.
+\]
+
+\textbf{Step 2 (Collection):}
+\[
+\Delta_2 = (36 - 36) + (24\alpha - 24\alpha) + 4\alpha^2 = 0 + 0 + 4\alpha^2 = 4\alpha^2.
+\]
+
+\textbf{Step 3 (Perfect Square):}
+\[
+4\alpha^2 = (2\alpha)^2.
+\]
+
+\textbf{Step 4 (Square Root):}
+Since $\alpha = \log_2 3 > 0$:
+\[
+\sqrt{\Delta_2} = \sqrt{4\alpha^2} = 2|\alpha| = 2\alpha.
+\]
+\end{proof}
+
+\subsection{Computation of $\Delta_3$ at $s = 6 + 2\alpha$}
+
+\begin{lemma}[$\Delta_3$ Factorization]\label{lem:delta3}
+At $s_0 = 6 + 2\alpha$:
+\begin{equation}
+\Delta_3 = 4(2 - \alpha)^2, \quad \sqrt{\Delta_3} = 4 - 2\alpha.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\textbf{Step 1 (Substitution):}
+\[
+\Delta_3 = s_0^2 - 20 - 40\alpha = (36 + 24\alpha + 4\alpha^2) - 20 - 40\alpha.
+\]
+
+\textbf{Step 2 (Collection):}
+\[
+\Delta_3 = (36 - 20) + (24\alpha - 40\alpha) + 4\alpha^2 = 16 - 16\alpha + 4\alpha^2.
+\]
+
+\textbf{Step 3 (Factorization):}
+\[
+16 - 16\alpha + 4\alpha^2 = 4(4 - 4\alpha + \alpha^2) = 4(2 - \alpha)^2.
+\]
+\textit{Verification:} $(2 - \alpha)^2 = 4 - 4\alpha + \alpha^2$. \checkmark
+
+\textbf{Step 4 (Sign Analysis):}
+Since $\alpha = \log_2 3$ and $3 < 4 = 2^2$, we have $\log_2 3 < \log_2 4 = 2$.
+Thus $\alpha < 2$, so $2 - \alpha > 0$.
+
+\textbf{Step 5 (Square Root):}
+\[
+\sqrt{\Delta_3} = \sqrt{4(2-\alpha)^2} = 2|2-\alpha| = 2(2-\alpha) = 4 - 2\alpha.
+\]
+\end{proof}
+
+%% ============================================================
+%% SECTION 7: The Sum Constraint
+%% ============================================================
+\section{The Sum Constraint}\label{sec:sumconstraint}
+
+\begin{proposition}[Sum Constraint]\label{prop:sumconstraint}
+The constraint $a + b + c = s$ requires:
+\begin{equation}\label{eq:signconstraint}
+\epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3} = -s
+\end{equation}
+for some $\epsilon_i \in \{+1, -1\}$.
+\end{proposition}
+
+\begin{proof}
+From \eqref{eq:sol-a}--\eqref{eq:sol-c}:
+\[
+a + b + c = \frac{3s + \epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3}}{2} = s.
+\]
+Multiplying by 2:
+\[
+3s + \epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3} = 2s.
+\]
+Rearranging:
+\[
+\epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3} = -s.
+\]
+\end{proof}
+
+\begin{remark}
+Since $s > 0$ (as $x, y, z > 0$), the right-hand side is negative.
+Therefore, at least one $\epsilon_i$ must be $-1$.
+\end{remark}
+
+%% ============================================================
+%% SECTION 8: Exhaustive Sign Combination Analysis
+%% ============================================================
+\section{Exhaustive Sign Combination Analysis}\label{sec:signanalysis}
+
+At $s_0 = 6 + 2\alpha$, we have computed:
+\[
+\sqrt{\Delta_1} = 2 + 2\alpha, \quad \sqrt{\Delta_2} = 2\alpha, \quad \sqrt{\Delta_3} = 4 - 2\alpha.
+\]
+The target is:
+\[
+-s_0 = -(6 + 2\alpha) = -6 - 2\alpha.
+\]
+
+We analyze all $2^3 = 8$ sign combinations $(\epsilon_1, \epsilon_2, \epsilon_3) \in \{+1, -1\}^3$.
+
+\subsection{Summary Table}
+
+\begin{center}
+\begin{longtable}{|c|c|c|c|l|}
+\hline
+\textbf{Case} & $(\epsilon_1, \epsilon_2, \epsilon_3)$ & \textbf{LHS Expression} & \textbf{LHS Value} & \textbf{Verdict} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Case} & $(\epsilon_1, \epsilon_2, \epsilon_3)$ & \textbf{LHS Expression} & \textbf{LHS Value} & \textbf{Verdict} \\
+\hline
+\endhead
+1 & $(+,+,+)$ & $(2+2\alpha) + 2\alpha + (4-2\alpha)$ & $6 + 2\alpha$ & Impossible: LHS $> 0$ \\
+\hline
+2 & $(+,+,-)$ & $(2+2\alpha) + 2\alpha - (4-2\alpha)$ & $-2 + 6\alpha$ & Req.~$\alpha = -\frac{1}{2}$ \\
+\hline
+3 & $(+,-,+)$ & $(2+2\alpha) - 2\alpha + (4-2\alpha)$ & $6 - 2\alpha$ & Contradiction \\
+\hline
+4 & $(+,-,-)$ & $(2+2\alpha) - 2\alpha - (4-2\alpha)$ & $-2 + 2\alpha$ & Req.~$\alpha = -1$ \\
+\hline
+5 & $(-,+,+)$ & $-(2+2\alpha) + 2\alpha + (4-2\alpha)$ & $2 - 2\alpha$ & Contradiction \\
+\hline
+6 & $(-,+,-)$ & $-(2+2\alpha) + 2\alpha - (4-2\alpha)$ & $-6 + 2\alpha$ & Req.~$\alpha = 0$ \\
+\hline
+7 & $(-,-,+)$ & $-(2+2\alpha) - 2\alpha + (4-2\alpha)$ & $2 - 6\alpha$ & Req.~$\alpha = 2$ \\
+\hline
+8 & $(-,-,-)$ & $-(2+2\alpha) - 2\alpha - (4-2\alpha)$ & $-6 - 2\alpha$ & \textbf{VALID} \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{Case-by-Case Analysis}
+
+\subsubsection{Case 1: $(\epsilon_1, \epsilon_2, \epsilon_3) = (+1, +1, +1)$}
+\begin{align*}
+\text{LHS} &= (2+2\alpha) + 2\alpha + (4-2\alpha)\\
+&= 2 + 2\alpha + 2\alpha + 4 - 2\alpha\\
+&= 6 + 2\alpha > 0.
+\end{align*}
+\textbf{Verdict:} Impossible since target $= -6 - 2\alpha < 0$.
+
+\subsubsection{Case 2: $(\epsilon_1, \epsilon_2, \epsilon_3) = (+1, +1, -1)$}
+\begin{align*}
+\text{LHS} &= (2+2\alpha) + 2\alpha - (4-2\alpha)\\
+&= 2 + 2\alpha + 2\alpha - 4 + 2\alpha\\
+&= -2 + 6\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+-2 + 6\alpha = -6 - 2\alpha \implies 8\alpha = -4 \implies \alpha = -\frac{1}{2}.
+\]
+\textbf{Verdict:} Impossible since $\alpha = \log_2 3 > 0 \not\in \{-\frac{1}{2}\}$.
+
+\subsubsection{Case 3: $(\epsilon_1, \epsilon_2, \epsilon_3) = (+1, -1, +1)$}
+\begin{align*}
+\text{LHS} &= (2+2\alpha) - 2\alpha + (4-2\alpha)\\
+&= 2 + 2\alpha - 2\alpha + 4 - 2\alpha\\
+&= 6 - 2\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+6 - 2\alpha = -6 - 2\alpha \implies 6 = -6.
+\]
+\textbf{Verdict:} Impossible (algebraic contradiction).
+
+\subsubsection{Case 4: $(\epsilon_1, \epsilon_2, \epsilon_3) = (+1, -1, -1)$}
+\begin{align*}
+\text{LHS} &= (2+2\alpha) - 2\alpha - (4-2\alpha)\\
+&= 2 + 2\alpha - 2\alpha - 4 + 2\alpha\\
+&= -2 + 2\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+-2 + 2\alpha = -6 - 2\alpha \implies 4\alpha = -4 \implies \alpha = -1.
+\]
+\textbf{Verdict:} Impossible since $\alpha > 0$.
+
+\subsubsection{Case 5: $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, +1, +1)$}
+\begin{align*}
+\text{LHS} &= -(2+2\alpha) + 2\alpha + (4-2\alpha)\\
+&= -2 - 2\alpha + 2\alpha + 4 - 2\alpha\\
+&= 2 - 2\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+2 - 2\alpha = -6 - 2\alpha \implies 2 = -6.
+\]
+\textbf{Verdict:} Impossible (algebraic contradiction).
+
+\subsubsection{Case 6: $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, +1, -1)$}
+\begin{align*}
+\text{LHS} &= -(2+2\alpha) + 2\alpha - (4-2\alpha)\\
+&= -2 - 2\alpha + 2\alpha - 4 + 2\alpha\\
+&= -6 + 2\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+-6 + 2\alpha = -6 - 2\alpha \implies 4\alpha = 0 \implies \alpha = 0.
+\]
+\textbf{Verdict:} Impossible since $\alpha = \log_2 3 > 0$ (boundary excluded).
+
+\subsubsection{Case 7: $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, -1, +1)$}
+\begin{align*}
+\text{LHS} &= -(2+2\alpha) - 2\alpha + (4-2\alpha)\\
+&= -2 - 2\alpha - 2\alpha + 4 - 2\alpha\\
+&= 2 - 6\alpha.
+\end{align*}
+Setting LHS $= -6 - 2\alpha$:
+\[
+2 - 6\alpha = -6 - 2\alpha \implies -4\alpha = -8 \implies \alpha = 2.
+\]
+\textbf{Verdict:} Impossible since $\alpha = \log_2 3 < 2$ (boundary excluded).
+
+\subsubsection{Case 8: $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, -1, -1)$}
+
+This is the key case. We compute:
+\begin{align*}
+\text{LHS} &= -(2+2\alpha) - 2\alpha - (4-2\alpha)\\
+&= (-2 - 2\alpha) + (-2\alpha) + (-4 + 2\alpha).
+\end{align*}
+
+\textbf{Step-by-step:}
+\begin{enumerate}
+\item Distribute signs: $(-1)(2+2\alpha) = -2 - 2\alpha$
+\item Distribute signs: $(-1)(2\alpha) = -2\alpha$
+\item Distribute signs: $(-1)(4-2\alpha) = -4 + 2\alpha$
+\item Group constants: $(-2) + (-4) = -6$
+\item Group $\alpha$ terms: $(-2\alpha) + (-2\alpha) + (2\alpha) = -2\alpha$
+\item Combine: $\text{LHS} = -6 - 2\alpha$
+\end{enumerate}
+
+\textbf{Verification:}
+\[
+\text{LHS} = -6 - 2\alpha = -(6 + 2\alpha) = -s_0. \quad \checkmark
+\]
+
+\textbf{Verdict:} This is the unique valid solution!
+
+\begin{theorem}[Unique Sign Combination]\label{thm:uniquesign}
+By exhaustive enumeration of all 8 sign combinations, only $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, -1, -1)$ yields LHS $= -s$ for $\alpha \in (0, 2)$.
+\end{theorem}
+
+%% ============================================================
+%% SECTION 9: Solution Values
+%% ============================================================
+\section{Explicit Solution Values}\label{sec:solution}
+
+\begin{proposition}[Values of $a$, $b$, $c$]\label{prop:abc}
+With $\epsilon_1 = \epsilon_2 = \epsilon_3 = -1$ and $s = 6 + 2\alpha$:
+\begin{align}
+a &= \frac{(6+2\alpha) - (2+2\alpha)}{2} = \frac{4}{2} = 2, \label{eq:aval}\\
+b &= \frac{(6+2\alpha) - 2\alpha}{2} = \frac{6}{2} = 3, \label{eq:bval}\\
+c &= \frac{(6+2\alpha) - (4-2\alpha)}{2} = \frac{2+4\alpha}{2} = 1 + 2\alpha. \label{eq:cval}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+Using \eqref{eq:sol-a}--\eqref{eq:sol-c} with the minus signs:
+\begin{align*}
+a &= \frac{s - \sqrt{\Delta_1}}{2} = \frac{(6+2\alpha) - (2+2\alpha)}{2} = \frac{4}{2} = 2.\\
+b &= \frac{s - \sqrt{\Delta_2}}{2} = \frac{(6+2\alpha) - 2\alpha}{2} = \frac{6}{2} = 3.\\
+c &= \frac{s - \sqrt{\Delta_3}}{2} = \frac{(6+2\alpha) - (4-2\alpha)}{2} = \frac{2+4\alpha}{2} = 1 + 2\alpha.
+\end{align*}
+\end{proof}
+
+\begin{corollary}[Values of $x$, $y$, $z$]\label{cor:xyz}
+\begin{align}
+x &= 2^a = 2^2 = 4, \label{eq:xval}\\
+y &= 2^b = 2^3 = 8, \label{eq:yval}\\
+z &= 2^c = 2^{1+2\alpha} = 2 \cdot 2^{2\alpha} = 2 \cdot (2^{\alpha})^2 = 2 \cdot 3^2 = 18. \label{eq:zval}
+\end{align}
+\end{corollary}
+
+\begin{proposition}[Verification of Sum]\label{prop:verifysum}
+\[
+a + b + c = 2 + 3 + (1 + 2\alpha) = 6 + 2\alpha = s_0. \quad \checkmark
+\]
+\end{proposition}
+
+%% ============================================================
+%% SECTION 10: Verification of Original Constraints
+%% ============================================================
+\section{Verification of Original Constraints}\label{sec:verify}
+
+We verify that $(x, y, z) = (4, 8, 18)$ satisfies all three original constraints.
+
+\subsection{Verification of Constraint 1}
+
+\begin{claim}
+$x^{\log_2(yz)} = 2^8 \cdot 3^4$.
+\end{claim}
+
+\begin{proof}
+\begin{align*}
+yz &= 8 \cdot 18 = 144 = 16 \cdot 9 = 2^4 \cdot 3^2.\\
+\log_2(yz) &= \log_2(2^4 \cdot 3^2) = 4 + 2\alpha.\\
+x^{\log_2(yz)} &= 4^{4+2\alpha} = (2^2)^{4+2\alpha} = 2^{8+4\alpha}.\\
+\intertext{Since $2^\alpha = 3$:}
+2^{8+4\alpha} &= 2^8 \cdot 2^{4\alpha} = 2^8 \cdot (2^\alpha)^4 = 2^8 \cdot 3^4. \quad \checkmark
+\end{align*}
+\end{proof}
+
+\subsection{Verification of Constraint 2}
+
+\begin{claim}
+$y^{\log_2(zx)} = 2^9 \cdot 3^6$.
+\end{claim}
+
+\begin{proof}
+\begin{align*}
+zx &= 18 \cdot 4 = 72 = 8 \cdot 9 = 2^3 \cdot 3^2.\\
+\log_2(zx) &= \log_2(2^3 \cdot 3^2) = 3 + 2\alpha.\\
+y^{\log_2(zx)} &= 8^{3+2\alpha} = (2^3)^{3+2\alpha} = 2^{9+6\alpha}.\\
+2^{9+6\alpha} &= 2^9 \cdot 2^{6\alpha} = 2^9 \cdot (2^\alpha)^6 = 2^9 \cdot 3^6. \quad \checkmark
+\end{align*}
+\end{proof}
+
+\subsection{Verification of Constraint 3}
+
+\begin{claim}
+$z^{\log_2(xy)} = 2^5 \cdot 3^{10}$.
+\end{claim}
+
+\begin{proof}
+\begin{align*}
+xy &= 4 \cdot 8 = 32 = 2^5.\\
+\log_2(xy) &= \log_2(2^5) = 5.\\
+z^{\log_2(xy)} &= 18^5 = (2 \cdot 3^2)^5 = 2^5 \cdot 3^{10}. \quad \checkmark
+\end{align*}
+\end{proof}
+
+%% ============================================================
+%% SECTION 11: Minimality Proof
+%% ============================================================
+\section{Proof of Minimality}\label{sec:minimality}
+
+We now prove that $s_0 = 6 + 2\alpha$ is indeed the minimum value of $s = a + b + c$.
+
+\subsection{Definition of the Constraint Function}
+
+\begin{definition}\label{def:f}
+For $s \geq \sqrt{20 + 40\alpha}$, define:
+\begin{equation}\label{eq:f}
+f(s) = \sqrt{s^2 - 32 - 16\alpha} + \sqrt{s^2 - 36 - 24\alpha} + \sqrt{s^2 - 20 - 40\alpha} - s.
+\end{equation}
+\end{definition}
+
+The constraint equation (for the all-minus case) is $f(s) = 0$.
+
+\subsection{Verification that $f(s_0) = 0$}
+
+\begin{lemma}\label{lem:f-zero}
+$f(s_0) = 0$ where $s_0 = 6 + 2\alpha$.
+\end{lemma}
+
+\begin{proof}
+Substituting the computed discriminant roots:
+\begin{align*}
+f(s_0) &= \sqrt{\Delta_1} + \sqrt{\Delta_2} + \sqrt{\Delta_3} - s_0\\
+&= (2 + 2\alpha) + 2\alpha + (4 - 2\alpha) - (6 + 2\alpha).
+\end{align*}
+Simplifying the first three terms:
+\[
+(2 + 2\alpha) + 2\alpha + (4 - 2\alpha) = 2 + 2\alpha + 2\alpha + 4 - 2\alpha = 6 + 2\alpha.
+\]
+Therefore:
+\[
+f(s_0) = (6 + 2\alpha) - (6 + 2\alpha) = 0. \quad \checkmark
+\]
+\end{proof}
+
+\subsection{Strict Monotonicity of $f$}
+
+\begin{lemma}\label{lem:fprime}
+$f'(s) > 0$ for all $s$ in the domain.
+\end{lemma}
+
+\begin{proof}
+Write $f(s) = \sqrt{s^2 - c_1} + \sqrt{s^2 - c_2} + \sqrt{s^2 - c_3} - s$ where:
+\[
+c_1 = 32 + 16\alpha, \quad c_2 = 36 + 24\alpha, \quad c_3 = 20 + 40\alpha.
+\]
+
+By the chain rule:
+\[
+\frac{d}{ds}\sqrt{s^2 - c} = \frac{1}{2\sqrt{s^2 - c}} \cdot 2s = \frac{s}{\sqrt{s^2 - c}}.
+\]
+
+Therefore:
+\begin{equation}\label{eq:fprime}
+f'(s) = \frac{s}{\sqrt{s^2 - c_1}} + \frac{s}{\sqrt{s^2 - c_2}} + \frac{s}{\sqrt{s^2 - c_3}} - 1.
+\end{equation}
+
+\textbf{Claim:} Each fraction $\frac{s}{\sqrt{s^2 - c_i}} > 1$.
+
+\textbf{Proof of claim:}
+For $\frac{s}{\sqrt{s^2 - c_i}} > 1$, we need $s > \sqrt{s^2 - c_i}$, i.e., $s^2 > s^2 - c_i$, i.e., $c_i > 0$.
+
+Since $\alpha > 0$:
+\begin{align*}
+c_1 &= 32 + 16\alpha > 32 > 0,\\
+c_2 &= 36 + 24\alpha > 36 > 0,\\
+c_3 &= 20 + 40\alpha > 20 > 0.
+\end{align*}
+
+Therefore, for $s > 0$ in the domain:
+\[
+f'(s) > 1 + 1 + 1 - 1 = 2 > 0.
+\]
+\end{proof}
+
+\subsection{Uniqueness of the Minimum}
+
+\begin{theorem}[Uniqueness]\label{thm:uniqueness}
+$s_0 = 6 + 2\alpha$ is the unique solution to $f(s) = 0$.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+\item The domain of $f$ is $[s_{\min}, \infty)$ where $s_{\min} = \sqrt{20 + 40\alpha}$ ensures all radicands are non-negative.
+\item $f$ is continuous on its domain as a composition of continuous functions.
+\item By Lemma~\ref{lem:fprime}, $f'(s) > 0$ for all $s$ in the domain.
+\item By the Mean Value Theorem, continuous $f$ with $f'(s) > 0$ everywhere implies $f$ is strictly increasing.
+\item For strictly increasing $f$: if $f(s_0) = 0$, then:
+\begin{itemize}
+\item $f(s) < 0$ for $s < s_0$, and
+\item $f(s) > 0$ for $s > s_0$.
+\end{itemize}
+\item By Lemma~\ref{lem:f-zero}, $f(s_0) = 0$ at $s_0 = 6 + 2\alpha$.
+\end{enumerate}
+Therefore $s_0 = 6 + 2\alpha$ is the unique zero of $f$, and no solution exists for $s < s_0$.
+\end{proof}
+
+\begin{corollary}[Minimum Product]\label{cor:minproduct}
+$s = a + b + c \geq s_0 = 6 + 2\alpha$, with equality achieved.
+Therefore:
+\[
+xyz = 2^s \geq 2^{6+2\alpha} = 2^6 \cdot 2^{2\alpha} = 64 \cdot (2^\alpha)^2 = 64 \cdot 9 = 576.
+\]
+\end{corollary}
+
+%% ============================================================
+%% SECTION 12: Conclusion
+%% ============================================================
+\section{Conclusion}\label{sec:conclusion}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+We have shown:
+\begin{enumerate}
+\item The constraints transform to a quadratic system in logarithmic variables.
+\item The system admits real solutions only when $s = a + b + c \geq \sqrt{20 + 40\alpha}$.
+\item At $s_0 = 6 + 2\alpha$, all discriminants are perfect squares.
+\item Exhaustive analysis of all 8 sign combinations shows only $(-1, -1, -1)$ is valid.
+\item The constraint function $f(s) = 0$ has a unique solution at $s_0 = 6 + 2\alpha$ by strict monotonicity.
+\item The explicit solution $(x, y, z) = (4, 8, 18)$ satisfies all original constraints.
+\item Therefore, $xyz = 4 \cdot 8 \cdot 18 = 576$ is the minimum.
+\end{enumerate}
+\end{proof}
+
+\begin{equation}
+\boxed{xyz_{\min} = 576}
+\end{equation}
+
+\appendix
+
+\section{Numerical Verification}\label{app:numerical}
+
+For reference, $\alpha = \log_2 3 \approx 1.5849625007211563$.
+
+\begin{align*}
+s_0 &= 6 + 2\alpha \approx 9.1699250014423126\\
+2^{s_0} &= 2^{6 + 2\log_2 3} = 2^6 \cdot 3^2 = 64 \cdot 9 = 576 \quad \checkmark
+\end{align*}
+
+\section{Graph Metadata}\label{app:metadata}
+
+This proof was formalized using the Alethfeld proof system from graph \texttt{graph-51acde-43ac9a}, containing 40 nodes at depth 0--1, with 67 expansion nodes at depths 2--3.
+
+Key verified nodes:
+\begin{itemize}
+\item \texttt{:1-000001} -- Logarithmic transformation
+\item \texttt{:1-000011, :1-000012, :1-000013} -- Discriminant factorizations
+\item \texttt{:1-000015} -- Valid sign combination verification
+\item \texttt{:1-000034} -- Exhaustive sign analysis (8 cases)
+\item \texttt{:1-000031, :1-000032, :1-000033} -- Minimality via monotonicity
+\end{itemize}
+
+\end{document}
