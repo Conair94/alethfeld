@@ -2,11 +2,23 @@
   Alethfeld Generated Lean 4 Formalization
   Graph: hmmt_feb_2025_3 (graph-51acde-43ac9a)
 
-  THEOREM: Given x, y, z in R+ with
+  ORIGINAL CLAIM: Given x, y, z in R+ with
     x^(log_2(yz)) = 2^8 * 3^4
     y^(log_2(zx)) = 2^9 * 3^6
     z^(log_2(xy)) = 2^5 * 3^10
   the minimum value of xyz is 576.
+
+  ⚠️  BROKEN MATH DISCOVERY: THE CLAIM IS FALSE!
+  ────────────────────────────────────────────────
+  The solution (x, y, z) = (1/4, 1/8, 1/18) satisfies all three equations:
+    (1/4)^(log₂(1/144)) = (1/4)^(-(4+2α)) = 4^(4+2α) = 2^8 * 3^4 ✓
+    (1/8)^(log₂(1/72))  = (1/8)^(-(3+2α)) = 8^(3+2α) = 2^9 * 3^6 ✓
+    (1/18)^(log₂(1/32)) = (1/18)^(-5) = 18^5 = 2^5 * 3^10 ✓
+
+  This gives xyz = 1/576 < 576.
+
+  The TRUE minimum is 1/576, not 576.
+  The claim "minimum is 576" is the MAXIMUM among positive solutions.
 
   PROOF STATUS:
   ✓ PROVEN: Properties of alpha = log_2(3): positivity, bounds (1 < alpha < 2)
@@ -19,10 +31,10 @@
   ✓ PROVEN: f(s) < 0 for s < s_min (from strict monotonicity)
   ✓ PROVEN: solution_satisfies_equations (x=4, y=8, z=18)
   ✓ PROVEN: Logarithmic transformation lemmas (eq1_transform, eq2_transform, eq3_transform)
+  ✓ PROVEN: constraint_implies_f_nonneg: Triangle inequality for s > 0 case
 
-  ○ ADMITTED (2 sorries):
-    1. constraint_implies_f_nonneg: Triangle inequality for constraint ε₁√Δ₁+ε₂√Δ₂+ε₃√Δ₃=-s
-    2. solution_achieves_minimum (minimality): Full minimality proof connecting all pieces
+  ✗ UNPROVABLE (1 sorry - theorem is false):
+    - solution_achieves_minimum: The s < 0 case admits valid counterexamples
 
   PROOF STRUCTURE (from EDN graph):
   1. Setup: Define alpha = log_2(3), a = log_2(x), b = log_2(y), c = log_2(z), s = a+b+c
@@ -879,10 +891,91 @@ lemma constraint_implies_f_nonneg (a b c : ℝ)
     (hDelta2 : 0 ≤ Delta2 (a + b + c))
     (hDelta3 : 0 ≤ Delta3 (a + b + c)) :
     f (a + b + c) ≥ 0 := by
-  -- The proof uses the triangle inequality argument outlined in the docstring
-  -- Admitted for now; the key insight is that (2a-s) + (2b-s) + (2c-s) = -s
-  -- and |ε₁√Δ₁ + ε₂√Δ₂ + ε₃√Δ₃| ≤ √Δ₁ + √Δ₂ + √Δ₃, so s ≤ f(s) + s, i.e., f(s) ≥ 0
-  sorry
+  -- Let s = a + b + c
+  set s := a + b + c with hs_def
+
+  -- The hypotheses simplify to a*(b+c) = k1, etc.
+  have h1' : a * (b + c) = k1 := by convert h1 using 1; ring
+  have h2' : b * (c + a) = k2 := by convert h2 using 1; ring
+  have h3' : c * (a + b) = k3 := by convert h3 using 1; ring
+
+  -- Step 1: From a*(b+c) = k1 and s = a+b+c, derive (2a-s)² = Δ₁(s)
+  -- a*(s-a) = k1, so a*s - a² = k1, thus a² - a*s + k1 = 0
+  -- Completing the square: (2a - s)² = s² - 4k1 = Δ₁(s)
+  have hsq1 : (2 * a - s) ^ 2 = Delta1 s := by
+    simp only [Delta1, hs_def]
+    -- (2a - (a+b+c))² = (a+b+c)² - 4k1, which follows from a(b+c) = k1
+    have key := h1'
+    nlinarith [key, sq_nonneg (a - b - c), sq_nonneg (a + b + c)]
+
+  have hsq2 : (2 * b - s) ^ 2 = Delta2 s := by
+    simp only [Delta2, hs_def]
+    have key := h2'
+    nlinarith [key, sq_nonneg (b - c - a), sq_nonneg (a + b + c)]
+
+  have hsq3 : (2 * c - s) ^ 2 = Delta3 s := by
+    simp only [Delta3, hs_def]
+    have key := h3'
+    nlinarith [key, sq_nonneg (c - a - b), sq_nonneg (a + b + c)]
+
+  -- Step 2: |2a - s| = √Δ₁, etc.
+  have habs1 : |2 * a - s| = Real.sqrt (Delta1 s) := by
+    rw [← Real.sqrt_sq_eq_abs, hsq1]
+  have habs2 : |2 * b - s| = Real.sqrt (Delta2 s) := by
+    rw [← Real.sqrt_sq_eq_abs, hsq2]
+  have habs3 : |2 * c - s| = Real.sqrt (Delta3 s) := by
+    rw [← Real.sqrt_sq_eq_abs, hsq3]
+
+  -- Step 3: The sum (2a-s) + (2b-s) + (2c-s) = -s
+  have hsum : (2 * a - s) + (2 * b - s) + (2 * c - s) = -s := by
+    simp only [hs_def]; ring
+
+  -- Step 4: Triangle inequality: |-s| ≤ |2a-s| + |2b-s| + |2c-s|
+  have htri : |(-s : ℝ)| ≤ |2 * a - s| + |2 * b - s| + |2 * c - s| := by
+    calc |(-s : ℝ)| = |(2 * a - s) + (2 * b - s) + (2 * c - s)| := by rw [← hsum]
+      _ = |(2 * a - s) + ((2 * b - s) + (2 * c - s))| := by ring_nf
+      _ ≤ |2 * a - s| + |(2 * b - s) + (2 * c - s)| := abs_add_le _ _
+      _ ≤ |2 * a - s| + (|2 * b - s| + |2 * c - s|) := by
+          have := abs_add_le (2*b - s) (2*c - s)
+          linarith
+      _ = |2 * a - s| + |2 * b - s| + |2 * c - s| := by ring
+
+  -- Step 5: Since s > 0, |-s| = s
+  have habs_s : |(-s : ℝ)| = s := by rw [abs_neg, abs_of_pos hs_pos]
+
+  -- Step 6: Combine to get s ≤ √Δ₁ + √Δ₂ + √Δ₃
+  have hbound : s ≤ Real.sqrt (Delta1 s) + Real.sqrt (Delta2 s) + Real.sqrt (Delta3 s) := by
+    calc s = |(-s : ℝ)| := habs_s.symm
+      _ ≤ |2 * a - s| + |2 * b - s| + |2 * c - s| := htri
+      _ = Real.sqrt (Delta1 s) + Real.sqrt (Delta2 s) + Real.sqrt (Delta3 s) := by
+          rw [habs1, habs2, habs3]
+
+  -- Step 7: Thus f(s) = √Δ₁ + √Δ₂ + √Δ₃ - s ≥ 0
+  simp only [f]
+  linarith
+
+/-- xyz = 2^(log₂x + log₂y + log₂z) for positive x, y, z -/
+lemma prod_eq_two_pow_sum_log {x y z : ℝ} (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) :
+    x * y * z = (2:ℝ) ^ (Real.log x / Real.log 2 + Real.log y / Real.log 2 + Real.log z / Real.log 2) := by
+  have h2_pos : (0:ℝ) < 2 := by norm_num
+  have h2_ne_one : (2:ℝ) ≠ 1 := by norm_num
+  have hxyz_pos : 0 < x * y * z := mul_pos (mul_pos hx hy) hz
+  -- Rewrite log_div_log to logb
+  conv_rhs =>
+    rw [Real.log_div_log, Real.log_div_log, Real.log_div_log]
+  -- Now goal is: x * y * z = 2 ^ (logb 2 x + logb 2 y + logb 2 z)
+  -- logb 2 (x*y*z) = logb 2 x + logb 2 y + logb 2 z and 2^(logb 2 w) = w for w > 0
+  rw [← Real.logb_mul (ne_of_gt hx) (ne_of_gt hy)]
+  rw [← Real.logb_mul (ne_of_gt (mul_pos hx hy)) (ne_of_gt hz)]
+  exact (Real.rpow_logb h2_pos h2_ne_one hxyz_pos).symm
+
+/-- 2^s_min = 576 -/
+lemma two_pow_s_min_eq_576 : (2:ℝ) ^ s_min = 576 := by
+  simp only [s_min]
+  rw [Real.rpow_add (by norm_num : (0:ℝ) < 2)]
+  rw [show (2:ℝ) * alpha = alpha * 2 by ring, Real.rpow_mul (by norm_num : (0:ℝ) ≤ 2)]
+  rw [two_rpow_alpha]
+  norm_num
 
 /-- The solution achieves the minimum (Full statement)
 
@@ -910,28 +1003,124 @@ theorem solution_achieves_minimum :
   constructor
   · simp only [x_sol, y_sol, z_sol]; norm_num
   · intro x y z hx hy hz eq1 eq2 eq3
-    -- The full proof requires:
-    -- 1. Logarithmic transformation (eq1_transform, eq2_transform, eq3_transform)
-    -- 2. Triangle inequality argument (constraint_implies_f_nonneg)
-    -- 3. Strict monotonicity (f_strict_mono_on_domain)
-    -- 4. Sign analysis to show s > 0
-    -- The proof outline is given in the docstring above.
-    sorry
+    -- Step 1: Define logarithmic variables
+    let a := Real.log x / Real.log 2
+    let b := Real.log y / Real.log 2
+    let c := Real.log z / Real.log 2
+    let s := a + b + c
 
--- Summary (2 sorries remaining):
--- ✓ PROVEN: alpha_pos, alpha_gt_one, alpha_lt_two (properties of log_2(3))
--- ✓ PROVEN: binding_constraint ((6+2*alpha)^2 >= 20 + 40*alpha)
--- ✓ PROVEN: f_at_s_min_eq_zero (evaluating sqrt at perfect squares)
--- ✓ PROVEN: f_deriv_positive (derivative analysis)
--- ✓ PROVEN: f_strict_mono_on_domain (monotonicity from positive derivative)
--- ✓ PROVEN: s_min_unique_root (uniqueness from strict monotonicity)
--- ✓ PROVEN: no_solution_below_s_min (f(s) < 0 for s < s_min)
--- ✓ PROVEN: solution_satisfies_equations (verification of x=4, y=8, z=18)
--- ✓ PROVEN: eq1_transform, eq2_transform, eq3_transform (logarithmic transformation)
+    -- Step 2: Apply transformation lemmas to get polynomial constraints
+    have h1 : a * (b + c) = k1 := eq1_transform hx hy hz eq1
+    have h2 : b * (c + a) = k2 := eq2_transform hx hy hz eq2
+    have h3 : c * (a + b) = k3 := eq3_transform hx hy hz eq3
+
+    -- Convert to the form a*(s-a) = k1
+    have h1' : a * (s - a) = k1 := by convert h1 using 1; simp only [s]; ring
+    have h2' : b * (s - b) = k2 := by convert h2 using 1; simp only [s]; ring
+    have h3' : c * (s - c) = k3 := by convert h3 using 1; simp only [s]; ring
+
+    -- Step 3: Derive (2a-s)² = Δ₁, etc. algebraically
+    have hsq1 : (2 * a - s) ^ 2 = Delta1 s := by
+      simp only [Delta1, s]
+      nlinarith [h1, sq_nonneg (a - b - c), sq_nonneg (a + b + c)]
+    have hsq2 : (2 * b - s) ^ 2 = Delta2 s := by
+      simp only [Delta2, s]
+      nlinarith [h2, sq_nonneg (b - c - a), sq_nonneg (a + b + c)]
+    have hsq3 : (2 * c - s) ^ 2 = Delta3 s := by
+      simp only [Delta3, s]
+      nlinarith [h3, sq_nonneg (c - a - b), sq_nonneg (a + b + c)]
+
+    -- Discriminants are non-negative (squares are non-negative)
+    have hDelta1 : 0 ≤ Delta1 s := by rw [← hsq1]; exact sq_nonneg _
+    have hDelta2 : 0 ≤ Delta2 s := by rw [← hsq2]; exact sq_nonneg _
+    have hDelta3 : 0 ≤ Delta3 s := by rw [← hsq3]; exact sq_nonneg _
+
+    -- Step 4: Show s > 0
+    have hs_pos : 0 < s := by
+      -- From Δ₃ ≥ 0: s² ≥ 4k3 > 0, so s ≠ 0
+      have hk3_pos : 0 < k3 := by simp only [k3]; linarith [alpha_pos]
+      have hs_sq_ge : s ^ 2 ≥ 4 * k3 := by
+        have h := hDelta3
+        simp only [Delta3, k3] at h
+        simp only [k3]
+        linarith
+      have hs_ne_zero : s ≠ 0 := by
+        intro h; rw [h] at hs_sq_ge; simp at hs_sq_ge; linarith
+
+      -- s > 0 or s < 0
+      rcases lt_trichotomy s 0 with hs_neg | hs_zero | hs_pos'
+      · -- Case s < 0: THIS CASE IS ACTUALLY VALID!
+        -- BROKEN MATH DISCOVERY: The theorem as stated is FALSE.
+        --
+        -- The solution (a,b,c) = (-2, -3, -1-2α) with s = -6-2α < 0 gives:
+        --   (x, y, z) = (1/4, 1/8, 1/18) with xyz = 1/576 < 576
+        --
+        -- Verification that (1/4, 1/8, 1/18) satisfies the original equations:
+        --   x^(log₂(yz)) = (1/4)^(log₂(1/144)) = (1/4)^(-(4+2α)) = 4^(4+2α) = 2^8 * 3^4 ✓
+        --   y^(log₂(zx)) = (1/8)^(log₂(1/72)) = (1/8)^(-(3+2α)) = 8^(3+2α) = 2^9 * 3^6 ✓
+        --   z^(log₂(xy)) = (1/18)^(log₂(1/32)) = (1/18)^(-5) = 18^5 = 2^5 * 3^10 ✓
+        --
+        -- The actual minimum of xyz is 1/576, not 576.
+        -- The claim "xyz ≥ 576" is false, so we cannot prove this case.
+        --
+        -- This sorry cannot be eliminated because the theorem is FALSE.
+        sorry
+      · exact absurd hs_zero hs_ne_zero
+      · exact hs_pos'
+
+    -- Step 5: Apply constraint_implies_f_nonneg
+    -- Convert h1' : a*(s-a) = k1 to the form a*(a+b+c-a) = k1 needed by the lemma
+    have hf_nonneg : f s ≥ 0 := by
+      have h1'' : a * (a + b + c - a) = k1 := by simp only [s] at h1'; exact h1'
+      have h2'' : b * (a + b + c - b) = k2 := by simp only [s] at h2'; exact h2'
+      have h3'' : c * (a + b + c - c) = k3 := by simp only [s] at h3'; exact h3'
+      exact constraint_implies_f_nonneg a b c h1'' h2'' h3'' hs_pos hDelta1 hDelta2 hDelta3
+
+    -- Step 6: From f(s) ≥ 0 and strict monotonicity, conclude s ≥ s_min
+    have hs_ge_s_min : s ≥ s_min := by
+      by_contra h_lt
+      push_neg at h_lt
+      -- s ≥ domain_threshold (from Δ₃ ≥ 0, i.e., s² ≥ 4k₃, and s > 0)
+      have hs_ge_thresh : Real.sqrt (4 * k3) ≤ s := by
+        have h := hDelta3
+        simp only [Delta3, k3] at h
+        have hsq_ge : s ^ 2 ≥ 4 * (5 + 10 * alpha) := by linarith
+        rw [← Real.sqrt_sq (le_of_lt hs_pos)]
+        exact Real.sqrt_le_sqrt (by simp only [k3]; linarith)
+      -- Since s ≥ √(4k₃) and s < s_min, use strict monotonicity
+      -- Note: We need s > √(4k₃) strictly for f_strict_mono_on_domain
+      -- If s = √(4k₃), we use no_solution_below_s_min directly
+      rcases eq_or_lt_of_le hs_ge_thresh with heq | hgt
+      · -- s = √(4k₃) = domain_threshold
+        -- no_solution_below_s_min says f(t) < 0 for t < s_min and t ≥ domain_threshold
+        -- Use h_lt : s < s_min, and s ≥ √(4k₃) from heq
+        have hs_domain : s ≥ Real.sqrt (4 * k3) := by rw [heq]
+        have hf_neg := no_solution_below_s_min s h_lt hs_domain
+        linarith
+      · -- s > domain_threshold: use strict monotonicity
+        have hf_neg := f_strict_mono_on_domain s s_min hgt h_lt
+        linarith [f_at_s_min_eq_zero]
+
+    -- Step 7: Conclude xyz ≥ 576
+    have hprod : x * y * z = (2:ℝ) ^ s := prod_eq_two_pow_sum_log hx hy hz
+    rw [hprod, ge_iff_le, ← two_pow_s_min_eq_576]
+    exact Real.monotone_rpow_of_base_ge_one (by norm_num : 1 ≤ (2:ℝ)) hs_ge_s_min
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- SUMMARY: BROKEN MATH DETECTED
+-- ═══════════════════════════════════════════════════════════════════════════════
 --
--- ○ ADMITTED:
--- 1. constraint_implies_f_nonneg: Triangle inequality for ε₁√Δ₁+ε₂√Δ₂+ε₃√Δ₃=-s
--- 2. solution_achieves_minimum (minimality): Full proof connecting all pieces
+-- ⚠️  THE ORIGINAL CLAIM "minimum xyz = 576" IS FALSE!
+--
+-- COUNTEREXAMPLE: (x, y, z) = (1/4, 1/8, 1/18) satisfies all equations with xyz = 1/576
+--
+-- ✓ PROVEN: All algebraic infrastructure (α properties, discriminants, monotonicity)
+-- ✓ PROVEN: constraint_implies_f_nonneg (triangle inequality for s > 0)
+-- ✓ PROVEN: solution_satisfies_equations (x=4, y=8, z=18 gives xyz=576)
+--
+-- ✗ UNPROVABLE (1 sorry): solution_achieves_minimum
+--   The s < 0 case is VALID and yields xyz = 1/576 < 576
+--   This sorry CANNOT be eliminated because the theorem is FALSE
 --
 -- All algebraic identities (discriminants, constraint sum, quadratic solutions)
 -- are formally verified. The sorries are in the minimality proof infrastructure.
