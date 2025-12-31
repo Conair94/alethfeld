@@ -1,0 +1,9 @@
+{:id :2-c10001
+ :type :claim
+ :statement "A regular $n$-gon with $n$ even has $n/2$ distinct edge directions (zone classes). Each edge belongs to exactly one zone class, and edges in the same class are parallel."
+ :dependencies #{:1-d00001}
+ :scope #{}
+ :justification :definition-expansion
+ :depth 2
+ :display-order 11
+ :parent :1-c00001}

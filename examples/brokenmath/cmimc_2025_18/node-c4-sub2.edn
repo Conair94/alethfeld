@@ -1,0 +1,9 @@
+{:id :2-c40002
+ :type :claim
+ :statement "The construction uses the de Bruijn projection method: project a $4480$-dimensional hypercube onto a 2D plane, selecting edges that avoid perpendicular zone combinations wherever possible."
+ :dependencies #{:2-c40001 :1-d00001}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 17
+ :parent :1-c00004}

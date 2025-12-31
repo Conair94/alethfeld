@@ -1,0 +1,9 @@
+{:id :2-c30001
+ :type :claim
+ :statement "Consider the boundary of the $8960$-gon. The edges alternate through zone directions $0, 1, 2, \\ldots, 4479, 0, 1, \\ldots$ as we traverse the boundary counterclockwise."
+ :dependencies #{:1-d00001 :1-a00001}
+ :scope #{}
+ :justification :definition-expansion
+ :depth 2
+ :display-order 13
+ :parent :1-c00003}

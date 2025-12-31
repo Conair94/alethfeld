@@ -1,0 +1,9 @@
+{:id :2-seq006
+ :type :claim
+ :statement "For adjacent index pairs (where $j = i+1$): $|A_i \\cap A_{i+1}| = 0$. Proof: $A_i \\cap A_{i+1}$ requires $\\sigma(i) = \\sigma(i+1) = \\sigma(i+2)$, meaning three consecutive positions have the same value. But each value appears only twice in the multiset, making this impossible."
+ :dependencies #{:2-seq003}
+ :scope #{}
+ :justification :contradiction
+ :depth 2
+ :parent :1-claim3
+ :display-order 6}

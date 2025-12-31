@@ -1,0 +1,8 @@
+{:id :1-qed001
+ :type :qed
+ :statement "Combining the lower bound $R \\geq 2460$ and the upper bound $R \\leq 2460$, the minimum value of $R$ is exactly $2460$."
+ :dependencies #{:1-c00003 :1-c00004}
+ :scope #{}
+ :justification :qed
+ :depth 1
+ :display-order 10}

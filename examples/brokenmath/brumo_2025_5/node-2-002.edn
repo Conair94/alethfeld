@@ -1,0 +1,9 @@
+{:id :2-seq002
+ :type :claim
+ :statement "The total number of permutations of $\\{0,0,1,1,2,2\\}$ (without adjacency constraint) is $\\frac{6!}{2! \\cdot 2! \\cdot 2!} = \\frac{720}{8} = 90$."
+ :dependencies #{:2-seq001}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 2}

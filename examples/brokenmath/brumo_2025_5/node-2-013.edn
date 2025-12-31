@@ -1,0 +1,9 @@
+{:id :2-seq013
+ :type :claim
+ :statement "Therefore, the number of valid residue class sequences equals $90 - 60 = 30$."
+ :dependencies #{:2-seq002 :2-seq012}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 13}

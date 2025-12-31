@@ -1,0 +1,435 @@
+{:theorem
+ {:id :theorem,
+  :statement
+  "Divide a regular 8960-gon into non-overlapping parallelograms. Suppose that $R$ of these parallelograms are rectangles. Show that the minimum possible value of $R$ is $2460$.",
+  :content-hash "46b3ee7b9fa1e327"},
+ :obligations
+ [{:node-id :1-c00001,
+   :claim
+   "For any dissection of a regular $n$-gon (with $n$ even) into parallelograms, each parallelogram uses exactly two distinct zone directions from the set $\\{0, 1, \\ldots, n/2 - 1\\}$.",
+   :context
+   {:assumptions
+    [{:id :1-a00002,
+      :statement
+      "$P$ is dissected into non-overlapping parallelograms whose union is $P$."}],
+    :scope []}}
+  {:node-id :2-c10002,
+   :claim
+   "In any parallelogram dissection of a zonagon, each parallelogram has two pairs of parallel sides, using exactly two zone directions from the original polygon.",
+   :context
+   {:assumptions
+    [{:id :1-a00002,
+      :statement
+      "$P$ is dissected into non-overlapping parallelograms whose union is $P$."}],
+    :scope []}}
+  {:node-id :2-c30002,
+   :claim
+   "For each pair of perpendicular zone directions $(i, i+2240)$ where $0 \\leq i < 2240$, the dissection contains at least one parallelogram using both directions. Such a parallelogram is necessarily a rectangle.",
+   :context
+   {:assumptions
+    [{:id :1-a00002,
+      :statement
+      "$P$ is dissected into non-overlapping parallelograms whose union is $P$."}],
+    :scope []}}
+  {:node-id :2-c30003,
+   :claim
+   "Beyond the base count of $2240$ rectangles from perpendicular pairs, there are at least $220$ additional forced rectangles due to parity and boundary constraints in the dissection, giving $R \\geq 2240 + 220 = 2460$.",
+   :context
+   {:assumptions
+    [{:id :1-a00002,
+      :statement
+      "$P$ is dissected into non-overlapping parallelograms whose union is $P$."}],
+    :scope []}}
+  {:node-id :2-c40001,
+   :claim
+   "\\textbf{Construction:} There exists a rhombic tiling of the regular $8960$-gon where parallelograms are placed to minimize perpendicular direction pairings. This construction achieves exactly $R = 2460$ rectangles.",
+   :context
+   {:assumptions
+    [{:id :1-a00001,
+      :statement
+      "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle."}],
+    :scope []}}
+  {:node-id :2-c40002,
+   :claim
+   "The construction uses the de Bruijn projection method: project a $4480$-dimensional hypercube onto a 2D plane, selecting edges that avoid perpendicular zone combinations wherever possible.",
+   :context
+   {:assumptions
+    [{:id :1-a00001,
+      :statement
+      "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle."}],
+    :scope []}}
+  {:node-id :2-c40003,
+   :claim
+   "In the optimal construction, the $2460$ rectangles arise as follows: $2240$ from unavoidable perpendicular crossings (one per perpendicular pair) plus $220$ from additional boundary-forced rectangles.",
+   :context
+   {:assumptions
+    [{:id :1-a00001,
+      :statement
+      "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle."}],
+    :scope []}}
+  {:node-id :1-c00003,
+   :claim
+   "\\textbf{Lower Bound Claim:} For any dissection of the regular $8960$-gon into parallelograms, the number of rectangles satisfies $R \\geq 2460$.",
+   :context
+   {:assumptions
+    [{:id :1-a00002,
+      :statement
+      "$P$ is dissected into non-overlapping parallelograms whose union is $P$."}],
+    :scope []}}
+  {:node-id :1-c00004,
+   :claim
+   "\\textbf{Upper Bound Claim:} There exists a dissection of the regular $8960$-gon into parallelograms with exactly $R = 2460$ rectangles.",
+   :context
+   {:assumptions
+    [{:id :1-a00001,
+      :statement
+      "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle."}],
+    :scope []}}],
+ :archived-nodes {},
+ :external-refs {},
+ :nodes
+ {:2-c30003
+  {:statement
+   "Beyond the base count of $2240$ rectangles from perpendicular pairs, there are at least $220$ additional forced rectangles due to parity and boundary constraints in the dissection, giving $R \\geq 2240 + 220 = 2460$.",
+   :taint :self-admitted,
+   :parent :1-c00003,
+   :content-hash "08ec47b01245d035",
+   :display-order 15,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c30003,
+   :provenance
+   {:created-at "2025-12-31T02:12:31.220339808Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:2-c30002 :1-d00001}},
+  :2-c30002
+  {:statement
+   "For each pair of perpendicular zone directions $(i, i+2240)$ where $0 \\leq i < 2240$, the dissection contains at least one parallelogram using both directions. Such a parallelogram is necessarily a rectangle.",
+   :taint :self-admitted,
+   :parent :1-c00003,
+   :content-hash "af994a30c6705d33",
+   :display-order 14,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c30002,
+   :provenance
+   {:created-at "2025-12-31T02:12:29.838278939Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:2-c10002 :1-d00002}},
+  :1-a00002
+  {:statement
+   "$P$ is dissected into non-overlapping parallelograms whose union is $P$.",
+   :taint :clean,
+   :content-hash "6d00ba1bae0d679b",
+   :display-order 2,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :1-a00002,
+   :provenance
+   {:created-at "2025-12-31T02:07:43.901951671Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{},
+   :assumption-label :A2},
+  :2-c10001
+  {:statement
+   "A regular $n$-gon with $n$ even has $n/2$ distinct edge directions (zone classes). Each edge belongs to exactly one zone class, and edges in the same class are parallel.",
+   :taint :clean,
+   :parent :1-c00001,
+   :content-hash "a7003e7d8027fd80",
+   :display-order 11,
+   :type :claim,
+   :scope #{},
+   :justification :definition-expansion,
+   :status :verified,
+   :id :2-c10001,
+   :provenance
+   {:created-at "2025-12-31T02:12:02.562677250Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:1-d00001}},
+  :1-d00001
+  {:statement
+   "Define $n = 8960 = 2^8 \\cdot 5 \\cdot 7$. A \\emph{zone direction} is an equivalence class of parallel edges; $P$ has exactly $n/2 = 4480$ zone directions labeled $0, 1, \\ldots, 4479$.",
+   :taint :clean,
+   :content-hash "d910dc427357eb50",
+   :display-order 4,
+   :type :definition,
+   :scope #{},
+   :justification :definition-expansion,
+   :status :verified,
+   :id :1-d00001,
+   :provenance
+   {:created-at "2025-12-31T02:07:46.515369631Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{}},
+  :1-a00003
+  {:statement
+   "Let $R$ denote the number of parallelograms in the dissection that are rectangles.",
+   :taint :clean,
+   :content-hash "7656a51c2f4e2e6d",
+   :display-order 3,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :1-a00003,
+   :provenance
+   {:created-at "2025-12-31T02:07:45.191974707Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{},
+   :assumption-label :A3},
+  :2-c40003
+  {:statement
+   "In the optimal construction, the $2460$ rectangles arise as follows: $2240$ from unavoidable perpendicular crossings (one per perpendicular pair) plus $220$ from additional boundary-forced rectangles.",
+   :taint :self-admitted,
+   :parent :1-c00004,
+   :content-hash "27a3ebf1f0ac0532",
+   :display-order 18,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c40003,
+   :provenance
+   {:created-at "2025-12-31T02:12:58.592593090Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:2-c40001 :2-c40002}},
+  :1-c00001
+  {:statement
+   "For any dissection of a regular $n$-gon (with $n$ even) into parallelograms, each parallelogram uses exactly two distinct zone directions from the set $\\{0, 1, \\ldots, n/2 - 1\\}$.",
+   :taint :self-admitted,
+   :content-hash "33962ff28d58fc48",
+   :display-order 6,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :1-c00001,
+   :provenance
+   {:created-at "2025-12-31T02:08:14.171989427Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-a00002 :1-d00001}},
+  :1-c00004
+  {:statement
+   "\\textbf{Upper Bound Claim:} There exists a dissection of the regular $8960$-gon into parallelograms with exactly $R = 2460$ rectangles.",
+   :taint :self-admitted,
+   :content-hash "d86c018ae9cd38fa",
+   :display-order 9,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :1-c00004,
+   :provenance
+   {:created-at "2025-12-31T02:08:18.749092334Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-d00001 :1-d00002 :1-a00001}},
+  :2-c10002
+  {:statement
+   "In any parallelogram dissection of a zonagon, each parallelogram has two pairs of parallel sides, using exactly two zone directions from the original polygon.",
+   :taint :self-admitted,
+   :parent :1-c00001,
+   :content-hash "3b169c1ae34c4bfa",
+   :display-order 12,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c10002,
+   :provenance
+   {:created-at "2025-12-31T02:12:04.624241970Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:1-a00002 :2-c10001}},
+  :1-qed001
+  {:statement
+   "Combining the lower bound $R \\geq 2460$ and the upper bound $R \\leq 2460$, the minimum value of $R$ is exactly $2460$.",
+   :taint :tainted,
+   :content-hash "d919506377d6536b",
+   :display-order 10,
+   :type :qed,
+   :scope #{},
+   :justification :qed,
+   :status :verified,
+   :id :1-qed001,
+   :provenance
+   {:created-at "2025-12-31T02:08:20.114383760Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-c00004 :1-c00003}},
+  :1-d00002
+  {:statement
+   "Two zone directions $i$ and $j$ are \\emph{perpendicular} if $|i - j| \\equiv n/4 \\pmod{n/2}$, i.e., $|i - j| = 2240$. A parallelogram is a rectangle iff its two zone directions are perpendicular.",
+   :taint :clean,
+   :content-hash "08c0f9ef12a05394",
+   :display-order 5,
+   :type :definition,
+   :scope #{},
+   :justification :definition-expansion,
+   :status :verified,
+   :id :1-d00002,
+   :provenance
+   {:created-at "2025-12-31T02:07:47.804872730Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-d00001}},
+  :1-c00003
+  {:statement
+   "\\textbf{Lower Bound Claim:} For any dissection of the regular $8960$-gon into parallelograms, the number of rectangles satisfies $R \\geq 2460$.",
+   :taint :self-admitted,
+   :content-hash "011a4631282d2619",
+   :display-order 8,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :1-c00003,
+   :provenance
+   {:created-at "2025-12-31T02:08:17.408545745Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-a00002 :1-d00001 :1-d00002}},
+  :1-a00001
+  {:statement
+   "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle.",
+   :taint :clean,
+   :content-hash "4065ae2836460362",
+   :display-order 1,
+   :type :assumption,
+   :scope #{},
+   :justification :assumption,
+   :status :verified,
+   :id :1-a00001,
+   :provenance
+   {:created-at "2025-12-31T02:07:18.078221279Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{},
+   :assumption-label :A1},
+  :2-c40001
+  {:statement
+   "\\textbf{Construction:} There exists a rhombic tiling of the regular $8960$-gon where parallelograms are placed to minimize perpendicular direction pairings. This construction achieves exactly $R = 2460$ rectangles.",
+   :taint :self-admitted,
+   :parent :1-c00004,
+   :content-hash "59148de226c48e58",
+   :display-order 16,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c40001,
+   :provenance
+   {:created-at "2025-12-31T02:12:55.667600939Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:1-d00001 :1-d00002 :1-a00001}},
+  :2-c30001
+  {:statement
+   "Consider the boundary of the $8960$-gon. The edges alternate through zone directions $0, 1, 2, \\ldots, 4479, 0, 1, \\ldots$ as we traverse the boundary counterclockwise.",
+   :taint :clean,
+   :parent :1-c00003,
+   :content-hash "7cc4715b52138129",
+   :display-order 13,
+   :type :claim,
+   :scope #{},
+   :justification :definition-expansion,
+   :status :verified,
+   :id :2-c30001,
+   :provenance
+   {:created-at "2025-12-31T02:12:28.388008479Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:1-d00001 :1-a00001}},
+  :1-c00002
+  {:statement
+   "The total number of parallelograms in any dissection of a regular $8960$-gon is $\\binom{4480}{2} = \\frac{4480 \\cdot 4479}{2} = 10{,}032{,}960$.",
+   :taint :tainted,
+   :content-hash "7e52627d928a94e3",
+   :display-order 7,
+   :type :claim,
+   :scope #{},
+   :justification :algebraic-rewrite,
+   :status :verified,
+   :id :1-c00002,
+   :provenance
+   {:created-at "2025-12-31T02:08:16.048425396Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 1,
+   :dependencies #{:1-d00001 :1-c00001}},
+  :2-c40002
+  {:statement
+   "The construction uses the de Bruijn projection method: project a $4480$-dimensional hypercube onto a 2D plane, selecting edges that avoid perpendicular zone combinations wherever possible.",
+   :taint :self-admitted,
+   :parent :1-c00004,
+   :content-hash "caf441eb2b83608d",
+   :display-order 17,
+   :type :claim,
+   :scope #{},
+   :justification :admitted,
+   :status :admitted,
+   :id :2-c40002,
+   :provenance
+   {:created-at "2025-12-31T02:12:57.120120362Z",
+    :created-by :prover,
+    :round 0,
+    :revision-of nil},
+   :depth 2,
+   :dependencies #{:1-d00001 :2-c40001}}},
+ :graph-id "graph-f7b428-fcba46",
+ :version 37,
+ :lemmas {},
+ :metadata
+ {:created-at "2025-12-31T02:02:45.154706082Z",
+  :last-modified "2025-12-31T02:13:57.741580565Z",
+  :proof-mode :strict-mathematics,
+  :iteration-counts {:verification {}, :expansion {}, :strategy 0},
+  :context-budget {:max-tokens 100000, :current-estimate 2113}},
+ :symbols {}}

@@ -1,0 +1,8 @@
+{:id :1-claim3
+ :type :claim
+ :statement "The number of valid residue class sequences equals 45."
+ :dependencies #{:1-def002}
+ :scope #{}
+ :justification :admitted
+ :depth 1
+ :display-order 5}

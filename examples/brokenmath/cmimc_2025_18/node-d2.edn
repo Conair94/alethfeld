@@ -1,0 +1,8 @@
+{:id :1-d00002
+ :type :definition
+ :statement "Two zone directions $i$ and $j$ are \\emph{perpendicular} if $|i - j| \\equiv n/4 \\pmod{n/2}$, i.e., $|i - j| = 2240$. A parallelogram is a rectangle iff its two zone directions are perpendicular."
+ :dependencies #{:1-d00001}
+ :scope #{}
+ :justification :definition-expansion
+ :depth 1
+ :display-order 5}

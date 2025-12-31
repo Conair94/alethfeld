@@ -1,0 +1,175 @@
+% Alethfeld Generated Proof
+% Graph: graph-8603c6-c5231e v55
+% Taint status: TAINTED (5 admitted steps)
+% Generated: 2025-12-31
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\newcommand{\by}[1]{\hfill\textit{(#1)}}
+\newcommand{\admitted}{\textbf{[ADMITTED]}}
+\newcommand{\tainted}{\textbf{[TAINTED]}}
+
+\title{Proof of Chinese TST 2025 Problem 8\\
+\large No Three $C_i$ Collinear in Quadrilateral Construction}
+\author{Alethfeld Proof Orchestrator}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}[Chinese TST 2025 Problem 8]
+Let quadrilateral $A_1A_2A_3A_4$ be not cyclic and have edges that are not parallel to each other. Denote $B_i$ as the intersection of the tangent line at $A_i$ to the circle $A_{i-1}A_iA_{i+1}$ and the $A_{i+2}$-symmedian with respect to triangle $A_{i+1}A_{i+2}A_{i+3}$. Define $C_i$ as the intersection of lines $A_iA_{i+1}$ and $B_iB_{i+1}$, where all indices are taken cyclically.
+
+Show that no three of the points $C_1$, $C_2$, $C_3$, and $C_4$ are collinear.
+\end{theorem}
+
+\section*{Assumptions}
+
+\noindent\textbf{(A1)} Quadrilateral $A_1A_2A_3A_4$ is not cyclic (no circle passes through all four vertices).
+
+\noindent\textbf{(A2)} No two edges of quadrilateral $A_1A_2A_3A_4$ are parallel.
+
+\section*{Definitions}
+
+\begin{definition}[Circumcircles]
+For each $i \in \{1,2,3,4\}$, let $\omega_i$ denote the circumcircle of triangle $A_{i-1}A_iA_{i+1}$ (indices mod 4).
+\end{definition}
+
+\begin{definition}[Tangent Lines]
+For each $i$, let $t_i$ denote the tangent line to $\omega_i$ at vertex $A_i$.
+\end{definition}
+
+\begin{definition}[Symmedians]
+For each $i$, let $s_i$ denote the $A_{i+2}$-symmedian of triangle $A_{i+1}A_{i+2}A_{i+3}$ (the reflection of the $A_{i+2}$-median over the $A_{i+2}$-angle bisector).
+\end{definition}
+
+\begin{definition}[Points $B_i$]
+Define $B_i := t_i \cap s_i$, the intersection of the tangent line $t_i$ and the symmedian $s_i$.
+\end{definition}
+
+\begin{definition}[Points $C_i$]
+Define $C_i := \ell_{A_iA_{i+1}} \cap \ell_{B_iB_{i+1}}$, where $\ell_{PQ}$ denotes the line through points $P$ and $Q$.
+\end{definition}
+
+\section*{Proof}
+
+\begin{proof}
+We proceed by establishing a coordinate framework and reducing the collinearity question to an algebraic condition.
+
+\medskip
+\noindent\textbf{Step 1.} (Well-definedness of $B_i$) \by{existential-intro}
+
+The points $B_1, B_2, B_3, B_4$ are well-defined (each intersection $t_i \cap s_i$ exists and is unique).
+
+\begin{itemize}
+\item The tangent line $t_i$ at $A_i$ to $\omega_i$ has direction perpendicular to the radius from the circumcenter $O_i$ to $A_i$. \admitted
+\item The symmedian $s_i$ passes through $A_{i+2}$ with direction determined by reflecting the median direction across the angle bisector at $A_{i+2}$.
+\item Two lines $t_i$ (through $A_i$) and $s_i$ (through $A_{i+2}$) in the plane either intersect in a unique point or are parallel. They are parallel iff their direction vectors are proportional. \admitted
+\item The direction of $t_i$ (perpendicular to $O_iA_i$) and the direction of $s_i$ (isogonal to median) are generically non-proportional when the quadrilateral is non-cyclic and has non-parallel edges. The parallelism condition defines a proper algebraic subvariety. \admitted
+\end{itemize}
+
+\medskip
+\noindent\textbf{Step 2.} (Well-definedness of $C_i$) \by{existential-intro}
+
+The points $C_1, C_2, C_3, C_4$ are well-defined (each intersection of $\ell_{A_iA_{i+1}}$ and $\ell_{B_iB_{i+1}}$ exists).
+
+\medskip
+\noindent\textbf{Step 3.} (Coordinate Setup) \by{existential-intro}
+
+Introduce coordinates: place $A_1 = (0, 0)$, $A_2 = (1, 0)$, and let $A_3 = (a_3, b_3)$, $A_4 = (a_4, b_4)$ be generic points satisfying the non-cyclic and non-parallel constraints.
+
+\medskip
+\noindent\textbf{Step 4.} (Tangent Computation) \by{algebraic-rewrite}
+
+The tangent line $t_i$ at $A_i$ to circumcircle $\omega_i$ can be computed explicitly in terms of coordinates of $A_{i-1}, A_i, A_{i+1}$ using the tangent-chord angle theorem.
+
+\medskip
+\noindent\textbf{Step 5.} (Symmedian Computation) \by{algebraic-rewrite}
+
+The symmedian $s_i$ (the $A_{i+2}$-symmedian of $\triangle A_{i+1}A_{i+2}A_{i+3}$) can be computed explicitly using the isogonal conjugate property: it passes through $A_{i+2}$ with direction isogonal to the median direction.
+
+\medskip
+\noindent\textbf{Step 6.} (Coordinates of $B_i$) \by{algebraic-rewrite}
+
+The coordinates of each $B_i = t_i \cap s_i$ can be expressed as rational functions in the coordinates $(a_3, b_3, a_4, b_4)$.
+
+\medskip
+\noindent\textbf{Step 7.} (Coordinates of $C_i$) \by{algebraic-rewrite}
+
+The coordinates of each $C_i = \ell_{A_iA_{i+1}} \cap \ell_{B_iB_{i+1}}$ can be expressed as rational functions in $(a_3, b_3, a_4, b_4)$.
+
+\medskip
+\noindent\textbf{Step 8.} (Collinearity Criterion) \admitted \by{external-application}
+
+For any three distinct points $P, Q, R$ with coordinates $(x_P, y_P), (x_Q, y_Q), (x_R, y_R)$, they are collinear iff
+\[
+\det\begin{pmatrix} x_P & y_P & 1 \\ x_Q & y_Q & 1 \\ x_R & y_R & 1 \end{pmatrix} = 0.
+\]
+
+\medskip
+\noindent\textbf{Step 9.} (Collinearity Determinants) \tainted \by{definition-expansion}
+
+Let $D_{ijk}(a_3, b_3, a_4, b_4)$ denote the collinearity determinant for triple $(C_i, C_j, C_k)$. Each $D_{ijk}$ is a rational function in the coordinates.
+
+\medskip
+\noindent\textbf{Step 10.} (Algebraic Variety Formulation) \tainted \by{implication-intro}
+
+The collinearity condition for any triple equals zero defines an algebraic variety $V_{ijk} \subset \mathbb{R}^4$. We must show the constraints of non-cyclicity and non-parallelism exclude $V_{123} \cup V_{124} \cup V_{134} \cup V_{234}$.
+
+\medskip
+\noindent\textbf{Step 11.} (Non-cyclic Algebraic Constraint) \by{algebraic-rewrite}
+
+The non-cyclic constraint on $A_1A_2A_3A_4$ defines the complement of a hypersurface: the set where the circumcenter equations for all four vertices are inconsistent, i.e., $\det M_{\text{cyclic}} \neq 0$ for a specific matrix $M_{\text{cyclic}}$ depending on coordinates.
+
+\medskip
+\noindent\textbf{Step 12.} (Non-parallel Algebraic Constraint) \by{algebraic-rewrite}
+
+The non-parallel constraint on edges defines: $(A_2 - A_1) \not\parallel (A_4 - A_3)$, $(A_3 - A_2) \not\parallel (A_1 - A_4)$, $(A_2 - A_1) \not\parallel (A_3 - A_2)$, etc. Each is a non-vanishing cross-product condition.
+
+\medskip
+\noindent\textbf{Step 13.} (Key Factorization) \admitted \tainted \by{algebraic-rewrite}
+
+For each triple $\{i,j,k\} \subset \{1,2,3,4\}$, the collinearity determinant $D_{ijk}$ can be factored, and each factor equals zero only when special degeneracies occur (cyclicity or parallelism).
+
+\textit{Note: This is the core computational claim and requires computer algebra verification.}
+
+\medskip
+\noindent\textbf{Step 14.} (Contrapositive Argument) \tainted \by{contradiction}
+
+By contraposition: if some triple $C_i, C_j, C_k$ were collinear, then $D_{ijk} = 0$. By Step 13, this implies either the quadrilateral is cyclic or has parallel edges, contradicting assumptions (A1) and (A2).
+
+\medskip
+\noindent\textbf{Conclusion.} \tainted
+
+Therefore, no three of the points $C_1, C_2, C_3, C_4$ are collinear. \qedhere
+\end{proof}
+
+\section*{Proof Obligations}
+
+The following steps are admitted and require external verification:
+
+\begin{enumerate}
+\item \textbf{Step 8} (Collinearity Criterion): Standard result from analytic geometry.
+\item \textbf{Step 13} (Key Factorization): Requires symbolic computation to verify that $D_{ijk}$ factors appropriately. This is the mathematical crux of the proof.
+\item \textbf{Substeps in Step 1}: Tangent direction property, line intersection criterion, and generic non-parallelism claim.
+\end{enumerate}
+
+\section*{Verification Status}
+
+\begin{itemize}
+\item Total nodes: 26 (21 verified, 5 admitted)
+\item Taint status: 4 nodes tainted (depending on admitted steps)
+\item Graph version: 55
+\item Context usage: 2.8\% of budget
+\end{itemize}
+
+\end{document}

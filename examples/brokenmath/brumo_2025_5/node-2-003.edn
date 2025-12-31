@@ -1,0 +1,9 @@
+{:id :2-seq003
+ :type :definition
+ :statement "Let $A_i$ denote the set of permutations of $\\{0,0,1,1,2,2\\}$ where positions $i$ and $i+1$ have equal values, for $i \\in \\{1,2,3,4,5\\}$."
+ :dependencies #{:2-seq001}
+ :scope #{}
+ :justification :definition-expansion
+ :depth 2
+ :parent :1-claim3
+ :display-order 3}

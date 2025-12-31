@@ -1,0 +1,8 @@
+{:id :1-c00004
+ :type :claim
+ :statement "\\textbf{Upper Bound Claim:} There exists a dissection of the regular $8960$-gon into parallelograms with exactly $R = 2460$ rectangles."
+ :dependencies #{:1-d00001 :1-d00002 :1-a00001}
+ :scope #{}
+ :justification :admitted
+ :depth 1
+ :display-order 9}

@@ -1,0 +1,9 @@
+{:id :2-seq012
+ :type :claim
+ :statement "By inclusion-exclusion: $|A_1 \\cup \\cdots \\cup A_5| = \\sum_i |A_i| - \\sum_{i<j} |A_i \\cap A_j| + \\sum_{i<j<k} |A_i \\cap A_j \\cap A_k| - \\cdots$. We have: $\\sum_i |A_i| = 5 \\times 18 = 90$. For pairs: 4 adjacent pairs contribute 0 each, 6 non-adjacent pairs contribute 6 each: $\\sum_{i<j} |A_i \\cap A_j| = 4 \\times 0 + 6 \\times 6 = 36$. For triples: only $\\{1,3,5\\}$ is non-zero: $\\sum_{i<j<k} |A_i \\cap A_j \\cap A_k| = 6$. Higher terms are 0. Thus $|A_1 \\cup \\cdots \\cup A_5| = 90 - 36 + 6 = 60$."
+ :dependencies #{:2-seq005 :2-seq006 :2-seq007 :2-seq008 :2-seq009 :2-seq010 :2-seq011}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 12}

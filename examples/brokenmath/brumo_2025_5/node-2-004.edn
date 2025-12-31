@@ -1,0 +1,9 @@
+{:id :2-seq004
+ :type :claim
+ :statement "By inclusion-exclusion, the number of valid sequences is $90 - |A_1 \\cup A_2 \\cup A_3 \\cup A_4 \\cup A_5|$."
+ :dependencies #{:2-seq002 :2-seq003}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 4}

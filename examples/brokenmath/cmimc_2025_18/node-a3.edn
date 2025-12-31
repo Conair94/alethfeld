@@ -1,0 +1,9 @@
+{:id :1-a00003
+ :type :assumption
+ :statement "Let $R$ denote the number of parallelograms in the dissection that are rectangles."
+ :dependencies #{}
+ :scope #{}
+ :justification :assumption
+ :depth 1
+ :display-order 3
+ :assumption-label :A3}

@@ -1,0 +1,9 @@
+{:id :2-seq010
+ :type :claim
+ :statement "The only triple with pairwise non-adjacent indices is $\\{1, 3, 5\\}$. For this triple, $|A_1 \\cap A_3 \\cap A_5| = 6$. Proof: $A_1 \\cap A_3 \\cap A_5$ requires $\\sigma(1)=\\sigma(2)$, $\\sigma(3)=\\sigma(4)$, $\\sigma(5)=\\sigma(6)$. These 3 pairs cover all 6 positions. Assign the three values $\\{0,1,2\\}$ to the three pairs: $3! = 6$ ways."
+ :dependencies #{:2-seq003}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 10}

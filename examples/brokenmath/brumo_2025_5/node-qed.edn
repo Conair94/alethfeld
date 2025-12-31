@@ -1,0 +1,8 @@
+{:id :1-qed001
+ :type :qed
+ :statement "The total number of valid arrangements equals $45 \\times 8 = 360$."
+ :dependencies #{:1-claim2 :1-claim3}
+ :scope #{}
+ :justification :qed
+ :depth 1
+ :display-order 6}

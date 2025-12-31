@@ -1,0 +1,9 @@
+{:id :2-c10002
+ :type :claim
+ :statement "In any parallelogram dissection of a zonagon, each parallelogram has two pairs of parallel sides, using exactly two zone directions from the original polygon."
+ :dependencies #{:2-c10001 :1-a00002}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 12
+ :parent :1-c00001}

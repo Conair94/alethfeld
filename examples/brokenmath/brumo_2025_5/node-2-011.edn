@@ -1,0 +1,9 @@
+{:id :2-seq011
+ :type :claim
+ :statement "For any subset $S \\subseteq \\{1,2,3,4,5\\}$ with $|S| \\geq 4$: $|\\bigcap_{i \\in S} A_i| = 0$. Proof: Any 4-subset of $\\{1,2,3,4,5\\}$ must contain at least one adjacent pair, so the intersection is empty."
+ :dependencies #{:2-seq009}
+ :scope #{}
+ :justification :modus-ponens
+ :depth 2
+ :parent :1-claim3
+ :display-order 11}

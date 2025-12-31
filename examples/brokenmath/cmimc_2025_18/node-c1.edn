@@ -1,0 +1,8 @@
+{:id :1-c00001
+ :type :claim
+ :statement "For any dissection of a regular $n$-gon (with $n$ even) into parallelograms, each parallelogram uses exactly two distinct zone directions from the set $\\{0, 1, \\ldots, n/2 - 1\\}$."
+ :dependencies #{:1-d00001 :1-a00002}
+ :scope #{}
+ :justification :admitted
+ :depth 1
+ :display-order 6}

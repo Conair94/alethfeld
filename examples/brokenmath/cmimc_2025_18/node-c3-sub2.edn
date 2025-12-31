@@ -1,0 +1,9 @@
+{:id :2-c30002
+ :type :claim
+ :statement "For each pair of perpendicular zone directions $(i, i+2240)$ where $0 \\leq i < 2240$, the dissection contains at least one parallelogram using both directions. Such a parallelogram is necessarily a rectangle."
+ :dependencies #{:1-d00002 :2-c10002}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 14
+ :parent :1-c00003}

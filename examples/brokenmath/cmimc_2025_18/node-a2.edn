@@ -1,0 +1,9 @@
+{:id :1-a00002
+ :type :assumption
+ :statement "$P$ is dissected into non-overlapping parallelograms whose union is $P$."
+ :dependencies #{}
+ :scope #{}
+ :justification :assumption
+ :depth 1
+ :display-order 2
+ :assumption-label :A2}

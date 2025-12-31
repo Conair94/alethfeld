@@ -1,0 +1,8 @@
+{:id :1-c00002
+ :type :claim
+ :statement "The total number of parallelograms in any dissection of a regular $8960$-gon is $\\binom{4480}{2} = \\frac{4480 \\cdot 4479}{2} = 10{,}032{,}960$."
+ :dependencies #{:1-d00001 :1-c00001}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 1
+ :display-order 7}

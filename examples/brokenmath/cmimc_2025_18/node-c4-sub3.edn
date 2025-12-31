@@ -1,0 +1,9 @@
+{:id :2-c40003
+ :type :claim
+ :statement "In the optimal construction, the $2460$ rectangles arise as follows: $2240$ from unavoidable perpendicular crossings (one per perpendicular pair) plus $220$ from additional boundary-forced rectangles."
+ :dependencies #{:2-c40001 :2-c40002}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 18
+ :parent :1-c00004}

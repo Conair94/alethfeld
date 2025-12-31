@@ -1,0 +1,9 @@
+{:id :1-a00001
+ :type :assumption
+ :statement "Let $P$ be a regular $8960$-gon with vertices $v_0, v_1, \\ldots, v_{8959}$ arranged counterclockwise on a circle."
+ :dependencies #{}
+ :scope #{}
+ :justification :assumption
+ :depth 1
+ :display-order 1
+ :assumption-label :A1}

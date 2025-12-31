@@ -1,0 +1,8 @@
+{:id :1-d00001
+ :type :definition
+ :statement "Define $n = 8960 = 2^8 \\cdot 5 \\cdot 7$. A \\emph{zone direction} is an equivalence class of parallel edges; $P$ has exactly $n/2 = 4480$ zone directions labeled $0, 1, \\ldots, 4479$."
+ :dependencies #{}
+ :scope #{}
+ :justification :definition-expansion
+ :depth 1
+ :display-order 4}

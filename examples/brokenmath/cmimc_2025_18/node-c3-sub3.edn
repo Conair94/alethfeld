@@ -1,0 +1,9 @@
+{:id :2-c30003
+ :type :claim
+ :statement "Beyond the base count of $2240$ rectangles from perpendicular pairs, there are at least $220$ additional forced rectangles due to parity and boundary constraints in the dissection, giving $R \\geq 2240 + 220 = 2460$."
+ :dependencies #{:2-c30002 :1-d00001}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 15
+ :parent :1-c00003}

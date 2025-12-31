@@ -1,0 +1,9 @@
+{:id :2-c40001
+ :type :claim
+ :statement "\\textbf{Construction:} There exists a rhombic tiling of the regular $8960$-gon where parallelograms are placed to minimize perpendicular direction pairings. This construction achieves exactly $R = 2460$ rectangles."
+ :dependencies #{:1-d00001 :1-d00002 :1-a00001}
+ :scope #{}
+ :justification :admitted
+ :depth 2
+ :display-order 16
+ :parent :1-c00004}

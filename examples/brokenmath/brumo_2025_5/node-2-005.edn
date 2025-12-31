@@ -1,0 +1,9 @@
+{:id :2-seq005
+ :type :claim
+ :statement "For each $i \\in \\{1,\\ldots,5\\}$, we have $|A_i| = 18$. Proof: To have $\\sigma(i) = \\sigma(i+1) = k$, choose $k \\in \\{0,1,2\\}$ (3 ways). The remaining 4 positions must be filled with the remaining 4 elements: one copy of $k$, and two copies each of the other two values. This gives $\\frac{4!}{1! \\cdot 2! \\cdot 2!} = \\frac{24}{4} = 6$ arrangements. Thus $|A_i| = 3 \\cdot 6 = 18$."
+ :dependencies #{:2-seq003}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 5}

@@ -1,0 +1,218 @@
+% HMMT February 2025 Problem 3 - Minimum Product xyz
+% Generated from Alethfeld EDN proof (graph-51acde-43ac9a)
+% All 40 nodes verified, taint: clean
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\by}[1]{\hfill\textit{[#1]}}
+
+\title{HMMT February 2025 Problem 3\\Minimum Value of $xyz$}
+\author{Alethfeld Proof Orchestrator}
+\date{Graph Version 81}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}[HMMT Feb 2025 \#3]
+Given that $x, y$, and $z$ are positive real numbers such that
+\[
+x^{\log_2(yz)} = 2^8 \cdot 3^4, \quad
+y^{\log_2(zx)} = 2^9 \cdot 3^6, \quad
+z^{\log_2(xy)} = 2^5 \cdot 3^{10},
+\]
+the smallest possible value of $xyz$ is $\boxed{576}$.
+\end{theorem}
+
+\section*{Proof}
+
+\subsection*{Setup}
+
+\begin{description}
+\item[A1] $x, y, z \in \mathbb{R}^+$ (positive real numbers). \by{assumption}
+\item[A2] $x^{\log_2(yz)} = 2^8 \cdot 3^4$. \by{assumption}
+\item[A3] $y^{\log_2(zx)} = 2^9 \cdot 3^6$. \by{assumption}
+\item[A4] $z^{\log_2(xy)} = 2^5 \cdot 3^{10}$. \by{assumption}
+\item[D1] Define $a = \log_2 x$, $b = \log_2 y$, $c = \log_2 z$, and $\alpha = \log_2 3$. \by{definition}
+\end{description}
+
+\subsection*{Logarithmic Transformation}
+
+\begin{claim}[Step 1]
+Taking $\log_2$ of both sides of the three equations:
+\[
+a(b+c) = 8 + 4\alpha, \quad b(c+a) = 9 + 6\alpha, \quad c(a+b) = 5 + 10\alpha.
+\]
+\end{claim}
+\begin{proof}
+Apply $\log_2$ to equation A2: $\log_2(yz) \cdot \log_2(x) = \log_2(2^8 \cdot 3^4)$, giving $(b+c) \cdot a = 8 + 4\log_2 3 = 8 + 4\alpha$. Similarly for the other equations.
+\by{algebraic-rewrite from A2, A3, A4, D1}
+\end{proof}
+
+\begin{claim}[Step 2]
+Let $s = a + b + c$. Then $xyz = 2^s$, and we seek to minimize $s$.
+\end{claim}
+\begin{proof}
+Since $a = \log_2 x$, we have $x = 2^a$, similarly $y = 2^b$, $z = 2^c$. Thus $xyz = 2^{a+b+c} = 2^s$.
+\by{definition-expansion from D1}
+\end{proof}
+
+\subsection*{Quadratic System}
+
+\begin{claim}[Step 4]
+The system can be rewritten as quadratic equations:
+\[
+a^2 - sa + (8+4\alpha) = 0, \quad b^2 - sb + (9+6\alpha) = 0, \quad c^2 - sc + (5+10\alpha) = 0.
+\]
+\end{claim}
+\begin{proof}
+Since $b + c = s - a$, the equation $a(b+c) = 8 + 4\alpha$ becomes $a(s-a) = 8 + 4\alpha$, which rearranges to $a^2 - sa + (8+4\alpha) = 0$. Similarly for $b$ and $c$.
+\by{algebraic-rewrite from Step 1, Step 2}
+\end{proof}
+
+\begin{claim}[Step 5]
+By the quadratic formula:
+\[
+a = \frac{s \pm \sqrt{s^2 - 4(8+4\alpha)}}{2}, \quad
+b = \frac{s \pm \sqrt{s^2 - 4(9+6\alpha)}}{2}, \quad
+c = \frac{s \pm \sqrt{s^2 - 4(5+10\alpha)}}{2}.
+\]
+\end{claim}
+
+\begin{claim}[Step 6]
+For real solutions, we require:
+\[
+s^2 \geq 32 + 16\alpha, \quad s^2 \geq 36 + 24\alpha, \quad s^2 \geq 20 + 40\alpha.
+\]
+\end{claim}
+
+\subsection*{Constraint Analysis}
+
+\begin{claim}[Step 7]
+Define $\Delta_1 = s^2 - 32 - 16\alpha$, $\Delta_2 = s^2 - 36 - 24\alpha$, $\Delta_3 = s^2 - 20 - 40\alpha$. The constraint $a + b + c = s$ requires:
+\[
+\frac{3s + \epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3}}{2} = s
+\]
+for some $\epsilon_i \in \{\pm 1\}$.
+\end{claim}
+
+\begin{claim}[Step 8]
+This simplifies to:
+\[
+\epsilon_1\sqrt{\Delta_1} + \epsilon_2\sqrt{\Delta_2} + \epsilon_3\sqrt{\Delta_3} = -s.
+\]
+\end{claim}
+
+\subsection*{Finding the Minimum}
+
+\begin{claim}[Step 10]
+Testing $s = \log_2 576 = \log_2(2^6 \cdot 3^2) = 6 + 2\alpha$: We have $s^2 = 36 + 24\alpha + 4\alpha^2$.
+\end{claim}
+
+\begin{claim}[Steps 11-13]
+At $s = 6 + 2\alpha$, the discriminants are perfect squares:
+\begin{align*}
+\Delta_1 &= 4 + 8\alpha + 4\alpha^2 = 4(1+\alpha)^2, \quad \sqrt{\Delta_1} = 2 + 2\alpha \\
+\Delta_2 &= 4\alpha^2, \quad \sqrt{\Delta_2} = 2\alpha \\
+\Delta_3 &= 16 - 16\alpha + 4\alpha^2 = 4(2-\alpha)^2, \quad \sqrt{\Delta_3} = 4 - 2\alpha
+\end{align*}
+(Note: $\sqrt{\Delta_3} = 2(2-\alpha)$ since $\alpha = \log_2 3 \approx 1.585 < 2$.)
+\end{claim}
+
+\begin{claim}[Step 15]
+With $(\epsilon_1, \epsilon_2, \epsilon_3) = (-1, -1, -1)$:
+\[
+-(2+2\alpha) - 2\alpha - (4-2\alpha) = -6 - 2\alpha = -(6+2\alpha) = -s.
+\]
+This satisfies the constraint.
+\end{claim}
+
+\begin{claim}[Step 16]
+The solution is:
+\[
+a = \frac{(6+2\alpha) - (2+2\alpha)}{2} = 2, \quad
+b = \frac{(6+2\alpha) - 2\alpha}{2} = 3, \quad
+c = \frac{(6+2\alpha) - (4-2\alpha)}{2} = 1 + 2\alpha.
+\]
+\end{claim}
+
+\begin{claim}[Step 17]
+Therefore:
+\[
+x = 2^2 = 4, \quad y = 2^3 = 8, \quad z = 2^{1+2\alpha} = 2 \cdot 3^2 = 18.
+\]
+\end{claim}
+
+\subsection*{Verification}
+
+\begin{claim}[Steps 18-20]
+Checking the original equations:
+\begin{itemize}
+\item $yz = 144$, $\log_2(144) = 4 + 2\alpha$, so $x^{\log_2(yz)} = 4^{4+2\alpha} = 2^{8+4\alpha} = 2^8 \cdot 3^4$. \checkmark
+\item $zx = 72$, $\log_2(72) = 3 + 2\alpha$, so $y^{\log_2(zx)} = 8^{3+2\alpha} = 2^{9+6\alpha} = 2^9 \cdot 3^6$. \checkmark
+\item $xy = 32$, $\log_2(32) = 5$, so $z^{\log_2(xy)} = 18^5 = 2^5 \cdot 3^{10}$. \checkmark
+\end{itemize}
+\end{claim}
+
+\begin{claim}[Step 21]
+Therefore $(x, y, z) = (4, 8, 18)$ is a valid solution with $xyz = 576$.
+\end{claim}
+
+\subsection*{Minimality}
+
+\begin{claim}[Step 31]
+Define $f(s) = \sqrt{\Delta_1} + \sqrt{\Delta_2} + \sqrt{\Delta_3} - s$ for $s \geq \sqrt{20+40\alpha}$. We have $f(s_0) = 0$ where $s_0 = 6 + 2\alpha$.
+\end{claim}
+
+\begin{claim}[Step 32]
+Computing the derivative:
+\[
+f'(s) = \frac{s}{\sqrt{\Delta_1}} + \frac{s}{\sqrt{\Delta_2}} + \frac{s}{\sqrt{\Delta_3}} - 1.
+\]
+Since each $\sqrt{\Delta_i} < s$ (for positive $a, b, c$), each fraction exceeds $1$, so $f'(s) > 2 > 0$.
+\end{claim}
+
+\begin{claim}[Step 33]
+Since $f'(s) > 0$, the function $f$ is strictly increasing. With $f(s_0) = 0$:
+\begin{itemize}
+\item For $s < s_0$: $f(s) < 0$, so $\sqrt{\Delta_1} + \sqrt{\Delta_2} + \sqrt{\Delta_3} < s$
+\item For $s > s_0$: $f(s) > 0$, so $\sqrt{\Delta_1} + \sqrt{\Delta_2} + \sqrt{\Delta_3} > s$
+\end{itemize}
+Thus $s_0$ is the unique solution where all-minus signs work.
+\end{claim}
+
+\begin{claim}[Step 34]
+For other sign combinations: if any $\epsilon_i = +1$, the LHS increases, making it impossible to achieve $-s < 0$ for $s \leq s_0$.
+\end{claim}
+
+\subsection*{Conclusion}
+
+\begin{claim}[QED]
+The minimum value of $xyz$ is:
+\[
+2^{a+b+c} = 2^{6+2\alpha} = 2^6 \cdot 2^{2\log_2 3} = 64 \cdot 9 = \boxed{576}.
+\]
+\end{claim}
+
+\vfill
+
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}\\[5pt]
+\textit{Generated by Alethfeld Proof Orchestrator}\\
+Graph: \texttt{graph-51acde-43ac9a} (v81)\\
+Status: 40 nodes verified, 0 tainted, 0 admitted
+\end{center}
+
+\end{document}

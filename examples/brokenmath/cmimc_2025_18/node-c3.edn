@@ -1,0 +1,8 @@
+{:id :1-c00003
+ :type :claim
+ :statement "\\textbf{Lower Bound Claim:} For any dissection of the regular $8960$-gon into parallelograms, the number of rectangles satisfies $R \\geq 2460$."
+ :dependencies #{:1-d00001 :1-d00002 :1-a00002}
+ :scope #{}
+ :justification :admitted
+ :depth 1
+ :display-order 8}

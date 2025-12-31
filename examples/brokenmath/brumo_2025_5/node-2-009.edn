@@ -1,0 +1,9 @@
+{:id :2-seq009
+ :type :claim
+ :statement "For any triple $\\{i, j, k\\}$ containing two consecutive indices, $|A_i \\cap A_j \\cap A_k| = 0$. Proof: Two consecutive indices share a position, creating a run of 3+ equal values, which is impossible with only 2 copies per value."
+ :dependencies #{:2-seq003}
+ :scope #{}
+ :justification :contradiction
+ :depth 2
+ :parent :1-claim3
+ :display-order 9}

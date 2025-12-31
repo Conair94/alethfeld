@@ -1,0 +1,8 @@
+{:id :1-claim2
+ :type :claim
+ :statement "Each valid residue class sequence $\\sigma$ gives rise to exactly $(2!)^3 = 8$ valid arrangements, obtained by permuting elements within each residue class independently."
+ :dependencies #{:1-def001 :1-def002 :1-claim1}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 1
+ :display-order 4}

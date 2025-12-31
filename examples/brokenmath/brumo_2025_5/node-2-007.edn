@@ -1,0 +1,9 @@
+{:id :2-seq007
+ :type :claim
+ :statement "For non-adjacent index pairs ($|i - j| \\geq 2$): $|A_i \\cap A_j| = 6$. Proof: We need $\\sigma(i) = \\sigma(i+1) = k_1$ and $\\sigma(j) = \\sigma(j+1) = k_2$. Since positions don't overlap, we use all copies of two values. Must have $k_1 \\neq k_2$ (only 2 copies each). Choose which value is unused: 3 ways. Assign the two used values to pairs: 2 ways. Remaining 2 positions get the 2 copies of the unused value: 1 way. Total: $3 \\times 2 \\times 1 = 6$."
+ :dependencies #{:2-seq003}
+ :scope #{}
+ :justification :algebraic-rewrite
+ :depth 2
+ :parent :1-claim3
+ :display-order 7}
