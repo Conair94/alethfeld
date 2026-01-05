@@ -2,7 +2,8 @@
  {:id :theorem,
   :statement
   "For all $n \\geq 0$, the $n$-th Bell number satisfies $B_n = \\frac{1}{e} \\sum_{k=0}^{\\infty} \\frac{k^n}{k\\!}$",
-  :content-hash "05842ac5d618c1cd"},
+  :content-hash "05842ac5d618c1cd",
+  :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:368-432"},
  :obligations [],
  :archived-nodes {},
  :external-refs {},
@@ -205,7 +206,7 @@
    :display-order 5,
    :type :claim,
    :scope #{},
-   :justification :admitted,
+   :justification :lemma-application,
    :status :verified,
    :id :1-e8b3a2,
    :provenance
@@ -214,7 +215,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-c4a9f6 :1-a0f3c1}},
+   :dependencies #{:1-c4a9f6 :1-a0f3c1},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:135-185"},
   :2-a1b2c3
   {:statement
    "The identity x^n = \\sum_{k=0}^{n} S(n,k) \\cdot x^{\\underline{k}} is a polynomial identity in x, meaning it holds for all x \\in \\mathbb{R}",
@@ -269,7 +271,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{}},
+   :dependencies #{},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:40-42"},
   :2-b5c6d7
   {:statement
    "Stirling recurrence: S(n+1,k) = k \\cdot S(n,k) + S(n,k-1) for 1 \\leq k \\leq n, with S(n+1,0) = 0 and S(n+1,n+1) = 1",
@@ -373,7 +376,7 @@
    :display-order 6,
    :type :claim,
    :scope #{},
-   :justification :admitted,
+   :justification :lemma-application,
    :status :verified,
    :id :1-f0d5c4,
    :provenance
@@ -382,7 +385,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-d6c1e8 :1-c4a9f6}},
+   :dependencies #{:1-d6c1e8 :1-c4a9f6},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:239-270"},
   :2-b2d4f6
   {:statement
    "Ratio test: \\lim_{k \\to \\infty} \\frac{(k+1)^n / (k+1)!}{k^n / k!} = \\lim_{k \\to \\infty} \\frac{(1 + 1/k)^n}{k+1} = 0 < 1",
@@ -514,7 +518,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-a0f3c1}},
+   :dependencies #{:1-a0f3c1},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:36-38"},
   :2-t8u9v0
   {:statement
    "\\forall n, \\frac{1}{e}\\sum_{k=0}^{\\infty} \\frac{1}{k!} \\sum_{j=0}^{n} S(n,j) \\cdot k^{\\underline{j}} = \\sum_{j=0}^{n} S(n,j) \\cdot \\frac{1}{e} \\sum_{k=0}^{\\infty} \\frac{k^{\\underline{j}}}{k!}",
@@ -589,7 +594,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-i6c1d0 :1-h4a9b8 :1-g2f7e6}},
+   :dependencies #{:1-i6c1d0 :1-h4a9b8 :1-g2f7e6},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:422-432"},
   :2-a3b4c5
   {:statement
    "Re-indexing: \\sum_{k=0}^{n} S(n,k) \\cdot x^{\\underline{k+1}} = \\sum_{j=1}^{n+1} S(n,j-1) \\cdot x^{\\underline{j}}",
@@ -949,7 +955,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-f0d5c4 :1-b2e7d4 :1-h4a9b8}},
+   :dependencies #{:1-f0d5c4 :1-b2e7d4 :1-h4a9b8},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:407-421"},
   :3-fi5678
   {:statement
    "= \\sum_{k=0}^{\\infty} a_{k,0} + \\sum_{k=0}^{\\infty} a_{k,1} + \\cdots + \\sum_{k=0}^{\\infty} a_{k,N}",
@@ -1015,7 +1022,7 @@
    :display-order 8,
    :type :claim,
    :scope #{},
-   :justification :algebraic-rewrite,
+   :justification :sum-interchange,
    :status :verified,
    :id :1-h4a9b8,
    :provenance
@@ -1024,7 +1031,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-g2f7e6}},
+   :dependencies #{:1-g2f7e6},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:380-406"},
   :2-c7d8e9
   {:statement
    "Combining: \\sum_{j=1}^{n+1} S(n,j-1) \\cdot x^{\\underline{j}} + \\sum_{k=0}^{n} k \\cdot S(n,k) \\cdot x^{\\underline{k}} = \\sum_{k=0}^{n+1} (S(n,k-1) + k \\cdot S(n,k)) \\cdot x^{\\underline{k}}",
@@ -1061,7 +1069,8 @@
     :round 0,
     :revision-of nil},
    :depth 1,
-   :dependencies #{:1-e8b3a2 :1-d6c1e8}},
+   :dependencies #{:1-e8b3a2 :1-d6c1e8},
+   :lean-ref "lean/AlethfeldLean/Examples/Dobinski.lean:370-379"},
   :2-e0f1a2
   {:statement
    "For all m \\geq 1: \\sum_{k=0}^{\\infty} \\frac{k^{\\underline{m}}}{k!} = e",
@@ -1238,8 +1247,15 @@
  :lemmas {},
  :metadata
  {:created-at "2025-12-30T13:43:10.982181984Z",
-  :last-modified "2025-12-30T14:16:39.071503774Z",
+  :last-modified "2026-01-05T18:00:00.000000000Z",
   :proof-mode :strict-mathematics,
   :iteration-counts {:verification {}, :expansion {}, :strategy 0},
-  :context-budget {:max-tokens 100000, :current-estimate 5517}},
+  :context-budget {:max-tokens 100000, :current-estimate 5517},
+  :lean-formalization
+  {:file "lean/AlethfeldLean/Examples/Dobinski.lean",
+   :status :verified,
+   :sorries 0,
+   :main-theorem "dobinski_formula",
+   :key-lemmas ["power_stirling_expansion" "tsum_fallingFactorial_div_factorial"
+                "summable_pow_div_factorial" "tsum_sum_interchange"]}},
  :symbols {}}
