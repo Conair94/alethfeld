@@ -6,7 +6,7 @@ This document serves as a guide for **Prover** and **Formalizer** agents using t
 
 *   **Package Name**: `AlethfeldLean`
 *   **Dependency**: `mathlib` (v4.26.0)
-*   **Verification Status**: (As of Dec 2025)
+*   **Verification Status**: (As of Jan 2026)
     *   L1 (Fourier): ✅ 0 sorries
     *   L2 (Influence): ✅ 0 sorries
     *   L3 (Entropy): ✅ 0 sorries
@@ -18,6 +18,7 @@ This document serves as a guide for **Prover** and **Formalizer** agents using t
         *   Step4-5: ✅ 0 sorries (error bounds proved)
         *   Step6-8: ⚠️ ~3 sorries remaining (numerical ln/log bounds)
     *   **Master Theorem**: ✅ Verified (0 sorries) - combines L1-L5 into complete result
+    *   **Dobinski's Formula**: ✅ Verified (0 sorries) - Bell numbers via infinite series
 *   **Build Command**:
     ```bash
     lake build
@@ -49,6 +50,8 @@ The library is organized under the `AlethfeldLean` namespace.
                 *   `Step7_LimitComputation`: Individual limit computations.
                 *   `Step8_MainTheorem`: Main theorem (QED).
             *   `QBFRank1MasterTheorem`: **Master theorem** combining L1-L5 into complete result.
+    *   **`Examples`** (Standalone verified results)
+        *   `Dobinski`: Dobinski's formula for Bell numbers.
 
 ## 3. Key Types and Definitions
 
@@ -412,7 +415,43 @@ The main theorem establishes a **lower bound** for the entropy-influence conject
 
 This bound is **tight** in the sense that it is achieved in the limit $n \to \infty$ with all qubits in the magic state.
 
-## 5. Agent Guidelines
+## 5. Example Formalizations
+
+### Dobinski's Formula (`AlethfeldLean.Examples.Dobinski`)
+
+| Symbol | Definition | Description |
+| :--- | :--- | :--- |
+| `bell n` | `∑ j ∈ range (n + 1), Nat.stirlingSecond n j` | Bell number $B_n$ (set partitions). |
+| `fallingFactorial k j` | `(k.descFactorial j : ℝ)` | Falling factorial $k^{(j)} = k(k-1)\cdots(k-j+1)$. |
+| `power_stirling_expansion k n` | `k^n = ∑ S(n,j) * k^{(j)}` | Power-Stirling expansion. |
+
+**Main Theorem:**
+
+*   **`dobinski_formula (n : ℕ)`**:
+    $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
+    *Usage*: Classic identity connecting Bell numbers to an infinite series.
+
+**Key Lemmas:**
+
+*   **`power_stirling_expansion (k n : ℕ)`**:
+    $$k^n = \sum_{j=0}^{n} S(n,j) \cdot k^{(j)}$$
+    *Usage*: Expands powers using Stirling numbers and falling factorials.
+
+*   **`tsum_fallingFactorial_div_factorial (j : ℕ)`**:
+    $$\sum_{k=0}^{\infty} \frac{k^{(j)}}{k!} = e$$
+    *Usage*: Key identity for the falling factorial series.
+
+*   **`summable_pow_div_factorial (n : ℕ)`**:
+    $$\sum_{k=0}^{\infty} \frac{k^n}{k!} \text{ converges}$$
+    *Usage*: Summability via ratio test with bound $k^n/k! \leq (1/2)^k$ for large $k$.
+
+*   **`tsum_sum_interchange {f} (n : ℕ)`**:
+    $$\sum_{k} \sum_{j \leq n} f(k,j) = \sum_{j \leq n} \sum_{k} f(k,j)$$
+    *Usage*: Sum interchange using `Summable.tsum_finsetSum`.
+
+**Verification Status:** ✅ **0 sorries** — Fully machine-verified
+
+## 6. Agent Guidelines
 
 ### For the **Prover** Agent
 

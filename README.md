@@ -73,7 +73,8 @@ The system has been successfully used to derive and formalize several non-trivia
 - **Lemma L1 (Fourier)**: Closed-form expression for Fourier coefficients of rank-1 product state QBFs. (Verified: 0 sorries)
 - **Lemma L2 (Influence)**: Proof that single-qubit and total influence are independent of the Bloch vector for rank-1 QBFs. (Verified: 0 sorries)
 - **Lemma L3 (Entropy)**: General entropy formula for rank-1 product state QBFs. (Verified: 0 sorries)
-- **Shannon Maximum Entropy**: Proof that the uniform distribution uniquely maximizes Shannon entropy for three outcomes. (Verified: 1 technical sorry in boundary case)
+- **Shannon Maximum Entropy**: Proof that the uniform distribution uniquely maximizes Shannon entropy for three outcomes. (Verified: 0 sorries)
+- **Dobinski's Formula**: Classic identity $B_n = (1/e) \sum_{k=0}^{\infty} k^n/k!$ connecting Bell numbers to infinite series. (Verified: 0 sorries)
 
 These results are available in the `lean/AlethfeldLean/` library and documented in `lean/API.md`.
 

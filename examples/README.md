@@ -30,7 +30,7 @@ Additional Lean formalizations in `lean/AlethfeldLean/Examples/BrokenMath/`:
 
 The EDN and LaTeX outputs may contain errors. Most Lean 4 files are unverified and should be regarded as untrusted—they may not compile, may contain incorrect formalizations, or may have `sorry` markers that hide significant gaps.
 
-**Exception:** The QBF Rank-1 example is fully machine-verified with 0 sorries in Lean 4.
+**Exceptions:** The QBF Rank-1, Halting Undecidability, Dobinski's Formula, and Divisor Sum 9! examples are fully machine-verified with 0 sorries in Lean 4.
 
 ---
 
@@ -122,19 +122,44 @@ theorem no_total_halting_decider (candidate : TotalProgram Program halts) :
 
 ---
 
-## Example 3: Dobinski's Formula (Unverified)
+## Example 3: Dobinski's Formula ⭐ VERIFIED
+
+**Status:** ✅ **Fully verified in Lean 4 (0 sorries)**
 
 **Theorem:** The Bell numbers satisfy
 $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
-**Why this example:** A classical result in combinatorics connecting Bell numbers (counting set partitions) to an infinite series. The proof requires careful handling of series manipulation and combinatorial identities. This serves as a baseline test—a well-known result that any competent system should handle.
+**Why this example:** A classical result in combinatorics connecting Bell numbers (counting set partitions) to an infinite series. The proof requires careful handling of series manipulation and combinatorial identities.
+
+**Key Mathematical Components:**
+- **Power-Stirling expansion**: $k^n = \sum_{j=0}^{n} S(n,j) \cdot k^{(j)}$ where $S(n,j)$ are Stirling numbers of the second kind
+- **Falling factorial sum**: $\sum_{k=0}^{\infty} k^{(j)}/k! = e$ for all $j \geq 0$
+- **Summability**: Ratio test with bound $k^n/k! \leq (1/2)^k$ for $k \geq 2^{n+1}$
+- **Sum interchange**: Via `Summable.tsum_finsetSum`
 
 **Files:**
 - `dobinski-formula/dobinski-formula.edn` — Original structured proof
 - `dobinski-formula/dobinski-v2.edn` — Extended version (orchestrator v5)
 - `dobinski-formula/dobinski-formula.tex`, `dobinski-v2.tex` — LaTeX outputs
 - `dobinski-formula/dobinski-formula.pdf`, `dobinski-v2.pdf` — Compiled PDFs
-- `dobinski-formula/dobinski-formula.lean` — Lean 4 skeleton (unverified)
+
+**Lean 4 Formalization:**
+```
+lean/AlethfeldLean/Examples/
+└── Dobinski.lean  ✅ 0 sorries
+```
+
+Key theorems:
+```lean
+theorem dobinski_formula (n : ℕ) :
+    (bell n : ℝ) = (Real.exp 1)⁻¹ * ∑' k : ℕ, (k : ℝ) ^ n / (k.factorial : ℝ)
+
+lemma power_stirling_expansion (k n : ℕ) :
+    (k : ℝ) ^ n = ∑ j ∈ range (n + 1), (Nat.stirlingSecond n j : ℝ) * fallingFactorial k j
+
+lemma tsum_fallingFactorial_div_factorial (j : ℕ) :
+    ∑' k : ℕ, fallingFactorial k j / (k.factorial : ℝ) = Real.exp 1
+```
 
 ---
 
@@ -432,11 +457,11 @@ Publication-ready output. Compile with `pdflatex`. Uses Lamport-style step numbe
 |---------|-------|----------|--------|-------|
 | **QBF Rank-1** | 195 | 0 | ✅ **0 sorries** | Fully machine-verified |
 | **Halting Undecidability** | 18 | 0 | ✅ **0 sorries, 0 axioms** | Fully machine-verified |
+| **Dobinski's Formula** | 23+ | 0 | ✅ **0 sorries** | Classic combinatorics; ratio test |
 | **Divisor Sum 9!** | 10 | 0 | ✅ **0 sorries** | BrokenMath: error detected + corrected |
 | **Deligne Tensor** | 39 | 0 | ❌ | Orchestrator v5.1; 4 verification rounds |
 | **Fib Modules** | 45 | 0 | ❌ | Orchestrator v5.1; adversarial verified |
 | **HMMT 2025-3** | 31 | 1 | ⚠️ **1 sorry** | BrokenMath: **THEOREM IS FALSE** |
-| Dobinski | 23+ | 0 | ❌ | v2 has extended proof |
 | Determinant Rank-1 | 31 | 1 | ❌ | v4 schema available |
 | Arclength Formula | 28 | 2 | ❌ | v4 schema available |
 | n-Copy Purification | 47 | 0 | ❌ | Covers d≥n only |
