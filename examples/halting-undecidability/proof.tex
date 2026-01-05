@@ -1,0 +1,307 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
+% Lamport-style proof environment
+\newcounter{proofstep}[theorem]
+\newcounter{substep}[proofstep]
+\renewcommand{\theproofstep}{\arabic{proofstep}}
+\renewcommand{\thesubstep}{\theproofstep.\arabic{substep}}
+
+\newenvironment{proofsteps}{%
+  \setcounter{proofstep}{0}%
+  \begin{list}{\textbf{$\langle 1 \rangle$\theproofstep.}}{%
+    \usecounter{proofstep}%
+    \setlength{\leftmargin}{2em}%
+    \setlength{\itemsep}{0.5em}%
+  }%
+}{%
+  \end{list}%
+}
+
+\newenvironment{substeps}{%
+  \setcounter{substep}{0}%
+  \begin{list}{\textbf{$\langle 2 \rangle$\thesubstep.}}{%
+    \usecounter{substep}%
+    \setlength{\leftmargin}{2em}%
+    \setlength{\itemsep}{0.3em}%
+  }%
+}{%
+  \end{list}%
+}
+
+% Justification macro
+\newcommand{\by}[1]{\hfill\textit{[#1]}}
+
+% Lean reference macro
+\newcommand{\leanref}[1]{\hfill{\footnotesize\color{blue!70!black}\texttt{[Lean: #1]}}}
+
+% Admitted/unverified markers
+\newcommand{\admitted}{\textcolor{orange}{\textbf{[ADMITTED]}}}
+\newcommand{\unverified}{\textcolor{red}{\textbf{[UNVERIFIED]}}}
+
+\title{Undecidability of the Halting Problem}
+\author{Alethfeld Proof System\\
+\small Graph ID: graph-837d62-79a574, Version 38\\
+\small Status: 18 nodes verified, 0 tainted\\
+\small \textcolor{green!50!black}{\textbf{Lean 4: Fully verified (0 sorries, 0 axioms)}}}
+\date{January 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove that no total program can decide its own halting problem, using a
+diagonalization argument. The proof is structured in Lamport's hierarchical
+notation and has been verified by the Alethfeld adversarial proof system.
+\textbf{This proof has been fully formalized in Lean 4 with zero sorries and
+zero non-standard axioms.}
+\end{abstract}
+
+\section{Axioms and Definitions}
+
+We work in an axiomatic model of computation $\mathcal{M}$ with the following components:
+
+\begin{definition}[DiagModel]\label{def:diagmodel}
+A \emph{diagonal model of computation} consists of:
+\begin{itemize}
+    \item A type $\mathsf{Data}$ used for both programs and inputs
+    \item A proposition $\mathsf{halts}(p, x)$ asserting that program $p$ halts on input $x$
+    \item A function $\mathsf{eval}(p, x, h) : \mathsf{Bool}$ returning the result of $p$ on $x$,
+          given a proof $h$ that $p$ halts on $x$
+    \item A constructor $\mathsf{if\_run\_else\_halt} : \mathsf{Data} \to \mathsf{Data}$
+\end{itemize}
+subject to the following axioms:
+\begin{align}
+    \mathsf{eval}(c, x, h) = \mathsf{true} &\Rightarrow \neg\mathsf{halts}(\mathsf{if\_run\_else\_halt}(c), x)
+    \tag{ireh\_runs\_of\_true} \\
+    \mathsf{eval}(c, x, h) = \mathsf{false} &\Rightarrow \mathsf{halts}(\mathsf{if\_run\_else\_halt}(c), x)
+    \tag{ireh\_halts\_of\_false}
+\end{align}
+\end{definition}
+
+\begin{definition}[Total Program]\label{def:total}
+A \emph{total program} is a pair $(\mathsf{prog}, \mathsf{htotal})$ where
+$\mathsf{prog} : \mathsf{Data}$ and $\mathsf{htotal} : \forall x.\, \mathsf{halts}(\mathsf{prog}, x)$.
+
+We define $\mathsf{eval\_total}(p, x) := \mathsf{eval}(p.\mathsf{prog}, x, p.\mathsf{htotal}(x))$.
+\leanref{L29--38}
+\end{definition}
+
+\section{Main Result}
+
+\begin{theorem}[Undecidability of the Halting Problem]\label{thm:main}
+For any total program $\mathsf{candidate}$, there exists a program $\mathsf{spoiler}$ such that:
+\[
+\bigl(\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{true}
+\land \neg\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})\bigr)
+\]
+\[
+\lor\; \bigl(\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{false}
+\land \mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})\bigr)
+\]
+\leanref{L58--83}
+\end{theorem}
+
+\begin{proof}
+\begin{proofsteps}
+
+\item \label{step:1-1} Let $\mathsf{candidate} : \mathsf{TotalProgram}$ be arbitrary.
+\by{assumption} \leanref{L67}
+
+\item \label{step:1-2} Define $\mathsf{spoiler} := \mathsf{if\_run\_else\_halt}(\mathsf{candidate.prog})$.
+\by{definition} \leanref{L72}
+
+\item \label{step:1-3} $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{true}
+\lor \mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{false}$.
+\by{Boolean exhaustion} \leanref{L75}
+
+\item \label{step:1-4} If $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{true}$,
+then $\neg\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+\by{implication-intro from \ref{step:1-2}, \ref{step:1-3}} \leanref{L80--83}
+
+\begin{substeps}
+    \item \label{step:2-1} Assume $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{true}$.
+    \by{local assumption $H_{\mathsf{true}}$} \leanref{L80}
+
+    \item \label{step:2-2} $\mathsf{halts}(\mathsf{candidate.prog}, \mathsf{spoiler})$ holds.
+    \by{universal-elim from $\mathsf{candidate.htotal}$} \leanref{L32}
+
+    \item \label{step:2-3} $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) =
+    \mathsf{eval}(\mathsf{candidate.prog}, \mathsf{spoiler}, \mathsf{candidate.htotal}(\mathsf{spoiler}))$.
+    \by{definition expansion} \leanref{L35--38}
+
+    \item \label{step:2-4} By axiom \textsc{ireh\_runs\_of\_true}:
+    $\mathsf{eval}(\mathsf{candidate.prog}, \mathsf{spoiler}, h) = \mathsf{true} \Rightarrow
+    \neg\mathsf{halts}(\mathsf{if\_run\_else\_halt}(\mathsf{candidate.prog}), \mathsf{spoiler})$.
+    \by{axiom application} \leanref{L63--64}
+
+    \item \label{step:2-5} By definition of $\mathsf{spoiler}$ and $H_{\mathsf{true}}$:
+    $\neg\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+    \by{modus ponens from \ref{step:2-1}, \ref{step:2-3}, \ref{step:2-4}} \leanref{L83}
+
+    \item \label{step:2-6} Discharge $H_{\mathsf{true}}$.
+    \by{discharge} \leanref{L82--83}
+\end{substeps}
+
+\item \label{step:1-5} If $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{false}$,
+then $\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+\by{implication-intro from \ref{step:1-2}, \ref{step:1-3}} \leanref{L76--79}
+
+\begin{substeps}
+    \item \label{step:2-7} Assume $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{false}$.
+    \by{local assumption $H_{\mathsf{false}}$} \leanref{L76}
+
+    \item \label{step:2-8} $\mathsf{halts}(\mathsf{candidate.prog}, \mathsf{spoiler})$ holds.
+    \by{universal-elim from $\mathsf{candidate.htotal}$} \leanref{L32}
+
+    \item \label{step:2-9} $\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) =
+    \mathsf{eval}(\mathsf{candidate.prog}, \mathsf{spoiler}, \mathsf{candidate.htotal}(\mathsf{spoiler}))$.
+    \by{definition expansion} \leanref{L35--38}
+
+    \item \label{step:2-10} By axiom \textsc{ireh\_halts\_of\_false}:
+    $\mathsf{eval}(\mathsf{candidate.prog}, \mathsf{spoiler}, h) = \mathsf{false} \Rightarrow
+    \mathsf{halts}(\mathsf{if\_run\_else\_halt}(\mathsf{candidate.prog}), \mathsf{spoiler})$.
+    \by{axiom application} \leanref{L65--66}
+
+    \item \label{step:2-11} By definition of $\mathsf{spoiler}$ and $H_{\mathsf{false}}$:
+    $\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+    \by{modus ponens from \ref{step:2-7}, \ref{step:2-9}, \ref{step:2-10}} \leanref{L79}
+
+    \item \label{step:2-12} Discharge $H_{\mathsf{false}}$.
+    \by{discharge} \leanref{L78--79}
+\end{substeps}
+
+\item \label{step:1-6} \textbf{QED:}
+$(\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{true} \land
+\neg\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})) \lor
+(\mathsf{eval\_total}(\mathsf{candidate}, \mathsf{spoiler}) = \mathsf{false} \land
+\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler}))$.
+\by{disjunction-intro from \ref{step:1-3}, \ref{step:1-4}, \ref{step:1-5}} \leanref{L68--70}
+
+\end{proofsteps}
+\end{proof}
+
+\section{Classical Formulation}
+
+\begin{theorem}[Undecidability -- Negation Form]\label{thm:neg}
+There does not exist a total program $\mathsf{decider}$ such that for all programs $p$:
+\[
+\mathsf{eval\_total}(\mathsf{decider}, p) = \mathsf{true} \iff \mathsf{halts}(p, p)
+\]
+\leanref{L93--114}
+\end{theorem}
+
+\begin{proof}
+Suppose for contradiction that such a $\mathsf{decider}$ exists. By Theorem~\ref{thm:main},
+there exists $\mathsf{spoiler}$ such that:
+\begin{itemize}
+    \item \textbf{Case 1:} $\mathsf{eval\_total}(\mathsf{decider}, \mathsf{spoiler}) = \mathsf{true}$
+    and $\neg\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+
+    But by the specification of $\mathsf{decider}$,
+    $\mathsf{eval\_total}(\mathsf{decider}, \mathsf{spoiler}) = \mathsf{true}$ implies
+    $\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$. Contradiction.
+    \leanref{L111--112}
+
+    \item \textbf{Case 2:} $\mathsf{eval\_total}(\mathsf{decider}, \mathsf{spoiler}) = \mathsf{false}$
+    and $\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$.
+
+    But by the specification of $\mathsf{decider}$,
+    $\mathsf{halts}(\mathsf{spoiler}, \mathsf{spoiler})$ implies
+    $\mathsf{eval\_total}(\mathsf{decider}, \mathsf{spoiler}) = \mathsf{true}$.
+    This contradicts $\mathsf{eval\_total}(\mathsf{decider}, \mathsf{spoiler}) = \mathsf{false}$.
+    \leanref{L113--114}
+\end{itemize}
+In both cases we reach a contradiction, so no such $\mathsf{decider}$ exists.
+\end{proof}
+
+\section{Lean 4 Formalization}
+
+The proof has been fully formalized in Lean 4 using Mathlib. The formalization is
+available at:
+
+\begin{center}
+\texttt{lean/AlethfeldLean/Computability/HaltingUndecidability.lean}
+\end{center}
+
+\subsection*{Key Definitions}
+
+\begin{verbatim}
+structure TotalProgram (Program : Type)
+    (halts : Program → Program → Prop) where
+  prog : Program
+  htotal : Program → ℕ
+  terminates : ∀ input, halts prog input
+
+def eval_total (eval : Program → Program → ℕ → Bool)
+    (candidate : TotalProgram Program halts)
+    (input : Program) : Bool :=
+  eval candidate.prog input (candidate.htotal input)
+\end{verbatim}
+
+\subsection*{Main Theorem}
+
+\begin{verbatim}
+theorem halting_undecidability
+    (eval : Program → Program → ℕ → Bool)
+    (if_run_else_halt : Program → Program)
+    (ireh_runs_of_true : ∀ dec input h,
+      eval dec input h = true →
+        ¬halts (if_run_else_halt dec) input)
+    (ireh_halts_of_false : ∀ dec input h,
+      eval dec input h = false →
+        halts (if_run_else_halt dec) input)
+    (candidate : TotalProgram Program halts) :
+    ∃ spoiler,
+      (eval_total eval candidate spoiler = true ∧
+        ¬halts spoiler spoiler) ∨
+      (eval_total eval candidate spoiler = false ∧
+        halts spoiler spoiler)
+\end{verbatim}
+
+\subsection*{Verification Status}
+
+\begin{itemize}
+    \item \textbf{Sorries:} 0
+    \item \textbf{Axioms used:} None (fully constructive)
+    \item \textbf{Dependencies:} Mathlib.Tactic
+\end{itemize}
+
+\section*{Verification Status}
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+Graph ID & graph-837d62-79a574 \\
+Version & 38 \\
+Total nodes & 18 \\
+Verified & 18 \\
+Admitted & 0 \\
+Tainted & 0 \\
+Obligations & 0 \\
+\hline
+\textbf{Lean 4 Status} & \textbf{Fully Verified} \\
+\hline
+Lean file & \texttt{HaltingUndecidability.lean} \\
+Sorries & 0 \\
+Non-standard axioms & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+\noindent\textit{Generated by Alethfeld Proof Orchestrator v5.1}
+
+\noindent\textit{Lean 4 formalization verified with \texttt{lake build}}
+
+\end{document}

@@ -12,8 +12,9 @@ examples/
 ├── determinant-rank1-perturbation/    # Matrix identity (rank-1 perturbation)
 ├── divisor-sum-9factorial/            # BrokenMath: error detection + Lean proof
 ├── dobinski-formula/                  # Bell numbers via infinite series
-├── fib-module-coherences/             # Fibonacci fusion category modules ⭐ NEW
+├── fib-module-coherences/             # Fibonacci fusion category modules
 ├── first-arclength-formula/           # Lemniscate arclength lemma
+├── halting-undecidability/            # Halting problem undecidability ⭐ VERIFIED
 ├── implicit-function-theorem/         # Implicit function theorem
 ├── n-copy-purification-channel/       # Quantum channel existence
 ├── prop-infinite-Z/                   # Permutation vs function expectations
@@ -71,7 +72,57 @@ See `lean/API.md` for full documentation of the Lean library.
 
 ---
 
-## Example 2: Dobinski's Formula
+## Example 2: Halting Problem Undecidability ⭐ VERIFIED
+
+**Status:** ✅ **Fully verified in Lean 4 (0 sorries, 0 axioms)**
+
+**Theorem:** For any total program that purports to decide halting, there exists a "spoiler" program such that the decider is wrong about whether the spoiler halts on itself.
+
+This is the classic diagonalization argument due to Turing (1936), formalized in Lean 4.
+
+**Why this example:** A fundamental result in computability theory. The proof demonstrates:
+- Abstract axiomatic modeling of computation
+- The diagonal construction (`if_run_else_halt`)
+- Case analysis on Boolean predicates
+- Complete formalization with zero dependencies on classical axioms
+
+**Key Mathematical Points:**
+- Given a purported halting decider `candidate`, construct `spoiler = if_run_else_halt(candidate.prog)`
+- The spoiler runs forever if the decider predicts halting, and halts if the decider predicts non-halting
+- By case analysis: if `eval_total(candidate, spoiler) = true`, then `¬halts(spoiler, spoiler)`
+- Conversely: if `eval_total(candidate, spoiler) = false`, then `halts(spoiler, spoiler)`
+- Either way, the decider is wrong about the spoiler
+
+**Files:**
+- `halting-undecidability/proof.edn` — Semantic proof graph (18 nodes, all verified)
+- `halting-undecidability/proof.tex` — LaTeX output (Lamport-style)
+- `halting-undecidability/proof.pdf` — Compiled PDF
+
+**Lean 4 Formalization:**
+```
+lean/AlethfeldLean/Computability/
+└── HaltingUndecidability.lean  ✅ 0 sorries, 0 axioms
+```
+
+Key theorems:
+```lean
+theorem halting_undecidability
+    (eval : Program → Program → ℕ → Bool)
+    (if_run_else_halt : Program → Program)
+    (ireh_runs_of_true : ∀ dec input h, eval dec input h = true → ¬halts (if_run_else_halt dec) input)
+    (ireh_halts_of_false : ∀ dec input h, eval dec input h = false → halts (if_run_else_halt dec) input)
+    (candidate : TotalProgram Program halts) :
+    ∃ spoiler, (eval_total eval candidate spoiler = true ∧ ¬halts spoiler spoiler) ∨
+               (eval_total eval candidate spoiler = false ∧ halts spoiler spoiler)
+
+theorem no_total_halting_decider (candidate : TotalProgram Program halts) :
+    ∃ input, ¬((eval_total eval candidate input = true ↔ halts input input) ∧
+               (eval_total eval candidate input = false ↔ ¬halts input input))
+```
+
+---
+
+## Example 3: Dobinski's Formula (Unverified)
 
 **Theorem:** The Bell numbers satisfy
 $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
@@ -87,7 +138,7 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
 ---
 
-## Example 3: Determinant Rank-1 Perturbation
+## Example 4: Determinant Rank-1 Perturbation
 
 **Source:** [arXiv:2512.20684](https://arxiv.org/abs/2512.20684) — "Remark on a determinant involving prime numbers" (Huan Xiao, December 2025)
 
@@ -106,7 +157,7 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
 ---
 
-## Example 4: Erdős–Herzog–Piranian Lemniscate Lemma
+## Example 5: Erdős–Herzog–Piranian Lemniscate Lemma
 
 **Source:** [arXiv:2512.12455](https://arxiv.org/abs/2512.12455) — "The maximal length of the Erdős–Herzog–Piranian lemniscate length in high degree" (December 2025)
 
@@ -124,7 +175,7 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
 ---
 
-## Example 5: n-Copy Quantum Purification Channel
+## Example 6: n-Copy Quantum Purification Channel
 
 **Source:** [arXiv:2511.23451](https://arxiv.org/abs/2511.23451) — "Random purification channel made simple" (November 2025)
 
@@ -151,7 +202,7 @@ $$B_n = \frac{1}{e} \sum_{k=0}^{\infty} \frac{k^n}{k!}$$
 
 ---
 
-## Example 6: Permutation vs Random Function Expectations
+## Example 7: Permutation vs Random Function Expectations
 
 **Theorem (Prop:infinite-Z):** For any non-negative random variable $F: \mathbf{Z}^N \to [0,\infty)$,
 $$\mathbb{E}^X(F) \le \frac{N^N}{N!} \mathbb{E}^R(F)$$
@@ -167,7 +218,7 @@ where $\mathbb{E}^X$ is expectation over uniform random bijections and $\mathbb{
 
 ---
 
-## Example 7: Cantor Set Trick Question (Robustness Test)
+## Example 8: Cantor Set Trick Question (Robustness Test)
 
 **Type:** Adversarial test — false statement detection
 **Result:** PASSED
@@ -190,7 +241,7 @@ where $\mathbb{E}^X$ is expectation over uniform random bijections and $\mathbb{
 
 ---
 
-## Example 8: Divisor Sum of 9! (BrokenMath Benchmark) ⭐ VERIFIED
+## Example 9: Divisor Sum of 9! (BrokenMath Benchmark) ⭐ VERIFIED
 
 **Source:** [BrokenMath](https://github.com/insait-institute/broken-math) — A benchmark of mathematical problems with subtle errors
 
@@ -237,7 +288,7 @@ theorem sum_not_105 :
 
 ---
 
-## Example 9: HMMT Feb 2025 Problem 3 (BrokenMath) ⭐ FALSE THEOREM DETECTED
+## Example 10: HMMT Feb 2025 Problem 3 (BrokenMath) ⭐ FALSE THEOREM DETECTED
 
 **Source:** [BrokenMath](https://github.com/insait-institute/broken-math) — A benchmark of mathematical problems with subtle errors
 
@@ -293,7 +344,7 @@ See `examples/brokenmath/README.md` for the full BrokenMath benchmark evaluation
 
 ---
 
-## Example 10: Deligne Relative Tensor Product ⭐ VERIFIED
+## Example 11: Deligne Relative Tensor Product ⭐ VERIFIED
 
 **Status:** ✅ **Fully verified through 4 rounds of adversarial Alethfeld protocol**
 
@@ -322,7 +373,7 @@ where $\mathcal{C}$ is regarded as both a left and right $\mathcal{C}$-module ca
 
 ---
 
-## Example 11: Fibonacci Module Category Coherences ⭐ VERIFIED
+## Example 12: Fibonacci Module Category Coherences ⭐ VERIFIED
 
 **Status:** ✅ **Fully verified through adversarial Alethfeld protocol**
 
@@ -380,6 +431,7 @@ Publication-ready output. Compile with `pdflatex`. Uses Lamport-style step numbe
 | Example | Nodes | Admitted | Lean 4 | Notes |
 |---------|-------|----------|--------|-------|
 | **QBF Rank-1** | 195 | 0 | ✅ **0 sorries** | Fully machine-verified |
+| **Halting Undecidability** | 18 | 0 | ✅ **0 sorries, 0 axioms** | Fully machine-verified |
 | **Divisor Sum 9!** | 10 | 0 | ✅ **0 sorries** | BrokenMath: error detected + corrected |
 | **Deligne Tensor** | 39 | 0 | ❌ | Orchestrator v5.1; 4 verification rounds |
 | **Fib Modules** | 45 | 0 | ❌ | Orchestrator v5.1; adversarial verified |
@@ -393,7 +445,7 @@ Publication-ready output. Compile with `pdflatex`. Uses Lamport-style step numbe
 
 "Admitted" = gaps explicitly acknowledged. "Lean 4" = compiles with no `sorry`.
 
-> **Note on HMMT 2025-3**: The sorry is intentional and cannot be eliminated because the theorem is **false**. See Example 9 below for details.
+> **Note on HMMT 2025-3**: The sorry is intentional and cannot be eliminated because the theorem is **false**. See Example 10 for details.
 
 ---
 
