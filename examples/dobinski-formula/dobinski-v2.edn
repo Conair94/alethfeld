@@ -1022,7 +1022,7 @@
    :display-order 8,
    :type :claim,
    :scope #{},
-   :justification :sum-interchange,
+   :justification :lemma-application,
    :status :verified,
    :id :1-h4a9b8,
    :provenance
