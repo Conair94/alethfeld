@@ -36,6 +36,15 @@ This insight guided the formalization strategy, proving that edge count is recon
 | `Case5.lean` | Reconstruction for n = 5 | ⚠️ 1 sorry |
 | `Main.lean` | Combined theorem for n ∈ {3, 4, 5} | depends on above |
 
+#### Proof Artifacts
+
+| File | Description |
+|------|-------------|
+| `proof.edn` | Alethfeld semantic proof graph (EDN format) |
+| `reconstruction-conjecture-small.tex` | LaTeX document with Lamport-style proof |
+| `reconstruction-conjecture-small.pdf` | Compiled PDF document |
+| `handoff.md` | Original handoff document from proof development |
+
 #### Key Theorems
 
 ```lean
