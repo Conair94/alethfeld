@@ -38,12 +38,7 @@ This insight guided the formalization strategy, proving that edge count is recon
 
 #### Proof Artifacts
 
-| File | Description |
-|------|-------------|
-| `proof.edn` | Alethfeld semantic proof graph (EDN format) |
-| `reconstruction-conjecture-small.tex` | LaTeX document with Lamport-style proof |
-| `reconstruction-conjecture-small.pdf` | Compiled PDF document |
-| `handoff.md` | Original handoff document from proof development |
+The Alethfeld semantic proof graph and LaTeX document are in `examples/reconstruction-conjecture-small/`.
 
 #### Key Theorems
 
