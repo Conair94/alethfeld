@@ -68,6 +68,25 @@ theorem trace_σ_ne_zero {j : Fin 4} (hj : j ≠ 0) : Matrix.trace (σ j) = 0 :=
 def finPow2SuccEquiv (n : ℕ) : Fin (2^(n+1)) ≃ Fin (2^n) × Fin 2 :=
   (finCongr (Nat.pow_succ 2 n)).trans finProdFinEquiv.symm
 
+/-- First component of finPow2SuccEquiv corresponds to division by 2 -/
+lemma finPow2SuccEquiv_fst (n : ℕ) (x : Fin (2^(n+1))) :
+    ((finPow2SuccEquiv n) x).1.val = x.val / 2 := by
+  simp only [finPow2SuccEquiv, Equiv.trans_apply, finCongr_apply]
+  simp only [finProdFinEquiv_symm_apply, Fin.divNat, Fin.val_mk, Fin.coe_cast]
+
+/-- Second component of finPow2SuccEquiv corresponds to mod 2 -/
+lemma finPow2SuccEquiv_snd (n : ℕ) (x : Fin (2^(n+1))) :
+    ((finPow2SuccEquiv n) x).2.val = x.val % 2 := by
+  simp only [finPow2SuccEquiv, Equiv.trans_apply, finCongr_apply]
+  simp only [finProdFinEquiv_symm_apply, Fin.modNat, Fin.val_mk, Fin.coe_cast]
+
+/-- testBit at position 0 equals whether mod 2 is 1 -/
+lemma testBit_zero_eq_mod2 (x : ℕ) : x.testBit 0 = (x % 2 = 1) := by
+  simp only [Nat.testBit_zero]
+  cases Nat.mod_two_eq_zero_or_one x with
+  | inl h => simp [h]
+  | inr h => simp [h]
+
 /-- n-fold tensor product of single-qubit Pauli matrices
     σ^α = σ^{α₁} ⊗ σ^{α₂} ⊗ ⋯ ⊗ σ^{αₙ} -/
 noncomputable def pauliString : {n : ℕ} → MultiIndex n → QubitMat n
