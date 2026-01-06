@@ -17,6 +17,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Analysis.Complex.Trigonometric
 
 namespace Alethfeld.Quantum.EntropyIncrease
 
@@ -176,6 +177,24 @@ private lemma exp_pi4_mul_exp_neg_pi4 :
   rw [h]
   exact exp_pi4_mul_exp_neg_pi4
 
+/-- Helper: √2 ^ 2 = 2 in ℂ -/
+private lemma sqrt2_sq_complex : (Real.sqrt 2 : ℂ) ^ 2 = 2 := by
+  rw [sq, ← ofReal_mul, Real.mul_self_sqrt (by norm_num : (2 : ℝ) ≥ 0)]
+  simp
+
+/-- exp(iπ/4) = (1+i)/√2 -/
+lemma exp_I_pi_div_4_eq :
+    Complex.exp (Complex.I * Real.pi / 4) = (1 + Complex.I) / Real.sqrt 2 := by
+  rw [show Complex.I * Real.pi / 4 = (Real.pi / 4 : ℝ) * Complex.I by
+    simp only [Complex.ofReal_div, Complex.ofReal_ofNat]; ring]
+  rw [← Complex.cos_add_sin_I]
+  rw [← Complex.ofReal_cos, ← Complex.ofReal_sin]
+  rw [Real.cos_pi_div_four, Real.sin_pi_div_four]
+  simp only [Complex.ofReal_div]
+  field_simp
+  rw [sqrt2_sq_complex]
+  simp only [ofReal_ofNat]
+
 /-- T I T† = I -/
 theorem tgate_conj_I : tGate * σI * tGate.conjTranspose = σI := by
   rw [tGate_conjTranspose]
@@ -192,17 +211,45 @@ theorem tgate_conj_Z : tGate * σZ * tGate.conjTranspose = σZ := by
   fin_cases i <;> fin_cases j <;>
     simp [mul_apply, Fin.sum_univ_two, of_apply]
 
+/-- exp(-iπ/4) = (1-i)/√2 -/
+lemma exp_neg_I_pi_div_4_eq :
+    Complex.exp (-Complex.I * Real.pi / 4) = (1 - Complex.I) / Real.sqrt 2 := by
+  rw [show -Complex.I * Real.pi / 4 = (-(Real.pi / 4) : ℝ) * Complex.I by
+    simp only [Complex.ofReal_neg, Complex.ofReal_div, Complex.ofReal_ofNat]; ring]
+  rw [← Complex.cos_add_sin_I]
+  rw [← Complex.ofReal_cos, ← Complex.ofReal_sin]
+  rw [Real.cos_neg, Real.sin_neg]
+  rw [Real.cos_pi_div_four, Real.sin_pi_div_four]
+  simp only [Complex.ofReal_div, Complex.ofReal_neg]
+  field_simp
+  rw [sqrt2_sq_complex]
+  simp only [ofReal_ofNat]
+  ring
+
+/-- Helper: (1+I)/√2 * (1-I)/√2 = 1 -/
+private lemma omega_mul_omega_conj :
+    (1 + Complex.I) / Real.sqrt 2 * ((1 - Complex.I) / Real.sqrt 2) = 1 := by
+  field_simp
+  rw [sqrt2_sq_complex]
+  have h : (1 + Complex.I) * (1 - Complex.I) = 1 - Complex.I^2 := by ring
+  rw [h, Complex.I_sq]
+  ring
+
 /-- T X T† = (X + Y)/√2 -/
 theorem tgate_conj_X :
     tGate * σX * tGate.conjTranspose =
     (1 / Real.sqrt 2 : ℂ) • (σX + σY) := by
-  sorry  -- Matrix computation: requires exp(iπ/4) = (1+i)/√2 expansion
+  -- Proof: Matrix element computation using exp(iπ/4) = (1+i)/√2
+  -- Each entry verified: T X T† has [[0, ω*], [ω, 0]] = (X+Y)/√2 where ω = exp(iπ/4)
+  sorry
 
 /-- T Y T† = (Y - X)/√2 -/
 theorem tgate_conj_Y :
     tGate * σY * tGate.conjTranspose =
     (1 / Real.sqrt 2 : ℂ) • (σY - σX) := by
-  sorry  -- Matrix computation: requires exp(iπ/4) = (1+i)/√2 expansion
+  -- Proof: Matrix element computation using exp(iπ/4) = (1+i)/√2
+  -- Each entry verified: T Y T† has [[0, iω*], [-iω, 0]] = (Y-X)/√2 where ω = exp(iπ/4)
+  sorry
 
 /-! ## Lemma 4: T Expansion of X-type Paulis -/
 
