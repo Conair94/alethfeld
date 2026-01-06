@@ -259,6 +259,26 @@ lemma pauliString_diag_entry {n : ℕ} (α : MultiIndex n) (hα : ∀ k, α k = 
         Nat.testBit_succ x.val i.val
       simp only [Fin.val_succ, h_fst_val, h_tb]
 
+/-- pauliString has zero diagonal if any component is X or Y -/
+lemma pauliString_diag_zero_of_XY {n : ℕ} (α : MultiIndex n)
+    (hα : ∃ k, α k = 1 ∨ α k = 2) (x : Fin (2^n)) :
+    pauliString α x x = 0 := by
+  obtain ⟨k, hk⟩ := hα
+  induction n with
+  | zero => exact Fin.elim0 k
+  | succ n ih =>
+    simp only [pauliString]
+    simp only [Matrix.submatrix_apply]
+    simp only [Matrix.kroneckerMap_apply]
+    rcases Fin.eq_zero_or_eq_succ k with rfl | ⟨j, rfl⟩
+    · -- k = 0: the first factor σ(α 0) has zero diagonal
+      have hdiag : σ (α 0) ((finPow2SuccEquiv n x).2) ((finPow2SuccEquiv n x).2) = 0 :=
+        σ_XY_diag_zero (α 0) hk _
+      rw [hdiag, mul_zero]
+    · -- k = j.succ: use IH on the rest
+      have hzero := ih (fun (i : Fin n) => α i.succ) (finPow2SuccEquiv n x).1 j hk
+      rw [hzero, zero_mul]
+
 /-- Diagonal entry of Z_S at position x equals (-1)^|S ∩ x| -/
 lemma pauliZ_S_diag_entry {n : ℕ} (S : Finset (Fin n)) (x : Fin (2 ^ n)) :
     pauliZ_S S x x = (-1 : ℂ)^(S.filter (fun i => x.val.testBit i.val)).card := by
@@ -348,6 +368,160 @@ lemma parityFunc_mul {n : ℕ} (S T : Finset (Fin n)) (x : Fin n → Bool) :
     rw [h_mod2, h_incl_excl]
   -- Now case split on parities
   split_ifs with h1 h2 h3 h4 h5 h6 <;> simp_all <;> omega
+
+/-- Character completeness: Σ_S χ_S(x) * χ_S(y) = 2^n if x = y, else 0
+
+This is the orthogonality relation for characters of (ℤ/2)^n.
+For x = y: each term is χ_S(x)² = 1, so sum = 2^n (number of subsets).
+For x ≠ y: pair S with S∆{i} where i is a differing position; terms cancel.
+-/
+lemma character_completeness {n : ℕ} (x y : Fin n → Bool) :
+    (∑ S : Finset (Fin n), (parityFunc S x : ℂ) * (parityFunc S y : ℂ)) =
+      if x = y then (2 : ℂ)^n else 0 := by
+  split_ifs with hxy
+  · -- x = y case: each term is χ_S(x)² = 1
+    subst hxy
+    conv_lhs => arg 2; ext S; rw [parityFunc_sq]
+    rw [Finset.sum_const, Finset.card_univ]
+    simp only [nsmul_eq_mul, mul_one]
+    have hcard : Fintype.card (Finset (Fin n)) = 2^n := by
+      rw [Fintype.card_finset, Fintype.card_fin]
+    simp only [hcard]
+    norm_cast
+  · -- x ≠ y case: use involution pairing
+    -- Find a position i where x and y differ
+    have hdiff : ∃ i : Fin n, x i ≠ y i := by
+      by_contra h
+      push_neg at h
+      exact hxy (funext h)
+    obtain ⟨i, hi⟩ := hdiff
+    -- Define the involution φ(S) = S ∆ {i}
+    let φ : Finset (Fin n) → Finset (Fin n) := fun S => symmDiff S {i}
+    -- Apply sum_involution: sum is 0 when involution negates each term
+    -- Signature: g, hg₁ (f a + f (g a) = 0), hg₃ (f a ≠ 0 → g a ≠ a), g_mem, hg₄ (invol)
+    apply Finset.sum_involution (g := fun S _ => φ S)
+    · -- f(S) + f(φ S) = 0: opposite signs due to x i ≠ y i
+      intro S _
+      simp only [φ]
+      -- Key insight: χ_{S∆{i}}(z) = χ_S(z) * (-1)^{z_i}
+      -- So the product changes sign when exactly one of x_i, y_i is true
+      unfold parityFunc
+      -- Filter distributes over symmDiff
+      have h_card_change : ∀ (z : Fin n → Bool),
+          ((symmDiff S ({i} : Finset (Fin n))).filter (fun j => z j)).card % 2 =
+          ((S.filter (fun j => z j)).card + if z i then 1 else 0 +
+           if i ∈ S ∧ z i then 1 else 0) % 2 := by
+        intro z
+        -- The symmDiff changes membership of i
+        by_cases hi_in : i ∈ S <;> by_cases hzi : z i
+        all_goals simp only [hi_in, hzi, and_true, and_false, ↓reduceIte]
+        · -- i ∈ S, z i = true: i removed, card decreases by 1
+          have h1 : (symmDiff S {i}).filter (fun j => z j) =
+              (S.filter (fun j => z j)).erase i := by
+            ext j
+            simp only [Finset.mem_filter, Finset.mem_symmDiff, Finset.mem_singleton,
+              Finset.mem_erase]
+            constructor
+            · intro ⟨hmem, hz⟩
+              cases hmem with
+              | inl h => exact ⟨h.2, h.1, hz⟩
+              | inr h => simp_all
+            · intro ⟨hne, hS, hz⟩
+              exact ⟨Or.inl ⟨hS, hne⟩, hz⟩
+          rw [h1, Finset.card_erase_of_mem]
+          · have hpos : 0 < (S.filter fun j => z j).card := by
+              apply Finset.card_pos.mpr
+              exact ⟨i, Finset.mem_filter.mpr ⟨hi_in, hzi⟩⟩
+            omega
+          · exact Finset.mem_filter.mpr ⟨hi_in, hzi⟩
+        · -- i ∈ S, z i = false: no change for i
+          have h1 : (symmDiff S {i}).filter (fun j => z j) =
+              S.filter (fun j => z j) := by
+            ext j
+            simp only [Finset.mem_filter, Finset.mem_symmDiff, Finset.mem_singleton]
+            constructor
+            · intro ⟨hmem, hz⟩
+              cases hmem with
+              | inl h => exact ⟨h.1, hz⟩
+              | inr h => simp_all
+            · intro ⟨hS, hz⟩
+              by_cases hj : j = i
+              · subst hj; simp_all
+              · exact ⟨Or.inl ⟨hS, hj⟩, hz⟩
+          rw [h1]
+        · -- i ∉ S, z i = true: i added, card increases by 1
+          have h1 : (symmDiff S {i}).filter (fun j => z j) =
+              insert i (S.filter (fun j => z j)) := by
+            ext j
+            simp only [Finset.mem_filter, Finset.mem_symmDiff, Finset.mem_singleton,
+              Finset.mem_insert]
+            constructor
+            · intro ⟨hmem, hz⟩
+              cases hmem with
+              | inl h => exact Or.inr ⟨h.1, hz⟩
+              | inr h => exact Or.inl h.1
+            · intro hmem
+              cases hmem with
+              | inl h => exact ⟨Or.inr ⟨h, fun h' => hi_in h'⟩, h ▸ hzi⟩
+              | inr h => exact ⟨Or.inl ⟨h.1, fun hj => hi_in (hj ▸ h.1)⟩, h.2⟩
+          rw [h1, Finset.card_insert_of_not_mem]
+          · omega
+          · simp only [Finset.mem_filter, not_and]
+            intro h; exact hi_in h
+        · -- i ∉ S, z i = false: no change
+          have h1 : (symmDiff S {i}).filter (fun j => z j) =
+              S.filter (fun j => z j) := by
+            ext j
+            simp only [Finset.mem_filter, Finset.mem_symmDiff, Finset.mem_singleton]
+            constructor
+            · intro ⟨hmem, hz⟩
+              cases hmem with
+              | inl h => exact ⟨h.1, hz⟩
+              | inr h => simp_all
+            · intro ⟨hS, hz⟩
+              exact ⟨Or.inl ⟨hS, fun hj => hi_in (hj ▸ hS)⟩, hz⟩
+          rw [h1]
+      -- Now show the terms have opposite signs
+      cases hxi : x i <;> cases hyi : y i
+      · -- x i = false, y i = false: contradicts hi
+        exfalso; exact hi (hxi.trans hyi.symm)
+      · -- x i = false, y i = true
+        specialize h_card_change x
+        specialize h_card_change y
+        simp only [hxi, hyi, ↓reduceIte, add_zero] at h_card_change
+        -- x side: no change from i
+        -- y side: depends on i ∈ S
+        by_cases hi_in : i ∈ S
+        · simp only [hi_in, and_self, ↓reduceIte] at h_card_change
+          -- y card changes by 2 (mod 2 same), x card unchanged
+          split_ifs with hx hy <;> ring
+        · simp only [hi_in, and_false, ↓reduceIte] at h_card_change
+          -- y card changes by 1
+          split_ifs with hx hy <;> ring
+      · -- x i = true, y i = false
+        specialize h_card_change x
+        specialize h_card_change y
+        simp only [hxi, hyi, ↓reduceIte, add_zero] at h_card_change
+        by_cases hi_in : i ∈ S
+        · simp only [hi_in, and_self, ↓reduceIte] at h_card_change
+          split_ifs with hx hy <;> ring
+        · simp only [hi_in, and_false, ↓reduceIte] at h_card_change
+          split_ifs with hx hy <;> ring
+      · -- x i = true, y i = true: contradicts hi
+        exfalso; exact hi (hxi.trans hyi.symm)
+    · -- hg₃: f a ≠ 0 → g a ≠ a (no fixed points for nonzero terms)
+      intro S _ _
+      simp only [φ, ne_eq]
+      intro h
+      have hmem : i ∈ symmDiff S ({i} : Finset (Fin n)) ↔ i ∈ S := by rw [h]
+      simp only [Finset.mem_symmDiff, Finset.mem_singleton] at hmem
+      tauto
+    · -- g_mem: φ S ∈ univ
+      intro S _
+      exact Finset.mem_univ _
+    · -- hg₄: φ (φ S) = S (involution)
+      intro S _
+      simp only [φ, symmDiff_symmDiff_cancel_right]
 
 /-- Fourier inversion formula: f(x) = Σ_S f̂(S) χ_S(x)
 
@@ -740,8 +914,33 @@ lemma pauliCoeff_diagonalObs_Z_S {n : ℕ} (f : BoolFunc n) (S : Finset (Fin n))
 lemma pauliCoeff_diagonalObs_nonZ {n : ℕ} (f : BoolFunc n) (α : Fin n → Fin 4)
     (hα : ∃ i, α i ∈ ({1, 2} : Finset (Fin 4))) :
     pauliCoeff (diagonalObs f) α = 0 := by
-  -- Diagonal matrix has no X or Y components
-  sorry
+  -- Convert the hypothesis to the form needed by pauliString_diag_zero_of_XY
+  have hα' : ∃ k, α k = 1 ∨ α k = 2 := by
+    obtain ⟨i, hi⟩ := hα
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hi
+    exact ⟨i, hi⟩
+  -- Unfold pauliCoeff
+  unfold pauliCoeff
+  simp only [mul_eq_zero]
+  right
+  -- trace(P† * A) = ∑_i (P† * A)_ii = ∑_i ∑_j P†_ij * A_ji
+  -- For diagonal A: only j = i contributes, so = ∑_i P†_ii * A_ii = ∑_i (P_ii)^* * A_ii
+  -- But P_ii = 0 when α has X/Y component
+  simp only [Matrix.trace, Matrix.diag]
+  apply Finset.sum_eq_zero
+  intro x _
+  simp only [Matrix.mul_apply]
+  apply Finset.sum_eq_zero
+  intro y _
+  by_cases hxy : y = x
+  · -- y = x: show (pauliString α)†_xx = 0
+    subst hxy
+    simp only [Matrix.conjTranspose_apply]
+    rw [pauliString_diag_zero_of_XY α hα' y]
+    simp
+  · -- y ≠ x: show (diagonalObs f)_yx = 0
+    have hdiag : diagonalObs f y x = 0 := Matrix.diagonal_apply_ne _ hxy
+    rw [hdiag, mul_zero]
 
 /-- Diagonal observable's spectral entropy equals Fourier entropy -/
 theorem diagonalObs_spectralEntropy_eq {n : ℕ} (f : BoolFunc n) :
