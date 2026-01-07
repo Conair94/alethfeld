@@ -2,7 +2,8 @@
   "CLI command for adding nodes to a semantic proof graph."
   (:require [clojure.string :as str]
             [alethfeld.io :as io]
-            [alethfeld.ops.add-node :as add-node]))
+            [alethfeld.ops.add-node :as add-node]
+            [alethfeld.result :as r]))
 
 (def cli-options
   [["-s" "--stdin" "Read node definition from stdin instead of file"]
@@ -41,50 +42,59 @@
         "  2 - Input error (file not found, parse error)"]
        (str/join \newline)))
 
+(defn- do-add-node
+  "Execute the add-node operation with result threading."
+  [graph-path node-source options]
+  (r/let-ok [graph (io/read-graph graph-path)
+             node node-source
+             new-graph (add-node/add-node graph node)]
+    (if (:dry-run options)
+      (r/ok {:dry-run true
+             :node-id (:id node)})
+      (r/let-ok [_ (io/write-graph (or (:output options) graph-path) new-graph)]
+        (r/ok {:node-id (:id node)
+               :graph-version (:version new-graph)})))))
+
+(defn- format-success [result]
+  (if (:dry-run result)
+    (str "OK: Validation passed (dry-run)\n  Node " (:node-id result) " would be added")
+    (io/format-edn {:status :ok
+                    :message (str "Node " (:node-id result) " added")
+                    :graph-version (:graph-version result)})))
+
+(defn- format-add-error [result]
+  (let [errors (:error result)]
+    (cond
+      ;; String error from I/O
+      (string? errors)
+      (r/exit-err 2 (str "Error: " errors))
+
+      ;; Vector of error maps from ops
+      (vector? errors)
+      (r/exit-err 1 (str "Error: Operation failed\n" (r/format-op-errors errors)))
+
+      :else
+      (r/exit-err 1 (str "Error: " errors)))))
+
 (defn run
   "Run the add-node command."
   [args options]
   (cond
     (:help options)
-    {:exit-code 0 :message (usage)}
+    (r/exit-ok (usage))
 
     (empty? args)
-    {:exit-code 2 :message (str "Error: No graph file specified\n\n" (usage))}
+    (r/exit-err 2 (str "Error: No graph file specified\n\n" (usage)))
 
     (and (not (:stdin options)) (< (count args) 2))
-    {:exit-code 2 :message (str "Error: No node file specified (use --stdin to read from stdin)\n\n" (usage))}
+    (r/exit-err 2 (str "Error: No node file specified (use --stdin to read from stdin)\n\n" (usage)))
 
     :else
     (let [graph-path (first args)
-          graph-result (io/read-graph graph-path)]
-      (if (:error graph-result)
-        {:exit-code 2 :message (str "Error reading graph: " (:error graph-result))}
-
-        (let [node-result (if (:stdin options)
-                           (io/read-edn-stdin)
-                           (io/read-edn (second args)))]
-          (if (:error node-result)
-            {:exit-code 2 :message (str "Error reading node: " (:error node-result))}
-
-            (let [add-result (add-node/add-node (:ok graph-result) (:ok node-result))]
-              (if (:error add-result)
-                {:exit-code 1
-                 :message (str "Error: Operation failed\n"
-                               (str/join \newline
-                                         (map #(str "  [" (name (:type %)) "] " (:message %))
-                                              (:error add-result))))}
-
-                (if (:dry-run options)
-                  {:exit-code 0
-                   :message (str "OK: Validation passed (dry-run)\n"
-                                 "  Node " (:id (:ok node-result)) " would be added")}
-
-                  (let [output-path (or (:output options) graph-path)
-                        write-result (io/write-graph output-path (:ok add-result))]
-                    (if (:error write-result)
-                      {:exit-code 2 :message (str "Error writing graph: " (:error write-result))}
-                      {:exit-code 0
-                       :message (io/format-edn
-                                 {:status :ok
-                                  :message (str "Node " (:id (:ok node-result)) " added")
-                                  :graph-version (:version (:ok add-result))})})))))))))))
+          node-source (if (:stdin options)
+                        (io/read-edn-stdin)
+                        (io/read-edn (second args)))
+          result (do-add-node graph-path node-source options)]
+      (if (r/ok? result)
+        (r/exit-ok (format-success (:ok result)))
+        (format-add-error result)))))
